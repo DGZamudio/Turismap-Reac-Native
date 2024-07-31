@@ -37,7 +37,7 @@ const LoginScreen = ({ navigation }) => {
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Video
-                source={require('../../assets/background.mp4')}
+                source={{uri: 'https://drive.google.com/file/d/1-NVqAXn3wtWeyOeo2T13I34e78j1xKsX/view?usp=sharing'}}
                 style={styles.backgroundVideo}
                 isMuted={true}
                 isLooping
