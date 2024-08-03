@@ -1,37 +1,40 @@
-import * as React from 'react';
-import { Button, View } from 'react-native';
+import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import HomeScreen from './HomeScreen';
 import EditProfile from './EditProfile';
-
-function HomeScreen({ navigation }) {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Button
-        onPress={() => navigation.navigate('Notifications')}
-        title="Go to notifications"
-      />
-    </View>
-  );
-}
-
-function EditProfile({ navigation }) {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Button 
-        onPress={() => navigation.goBack()} 
-        title="Go back home" 
-      />
-    </View>
-  );
-}
 
 const Drawer = createDrawerNavigator();
 
-export default function App() {
+function DrawerNavigator() {
   return (
-      <Drawer.Navigator>
-        <Drawer.Screen name="Home" component={HomeScreen} />
-        <Drawer.Screen name="Edit profile" component={EditProfile} />
-      </Drawer.Navigator>
+    <Drawer.Navigator initialRouteName="Home"
+    screenOptions={{
+      headerTintColor:'#FFF',
+    }}    >
+    <Drawer.Screen name="Home" component={HomeScreen}     
+          options={{
+            title: 'Map',
+              headerStyle: {
+              backgroundColor: '#212121',
+            },
+              headerTitleStyle: {
+                color: '#212121',
+            },
+          }}
+    />
+    <Drawer.Screen name="EditProfile" component={EditProfile}           
+          options={{
+            title: 'Edit Profile',
+              headerStyle: {
+              backgroundColor: '#212121',
+            },
+              headerTitleStyle: {
+                color: '#212121',
+            },
+          }}
+    />
+    </Drawer.Navigator>
   );
 }
+
+export default DrawerNavigator;

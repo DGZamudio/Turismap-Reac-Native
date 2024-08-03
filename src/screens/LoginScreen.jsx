@@ -48,7 +48,7 @@ const LoginScreen = ({ navigation }) => {
                 <TextInput placeholder="Username" style={styles.input} placeholderTextColor="#f8f9fa" />
                 <TextInput placeholder="Password" style={styles.input} secureTextEntry={true} placeholderTextColor="#f8f9fa" />
                 <Pressable
-                    onPress={() => navigation.navigate('EditProfile')}
+                    //onPress={() => navigation.navigate('EditProfile')}
                 >
                     <Text style={styles.passwordInfo}>
                         If you forgot your password click here!

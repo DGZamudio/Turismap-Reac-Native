@@ -1,22 +1,23 @@
 import React from 'react';
-import {SafeAreaView, StyleSheet} from 'react-native';
+import {View, StyleSheet,StatusBar} from 'react-native';
 import MapView from 'react-native-maps'
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = () => {
     return(
-        <SafeAreaView style={styles.Text}>
-            <MapView style={styles.map}
-                customMapStyle={mapDarkStyle}
-                loadingEnabled='true'
-                initialRegion=
-                {{
-                latitude: 4.597841,
-                longitude: -74.076184,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421
-                }}
-            />
-        </SafeAreaView>
+        <View style={styles.container}>
+          <StatusBar setStatusBarStyle='light-content'></StatusBar>
+          <MapView style={styles.map}
+              customMapStyle={mapDarkStyle}
+              loadingEnabled='true'
+              initialRegion=
+              {{
+              latitude: 4.597841,
+              longitude: -74.076184,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421
+              }}
+          />
+        </View>
     );
 };
 const mapDarkStyle =[
@@ -265,10 +266,9 @@ const mapStandardStyle = [
       }
 ]
 const styles = StyleSheet.create({
-    Text: {
+    container: {
         flex:1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        flexDirection:'column',
     },
     map: {
         width:'100%',

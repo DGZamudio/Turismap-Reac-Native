@@ -33,6 +33,7 @@ const EditProfile = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
+        <Text style={styles.text}>Edit profile</Text>
         <View style={styles.cardContent}>
           <Image source={require('../../assets/pfp.jpg')} style={styles.pfp} />
           <TextInput style={styles.input} placeholder="Username" placeholderTextColor="#f8f9fa"/>
@@ -56,6 +57,32 @@ const EditProfile = ({ navigation }) => {
           </Pressable>
         </View>
       </View>
+
+      <View style={styles.card}>
+        <Text style={styles.text}>Change Password</Text>
+        <View style={styles.cardContent}>
+          <TextInput style={styles.input} placeholder="Old password" placeholderTextColor="#f8f9fa"/>
+          <TextInput style={styles.input} placeholder="New password" placeholderTextColor="#f8f9fa"/>
+          <Pressable
+                    onPress={() => navigation.navigate('Home')}
+                    onPressIn={handlePressIn}
+                    onPressOut={handlePressOut}
+                    style={styles.button}
+                >
+                    <Animated.View
+                        style={[
+                            styles.buttonContent,
+                            {
+                                transform: [{ scale: scaleAnim }],
+                                shadowOpacity: shadowAnim,
+                            },
+                        ]}
+                    >
+                        <Text style={styles.buttonText}>Save Password</Text>
+                    </Animated.View>
+          </Pressable>
+        </View>
+      </View>
     </View>
   );
 };
@@ -68,6 +95,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#000',
     },
     card: {
+      margin:'5%',
       width: 190,
       height: 254,
       borderRadius: 30,
@@ -79,7 +107,7 @@ const styles = StyleSheet.create({
       elevation: 15,
     },
     input: {
-        margin:'10%',
+        margin:'5%',
         backgroundColor: 'transparent',       
         borderBottomColor: '#fff',
         borderBottomWidth: 1,
@@ -90,9 +118,17 @@ const styles = StyleSheet.create({
         color: '#f8f9fa',
     },
     cardContent: {
-      marginTop:'10%',
       justifyContent:'center',
       alignItems:'center',
+    },
+    text:{
+      margin:'3%',
+      color:'#FFF',
+      fontWeight: 'bold',
+      fontSize: 15,
+      borderBottomWidth: 1,
+      borderBottomColor: '#f8f9fa',
+      textAlign:'center',
     },
     pfp: {
       width:'34%',
@@ -100,7 +136,7 @@ const styles = StyleSheet.create({
       borderRadius:50,
     },
     button: {
-      marginTop:'5%',
+      marginTop:'10%',
       borderRadius: 30,
       overflow: 'hidden',
       backgroundColor: '#fff',
