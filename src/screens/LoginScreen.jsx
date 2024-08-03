@@ -1,10 +1,8 @@
-// src/screens/RegisterScreen.jsx
 import React from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, Image, ScrollView, Animated } from 'react-native';
 import { Video } from 'expo-av';
 
 const LoginScreen = ({ navigation }) => {
-    // Animaciones para el botón
     const scaleAnim = new Animated.Value(1);
     const shadowAnim = new Animated.Value(0.2);
 
@@ -37,7 +35,7 @@ const LoginScreen = ({ navigation }) => {
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Video
-                source={{uri: 'https://drive.google.com/file/d/1-NVqAXn3wtWeyOeo2T13I34e78j1xKsX/view?usp=sharing'}}
+                source={{uri: 'https://www.dropbox.com/scl/fi/ftmbd9ukbng2txtiilwhd/background.mp4?rlkey=81y4h7vwk7fprh35m9ia9c6jk&st=jx8rmazt&raw=1'}}
                 style={styles.backgroundVideo}
                 isMuted={true}
                 isLooping
@@ -126,7 +124,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     buttonContent: {
-        backgroundColor: 'transparent', // Gradients aren't supported directly; use a library for gradients
+        backgroundColor: 'transparent', 
         paddingVertical: 14,
         paddingHorizontal: 28,
         alignItems: 'center',
@@ -139,7 +137,6 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: '#000',
-        fontFamily: 'Segoe UI',
         fontWeight: 'bold',
         fontSize: 18,
     },
