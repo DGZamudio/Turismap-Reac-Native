@@ -48,6 +48,13 @@ const LoginScreen = ({ navigation }) => {
                 <TextInput placeholder="Username" style={styles.input} placeholderTextColor="#f8f9fa" />
                 <TextInput placeholder="Password" style={styles.input} secureTextEntry={true} placeholderTextColor="#f8f9fa" />
                 <Pressable
+                    onPress={() => navigation.navigate('EditProfile')}
+                >
+                    <Text style={styles.passwordInfo}>
+                        If you forgot your password click here!
+                    </Text>
+                </Pressable>
+                <Pressable
                     onPress={() => navigation.navigate('Home')}
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
@@ -101,6 +108,11 @@ const styles = StyleSheet.create({
         fontSize: 24,
         marginBottom: 10,
         color: '#f8f9fa',
+    },
+    passwordInfo: {
+        color: '#f8f9fa',
+        marginBottom: 10,
+        textAlign: 'center',
     },
     logo: {
         width: '25%',

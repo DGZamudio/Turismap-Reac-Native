@@ -1,10 +1,10 @@
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
+import {SafeAreaView, StyleSheet} from 'react-native';
 import MapView from 'react-native-maps'
 
 const HomeScreen = ({ navigation }) => {
     return(
-        <View style={styles.Text}>
+        <SafeAreaView style={styles.Text}>
             <MapView style={styles.map}
                 customMapStyle={mapDarkStyle}
                 loadingEnabled='true'
@@ -16,7 +16,7 @@ const HomeScreen = ({ navigation }) => {
                 longitudeDelta: 0.0421
                 }}
             />
-        </View>
+        </SafeAreaView>
     );
 };
 const mapDarkStyle =[
