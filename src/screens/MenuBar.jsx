@@ -4,6 +4,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import HomeScreen from './HomeScreen';
 import EditProfile from './EditProfile';
 import Login from './LoginScreen'
+import Crud from './Crud'
 import { View, Image, Text } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
@@ -75,8 +76,17 @@ function DrawerNavigator() {
     <Drawer.Screen name="Login" component={Login}           
           options={{
             title: 'Log out',
+            headerShown: false, 
             drawerIcon: () => (
               <AntDesign name="logout" size={24} color="white" />
+            )
+          }}
+    />
+        <Drawer.Screen name="Crud" component={Crud}           
+          options={{
+            title: 'CRUD',
+            drawerIcon: () => (
+              <AntDesign name="setting" size={24} color="white" />
             )
           }}
     />

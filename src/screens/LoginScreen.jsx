@@ -47,13 +47,16 @@ const LoginScreen = ({ navigation }) => {
                 <Image source={require('../../assets/Turismap Logo Minimalist.png')} style={styles.logo} />
                 <TextInput placeholder="Username" style={styles.input} placeholderTextColor="#f8f9fa" />
                 <TextInput placeholder="Password" style={styles.input} secureTextEntry={true} placeholderTextColor="#f8f9fa" />
-                <Pressable
-                    //onPress={() => navigation.navigate('EditProfile')}
-                >
-                    <Text style={styles.passwordInfo}>
-                        If you forgot your password click here!
-                    </Text>
-                </Pressable>
+                <View style={styles.recov}>
+                    <Text style={styles.passwordInfo}>If you forgot your password </Text>
+                    <Pressable
+                        onPress={() => navigation.navigate('RecoverPass')}
+                    >
+                        <Text style={styles.passwordInfo1}>
+                            Click here!
+                        </Text>
+                    </Pressable>
+                </View>
                 <Pressable
                     onPress={() => navigation.navigate('Home')}
                     onPressIn={handlePressIn}
@@ -109,10 +112,20 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         color: '#f8f9fa',
     },
+    recov:{
+        flexDirection:'row',
+    },
     passwordInfo: {
         color: '#f8f9fa',
         marginBottom: 10,
         textAlign: 'center',
+    },
+    passwordInfo1: {
+        color: '#f8f9fa',
+        marginBottom: 10,
+        fontWeight:'bold',
+        borderBottomWidth:1,
+        borderBottomColor:'#f8f9fa',
     },
     logo: {
         width: '25%',
