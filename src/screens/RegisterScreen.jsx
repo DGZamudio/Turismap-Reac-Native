@@ -67,11 +67,11 @@ const RegisterScreen = ({ navigation }) => {
                             },
                         ]}
                     >
-                        <Text style={styles.buttonText}>Sign in</Text>
+                        <Text style={styles.buttonText}>Sign up</Text>
                     </Animated.View>
                 </Pressable>
                 <Pressable onPress={() => navigation.navigate('Login')} style={styles.loginButton}>
-                    <Text style={styles.loginText}>Log in</Text>
+                    <Text style={styles.loginText}>Sign in</Text>
                 </Pressable>
             </View>
         </ScrollView>
@@ -108,8 +108,8 @@ const styles = StyleSheet.create({
         color: '#f8f9fa',
     },
     logo: {
-        width: '25%',
-        height: undefined,
+        width: 100,
+        height: 100,
         aspectRatio: 1,
         marginBottom: 20,
     },

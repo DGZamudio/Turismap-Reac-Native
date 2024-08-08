@@ -75,7 +75,7 @@ function DrawerNavigator() {
     />
     <Drawer.Screen name="Login" component={Login}           
           options={{
-            title: 'Log out',
+            title: 'Sign Out',
             headerShown: false, 
             drawerIcon: () => (
               <AntDesign name="logout" size={24} color="white" />
@@ -84,7 +84,7 @@ function DrawerNavigator() {
     />
         <Drawer.Screen name="Crud" component={Crud}           
           options={{
-            title: 'CRUD',
+            title: 'Lists',
             drawerIcon: () => (
               <AntDesign name="setting" size={24} color="white" />
             )

@@ -363,14 +363,15 @@ const styles = StyleSheet.create({
       backgroundColor:'#D4D4D4',
       borderRadius:30,
       color: '#646464',
-      justifyContent:'space-between',
+      justifyContent:'space-around',
       borderWidth:3,
       borderColor:'#000',
+      width:'65%'
     },
     searchContent: {
       textAlign:'center',
       alignItems:'center',
-      width:'50%',
+      width:'70%',
       height:30,
     }
 })

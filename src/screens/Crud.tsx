@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, ScrollView, Pressable } from 'react-native'
+import { StyleSheet, Text, View, FlatList, ScrollView, Pressable, TextInput } from 'react-native'
 import React from 'react'
 import AntDesign from '@expo/vector-icons/AntDesign';
 
@@ -50,32 +50,63 @@ const Crud = () => {
   return (
     <View style={styles.container}>
         <ScrollView style={styles.card}>
-            <Text style={styles.title}>Crud</Text>
-            <Pressable style={styles.addButton}>
-              <Text style={{color:'#FFF'}}>
-                Add
-              </Text>
-              <AntDesign name="adduser" size={24} color="white" />
-            </Pressable>
-            <View style={styles.headerRow}>
-                <View style={styles.headerItem}>
-                  <Text style={styles.listTitle}>Id</Text>
-                </View>
-                <View style={styles.headerItem}>
-                  <Text style={styles.listTitle}>Name</Text>
-                </View>
-                <View style={styles.headerItem}>
-                  <Text style={styles.listTitle}>Email</Text>
-                </View>
-                <View style={styles.headerItem}>
-                  <Text style={styles.listTitle}>Options</Text>
-                </View>
+            <Text style={styles.title}>Lists</Text>
+            <View style={styles.buttons}>
+              <Pressable style={styles.addButton}>
+                <Text style={{color:'#FFF'}}>
+                  Add
+                </Text>
+                <AntDesign name="adduser" size={24} color="white" />
+              </Pressable>
+              <View style={styles.search}>          
+                <TextInput placeholder='Search' style={styles.searchContent} />
+                <AntDesign name="search1" size={24} color="grey" style={{
+                  marginRight:15,
+                }} />
+              </View>
             </View>
-            <FlatList
-                data={DATA}
-                renderItem={({ item }) => <Item id={item.id} title={item.title} email={item.email} />}
-                keyExtractor={item => item.id}
-            />
+            <View style={styles.crud}>
+              <Text style={styles.title}>Users</Text>
+              <View style={{
+                        margin:'5%',
+                        marginLeft:'18%',
+                        flexDirection:'row',
+                        backgroundColor:'#D4D4D4',
+                        borderRadius:30,
+                        justifyContent:'space-around',
+                        borderWidth:3,
+                        borderColor:'#000',
+                        width:'65%',
+                        height:35
+              }}>          
+                <TextInput placeholder='Search' style={styles.searchContent} />
+                <AntDesign name="search1" size={24} color="grey" style={{
+                  marginRight:15,
+                }} />
+              </View>
+              <View style={styles.headerRow}>
+                  <View style={styles.headerItem}>
+                    <Text style={styles.listTitle}>Id</Text>
+                  </View>
+                  <View style={styles.headerItem}>
+                    <Text style={styles.listTitle}>Name</Text>
+                  </View>
+                  <View style={styles.headerItem}>
+                    <Text style={styles.listTitle}>Email</Text>
+                  </View>
+                  <View style={styles.headerItem}>
+                    <Text style={styles.listTitle}>Options</Text>
+                  </View>
+              </View>
+              <FlatList
+                  data={DATA}
+                  renderItem={({ item }) => <Item id={item.id} title={item.title} email={item.email} />}
+                  keyExtractor={item => item.id}
+              />
+            </View>
+
+            
+            
         </ScrollView>
     </View>
   )
@@ -101,8 +132,25 @@ const styles = StyleSheet.create({
         shadowRadius: 60,
         elevation: 15,
       },
+      buttons:{
+        flexDirection:'row',
+        justifyContent:'space-between',
+        marginLeft:'8%',
+        marginRight:'8%',
+        marginTop:'5%',
+      },
+      crud: {
+        margin: '5%',
+        width: '90%',
+        borderRadius: 30,
+        backgroundColor: '#303030',
+        shadowColor: '#191919',
+        shadowOffset: { width: 15, height: 15 },
+        shadowOpacity: 10,
+        shadowRadius: 60,
+        elevation: 15,
+      },
       addButton: {
-        margin:'5%',
         padding:'2%',
         width:65,
         borderRadius:5,
@@ -123,6 +171,23 @@ const styles = StyleSheet.create({
       rowIcon:{
         justifyContent:'center',
         flexDirection: 'row', 
+      },
+      search: {
+        flexDirection:'row',
+        backgroundColor:'#D4D4D4',
+        borderRadius:30,
+        color: '#646464',
+        justifyContent:'space-around',
+        borderWidth:3,
+        borderColor:'#000',
+        width:'65%',
+        height:35
+      },
+      searchContent: {
+        textAlign:'center',
+        alignItems:'center',
+        width:'70%',
+        height:30,
       },
       delItemn:{
         width:26,

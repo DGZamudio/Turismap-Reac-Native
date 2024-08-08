@@ -72,11 +72,11 @@ const LoginScreen = ({ navigation }) => {
                             },
                         ]}
                     >
-                        <Text style={styles.buttonText}>Log in</Text>
+                        <Text style={styles.buttonText}>Sign in</Text>
                     </Animated.View>
                 </Pressable>
                 <Pressable onPress={() => navigation.navigate('Register')} style={styles.loginButton}>
-                    <Text style={styles.loginText}>Sign in</Text>
+                    <Text style={styles.loginText}>Sign up</Text>
                 </Pressable>
             </View>
         </ScrollView>
@@ -128,8 +128,8 @@ const styles = StyleSheet.create({
         borderBottomColor:'#f8f9fa',
     },
     logo: {
-        width: '25%',
-        height: undefined,
+        width: 100,
+        height: 100,
         aspectRatio: 1,
         marginBottom: 20,
     },
