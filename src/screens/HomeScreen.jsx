@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, StyleSheet, StatusBar, TextInput } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MapView, { Polygon } from 'react-native-maps'
@@ -9,21 +9,6 @@ const HomeScreen = () => {
       longitude: -74.076184,
       latitudeDelta: 0.01,
       longitudeDelta: 0.01,
-    };
-
-    const containsLocation = (location, polygon) => {
-      const { latitude, longitude } = location;
-      let isInside = false;
-      const numVertices = polygon.length;
-    
-      for (let i = 0, j = numVertices - 1; i < numVertices; j = i++) {
-        const xi = polygon[i].latitude, yi = polygon[i].longitude;
-        const xj = polygon[j].latitude, yj = polygon[j].longitude;
-        const intersect = ((yi > longitude) !== (yj > longitude))
-          && (latitude < (xj - xi) * (longitude - yi) / (yj - yi) + xi);
-        if (intersect) isInside = !isInside;
-      }
-      return isInside;
     };
 
     const mapRef = useRef(null);
@@ -50,26 +35,6 @@ const HomeScreen = () => {
       { latitude: 4.602165, longitude: -74.074427 },
     ];
   
-    const isLocationInPolygon = (location) => {
-      return containsLocation(location, polygonCoordinates);
-    };
-  
-    const handleRegionChangeComplete = useCallback((newRegion) => {
-      const center = {
-        latitude: newRegion.latitude + newRegion.latitudeDelta / 2,
-        longitude: newRegion.longitude + newRegion.longitudeDelta / 2,
-      };
-  
-      if (!isLocationInPolygon(center)) {
-        if (mapRef.current) {
-          mapRef.current.animateToRegion(initialRegion, 1000);
-        }
-        setRegion(initialRegion);
-      } else {
-        setRegion(newRegion);
-      }
-    }, [initialRegion]);
-  
   
     return(
         <View style={styles.container}>
@@ -87,13 +52,12 @@ const HomeScreen = () => {
             loadingEnabled={true}
             showsUserLocation={true}
             region={region}
-            onRegionChangeComplete={handleRegionChangeComplete}
             initialRegion={initialRegion}
           >  
             <Polygon
               coordinates={polygonCoordinates}
-              strokeColor="#A00"
-              fillColor="rgba(255,0,0,0)" 
+              strokeColor="rgba(0,255,0,255)"
+              fillColor="transparent" 
               strokeWidth={2}
             />
           </MapView>
