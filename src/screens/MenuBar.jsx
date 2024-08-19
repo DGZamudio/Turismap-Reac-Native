@@ -4,7 +4,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import HomeScreen from './HomeScreen';
 import EditProfile from './EditProfile';
 import Login from './LoginScreen'
-import Crud from './Crud'
+import Crud from './Crud';
 import { View, Image, Text } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 

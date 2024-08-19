@@ -1,46 +1,73 @@
 import { StyleSheet, Text, View, FlatList, ScrollView, Pressable, TextInput } from 'react-native'
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import AntDesign from '@expo/vector-icons/AntDesign';
 
 const Crud = () => {
-    const DATA = [
-        {
-          id: '1',
-          title: 'Pablo',
-          email: 'Pablitoxx@gmail.com'
+    const [DATA, setData] = useState([]);
+
+    useEffect(() => {
+      fetch('http://192.168.1.86:5000/get_users', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        {
-          id: '2',
-          title: 'Marian',
-          email: 'laragozza@gmail.com'
-        },
-        {
-          id: '3',
-          title: 'Danna',
-          email: 'idk782@gmail.com'
-        },
-      ];
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Fetched data:', data);
+        setData(data);
+      })
+      .catch((error) => {
+        console.error('Error al obtener los usuarios:', error);
+      });
+  }, []);
       
-    type ItemProps = {id: string; title: string; email: string};
+    type ItemProps = {_id: string; nombreUsuario: string; correoUsuario: string; estadoUsuario: string; rolUsuario: string};
       
-    const Item = ({ id, title, email }: ItemProps) => (
+    const deleteUser = (id) => {
+      fetch(`http://192.168.1.86:5000/delete_user/${id}`, {
+          method: 'DELETE',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+      })
+      .then(response => {
+          if (response.ok) {
+              setData(DATA.filter(user => user._id !== id));
+          } else {
+              console.error('Error deleting user:', response.statusText);
+          }
+      })
+      .catch(error => {
+          console.error('Error deleting user:', error);
+      });
+  };
+  
+    const Item = ({ _id, nombreUsuario, correoUsuario, estadoUsuario, rolUsuario }: ItemProps) => (
         <View style={styles.rowList}>
           <View style={styles.item}>
-            <Text style={styles.itemTitle}>{id}</Text>
+            <Text style={styles.itemTitle}>{_id}</Text>
           </View>
           <View style={styles.item}>
-            <Text style={styles.itemTitle}>{title}</Text>
+            <Text style={styles.itemTitle}>{nombreUsuario}</Text>
           </View>
           <View style={styles.item}>
-            <Text style={styles.itemTitle}>{email}</Text>
+            <Text style={styles.itemTitle}>{correoUsuario}</Text>
+          </View>
+          <View style={styles.item}>
+            <Text style={styles.itemTitle}>{estadoUsuario}</Text>
+          </View>
+          <View style={styles.item}>
+            <Text style={styles.itemTitle}>{rolUsuario}</Text>
           </View>
           <View style={styles.item}>
             <View style={styles.rowIcon}>
               <Pressable style={styles.editItemn} >
                 <AntDesign name="edit" size={24} color="black" />
               </Pressable>
-              <Pressable style={styles.delItemn} >
-                <AntDesign name="delete" size={24} color="black" />
+              <Pressable style={styles.delItemn} 
+              onPress={() => deleteUser(_id)}>
+                <AntDesign name="delete" size={24} color="black"/>
               </Pressable>
             </View>
           </View>
@@ -51,13 +78,7 @@ const Crud = () => {
     <View style={styles.container}>
         <ScrollView style={styles.card}>
             <Text style={styles.title}>Lists</Text>
-            <View style={styles.buttons}>
-              <Pressable style={styles.addButton}>
-                <Text style={{color:'#FFF'}}>
-                  Add
-                </Text>
-                <AntDesign name="adduser" size={24} color="white" />
-              </Pressable>
+            <View style={styles.search1}>
               <View style={styles.search}>          
                 <TextInput placeholder='Search' style={styles.searchContent} />
                 <AntDesign name="search1" size={24} color="grey" style={{
@@ -67,22 +88,19 @@ const Crud = () => {
             </View>
             <View style={styles.crud}>
               <Text style={styles.title}>Users</Text>
-              <View style={{
-                        margin:'5%',
-                        marginLeft:'18%',
-                        flexDirection:'row',
-                        backgroundColor:'#D4D4D4',
-                        borderRadius:30,
-                        justifyContent:'space-around',
-                        borderWidth:3,
-                        borderColor:'#000',
-                        width:'65%',
-                        height:35
-              }}>          
-                <TextInput placeholder='Search' style={styles.searchContent} />
-                <AntDesign name="search1" size={24} color="grey" style={{
-                  marginRight:15,
-                }} />
+              <View style={styles.buttons}>
+                <Pressable style={styles.addButton}>
+                  <Text style={{color:'#FFF'}}>
+                    Add
+                  </Text>
+                  <AntDesign name="adduser" size={24} color="white" />
+                </Pressable>
+                <View style={styles.search}>          
+                  <TextInput placeholder='Search' style={styles.searchContent} />
+                  <AntDesign name="search1" size={24} color="grey" style={{
+                    marginRight:15,
+                  }} />
+                </View>
               </View>
               <View style={styles.headerRow}>
                   <View style={styles.headerItem}>
@@ -95,13 +113,19 @@ const Crud = () => {
                     <Text style={styles.listTitle}>Email</Text>
                   </View>
                   <View style={styles.headerItem}>
+                    <Text style={styles.listTitle}>State</Text>
+                  </View>
+                  <View style={styles.headerItem}>
+                    <Text style={styles.listTitle}>Role</Text>
+                  </View>
+                  <View style={styles.headerItem}>
                     <Text style={styles.listTitle}>Options</Text>
                   </View>
               </View>
               <FlatList
                   data={DATA}
-                  renderItem={({ item }) => <Item id={item.id} title={item.title} email={item.email} />}
-                  keyExtractor={item => item.id}
+                  renderItem={({ item }) => <Item _id={item._id} nombreUsuario={item.nombreUsuario} correoUsuario={item.correoUsuario} estadoUsuario={item.estadoUsuario} rolUsuario={item.rolUsuario} />}
+                  keyExtractor={item => item._id}
               />
             </View>
 
@@ -149,6 +173,10 @@ const styles = StyleSheet.create({
         shadowOpacity: 10,
         shadowRadius: 60,
         elevation: 15,
+      },
+      search1: {
+        alignItems: "center",
+        marginTop: "5%"
       },
       addButton: {
         padding:'2%',

@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { View, StyleSheet, StatusBar, TextInput } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import MapView, { Polygon } from 'react-native-maps'
+
 
 const HomeScreen = () => {
     const initialRegion = {
@@ -45,7 +45,7 @@ const HomeScreen = () => {
             }} />
           </View>
           <StatusBar setStatusBarStyle='light-content'></StatusBar>
-          <MapView
+          {/*<MapView
             ref={mapRef}
             style={styles.map}
             customMapStyle={mapDarkStyle}
@@ -60,7 +60,7 @@ const HomeScreen = () => {
               fillColor="transparent" 
               strokeWidth={2}
             />
-          </MapView>
+          </MapView>*/}
         </View>
     );
 };

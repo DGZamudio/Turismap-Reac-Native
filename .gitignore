@@ -7,7 +7,7 @@ node_modules/
 .expo/
 dist/
 web-build/
-
+import MapView, { Polygon } from 'react-native-maps'
 # Native
 *.orig.*
 *.jks
