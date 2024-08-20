@@ -4,7 +4,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import HomeScreen from './HomeScreen';
 import EditProfile from './EditProfile';
 import Login from './LoginScreen'
-import Crud from './Crud';
+import NavCrud from './NavCrud'
 import { View, Image, Text } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
@@ -82,7 +82,7 @@ function DrawerNavigator() {
             )
           }}
     />
-        <Drawer.Screen name="Crud" component={Crud}           
+        <Drawer.Screen name="Crud" component={NavCrud}           
           options={{
             title: 'Lists',
             drawerIcon: () => (

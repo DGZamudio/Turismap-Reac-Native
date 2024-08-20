@@ -1,5 +1,6 @@
 import { StyleSheet, TextInput, View, Image, Animated, Pressable, Text } from 'react-native'
-import React from 'react'
+import CheckBox from '@react-native-community/checkbox';
+import React, {useState, useEffect} from 'react'
 
 const EditProfile = ({ navigation }) => {
   const scaleAnim = new Animated.Value(1);
@@ -30,6 +31,27 @@ const EditProfile = ({ navigation }) => {
           useNativeDriver: true,
       }).start();
   };
+
+  const [nombreUsuario, setNombreUsuario] = useState("")
+  const [contrasenaUsuario, setContrasenaUsuario] = useState("")
+
+  const [toggleCheckBox, setToggleCheckBox] = useState(false)
+
+  const insertData = () => {
+    fetch(`http://192.168.1.86:5000/update_user/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({nombreUsuario:nombreUsuario,contrasenaUsuario:contrasenaUsuario,estadoUsuario:'1',rolUsuario:'1'})
+    })
+    .then(resp => resp.json())
+    .then(data => {
+      navigation.navigate('Crud')
+    })
+    .catch(error => console.log(error))
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.card}>
@@ -37,6 +59,7 @@ const EditProfile = ({ navigation }) => {
         <View style={styles.cardContent}>
           <Image source={require('../../assets/pfp.jpg')} style={styles.pfp} />
           <TextInput style={styles.input} placeholder="Username" placeholderTextColor="#f8f9fa"/>
+
           <Pressable
                     onPress={() => navigation.navigate('Home')}
                     onPressIn={handlePressIn}

@@ -2,15 +2,13 @@ import { StyleSheet, Text, View, FlatList, ScrollView, Pressable, TextInput } fr
 import React, {useEffect, useState} from 'react'
 import AntDesign from '@expo/vector-icons/AntDesign';
 
-const Crud = () => {
+const Crud = ({ navigation }) => {
     const [DATA, setData] = useState([]);
 
     useEffect(() => {
       fetch('http://192.168.1.86:5000/get_users', {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+
       })
       .then((response) => response.json())
       .then((data) => {
@@ -63,7 +61,8 @@ const Crud = () => {
           <View style={styles.item}>
             <View style={styles.rowIcon}>
               <Pressable style={styles.editItemn} >
-                <AntDesign name="edit" size={24} color="black" />
+                <AntDesign name="edit" size={24} color="black" 
+                onPress={() => navigation.navigate('EditProfile')} />
               </Pressable>
               <Pressable style={styles.delItemn} 
               onPress={() => deleteUser(_id)}>
@@ -89,11 +88,14 @@ const Crud = () => {
             <View style={styles.crud}>
               <Text style={styles.title}>Users</Text>
               <View style={styles.buttons}>
-                <Pressable style={styles.addButton}>
+                <Pressable onPress={() => navigation.navigate('AddUser')} style={styles.addButton}>
                   <Text style={{color:'#FFF'}}>
                     Add
                   </Text>
                   <AntDesign name="adduser" size={24} color="white" />
+                </Pressable>
+                <Pressable style={styles.refresh}>
+                  <AntDesign name="reload1" size={24} color="black" />
                 </Pressable>
                 <View style={styles.search}>          
                   <TextInput placeholder='Search' style={styles.searchContent} />
@@ -159,8 +161,8 @@ const styles = StyleSheet.create({
       buttons:{
         flexDirection:'row',
         justifyContent:'space-between',
-        marginLeft:'8%',
-        marginRight:'8%',
+        marginLeft:'5%',
+        marginRight:'5%',
         marginTop:'5%',
       },
       crud: {
@@ -185,6 +187,13 @@ const styles = StyleSheet.create({
         backgroundColor:'#00bb00',
         flexDirection:'row',
       },
+      refresh: {
+        padding:'2%',
+        borderRadius:5,
+        backgroundColor:'#2888A8',
+        flexDirection:'row',
+        justifyContent:'center',
+      },
       headerRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -208,7 +217,7 @@ const styles = StyleSheet.create({
         justifyContent:'space-around',
         borderWidth:3,
         borderColor:'#000',
-        width:'65%',
+        width:'55%',
         height:35
       },
       searchContent: {
