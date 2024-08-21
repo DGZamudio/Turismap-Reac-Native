@@ -4,9 +4,10 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 
 const Crud = ({ navigation }) => {
     const [DATA, setData] = useState([]);
+    const [loading,setIsLoading] = useState(true)
 
-    useEffect(() => {
-      fetch('http://192.168.1.86:5000/get_users', {
+    const loadData = () => {
+      fetch('https://turismap-backend-python.onrender.com/get_users', {
         method: 'GET',
 
       })
@@ -14,16 +15,21 @@ const Crud = ({ navigation }) => {
       .then((data) => {
         console.log('Fetched data:', data);
         setData(data);
+        setIsLoading(false)
       })
       .catch((error) => {
         console.error('Error al obtener los usuarios:', error);
       });
+    }
+
+    useEffect(() => {
+      loadData()
   }, []);
       
     type ItemProps = {_id: string; nombreUsuario: string; correoUsuario: string; estadoUsuario: string; rolUsuario: string};
       
     const deleteUser = (id) => {
-      fetch(`http://192.168.1.86:5000/delete_user/${id}`, {
+      fetch(`https://turismap-backend-python.onrender.com/delete_user/${id}`, {
           method: 'DELETE',
           headers: {
               'Content-Type': 'application/json',
@@ -39,7 +45,10 @@ const Crud = ({ navigation }) => {
       .catch(error => {
           console.error('Error deleting user:', error);
       });
-  };
+    };
+    const edit = (data) => {
+      navigation.navigate('EditProfile', { data: data });
+    }
   
     const Item = ({ _id, nombreUsuario, correoUsuario, estadoUsuario, rolUsuario }: ItemProps) => (
         <View style={styles.rowList}>
@@ -62,7 +71,7 @@ const Crud = ({ navigation }) => {
             <View style={styles.rowIcon}>
               <Pressable style={styles.editItemn} >
                 <AntDesign name="edit" size={24} color="black" 
-                onPress={() => navigation.navigate('EditProfile')} />
+                onPress={() => edit({_id, nombreUsuario})} />
               </Pressable>
               <Pressable style={styles.delItemn} 
               onPress={() => deleteUser(_id)}>
@@ -95,7 +104,7 @@ const Crud = ({ navigation }) => {
                   <AntDesign name="adduser" size={24} color="white" />
                 </Pressable>
                 <Pressable style={styles.refresh}>
-                  <AntDesign name="reload1" size={24} color="black" />
+                  <AntDesign name="reload1" size={24} color="black" onPress={() => loadData()} />
                 </Pressable>
                 <View style={styles.search}>          
                   <TextInput placeholder='Search' style={styles.searchContent} />
@@ -128,6 +137,8 @@ const Crud = ({ navigation }) => {
                   data={DATA}
                   renderItem={({ item }) => <Item _id={item._id} nombreUsuario={item.nombreUsuario} correoUsuario={item.correoUsuario} estadoUsuario={item.estadoUsuario} rolUsuario={item.rolUsuario} />}
                   keyExtractor={item => item._id}
+                  onRefresh={() => loadData()}
+                  refreshing = {loading}
               />
             </View>
 

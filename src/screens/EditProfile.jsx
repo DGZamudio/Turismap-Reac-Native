@@ -1,8 +1,7 @@
 import { StyleSheet, TextInput, View, Image, Animated, Pressable, Text } from 'react-native'
-import CheckBox from '@react-native-community/checkbox';
 import React, {useState, useEffect} from 'react'
 
-const EditProfile = ({ navigation }) => {
+const EditProfile = ({ route, navigation }) => {
   const scaleAnim = new Animated.Value(1);
   const shadowAnim = new Animated.Value(0.2);
 
@@ -31,14 +30,13 @@ const EditProfile = ({ navigation }) => {
           useNativeDriver: true,
       }).start();
   };
+  const { data } = route.params;
+  const [_id] = useState(data._id)
+  const [nombreUsuario, setNombreUsuario] = useState(data.nombreUsuario)
+  const [contrasenaUsuario, setContrasenaUsuario] = useState(data.contrasenaUsuario)
 
-  const [nombreUsuario, setNombreUsuario] = useState("")
-  const [contrasenaUsuario, setContrasenaUsuario] = useState("")
-
-  const [toggleCheckBox, setToggleCheckBox] = useState(false)
-
-  const insertData = () => {
-    fetch(`http://192.168.1.86:5000/update_user/${id}`, {
+  const editdata = (id) => {
+    fetch(`https://turismap-backend-python.onrender.com/update_user/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -58,10 +56,10 @@ const EditProfile = ({ navigation }) => {
         <Text style={styles.text}>Edit profile</Text>
         <View style={styles.cardContent}>
           <Image source={require('../../assets/pfp.jpg')} style={styles.pfp} />
-          <TextInput style={styles.input} placeholder="Username" placeholderTextColor="#f8f9fa"/>
+          <TextInput style={styles.input} placeholder="Username" placeholderTextColor="#f8f9fa" value={nombreUsuario} onChangeText = {text => setNombreUsuario(text)}/>
 
           <Pressable
-                    onPress={() => navigation.navigate('Home')}
+                    onPress={() => editdata(_id)}
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
                     style={styles.button}
@@ -85,9 +83,9 @@ const EditProfile = ({ navigation }) => {
         <Text style={styles.text}>Change Password</Text>
         <View style={styles.cardContent}>
           <TextInput style={styles.input} placeholder="Old password" placeholderTextColor="#f8f9fa"/>
-          <TextInput style={styles.input} placeholder="New password" placeholderTextColor="#f8f9fa"/>
+          <TextInput style={styles.input} placeholder="New password" placeholderTextColor="#f8f9fa" onChangeText = {text => setContrasenaUsuario(text)} />
           <Pressable
-                    onPress={() => navigation.navigate('Home')}
+                    onPress={() => editdata(_id)}
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
                     style={styles.button}

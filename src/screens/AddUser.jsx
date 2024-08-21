@@ -37,7 +37,7 @@ const AddUser = ({ navigation }) => {
   const [contrasenaUsuario, setContrasenaUsuario] = useState("")
 
   const insertData = () => {
-    fetch('http://192.168.1.86:5000/register', {
+    fetch('https://turismap-backend-python.onrender.com/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
