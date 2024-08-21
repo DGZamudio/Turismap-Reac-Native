@@ -25,8 +25,8 @@ const Crud = ({ navigation }) => {
     useEffect(() => {
       loadData()
   }, []);
-      
-    type ItemProps = {_id: string; nombreUsuario: string; correoUsuario: string; estadoUsuario: string; rolUsuario: string};
+
+    type ItemProps = {_id: string; nombreUsuario: string; correoUsuario: string; estadoUsuario: string; rolUsuario: string;};
       
     const deleteUser = (id) => {
       fetch(`https://turismap-backend-python.onrender.com/delete_user/${id}`, {
@@ -46,9 +46,12 @@ const Crud = ({ navigation }) => {
           console.error('Error deleting user:', error);
       });
     };
-    const edit = (data) => {
-      navigation.navigate('EditProfile', { data: data });
-    }
+    const edit = (user) => {
+      const userData = DATA.find(u => u._id === user._id);
+      if (userData) {
+          navigation.navigate('EditProfile', { data: userData });
+      }
+  };
   
     const Item = ({ _id, nombreUsuario, correoUsuario, estadoUsuario, rolUsuario }: ItemProps) => (
         <View style={styles.rowList}>

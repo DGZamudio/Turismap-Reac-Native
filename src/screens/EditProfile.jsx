@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput, View, Image, Animated, Pressable, Text } from 'react-native'
+import { StyleSheet, TextInput, View, Image, Animated, Pressable, Text, Alert } from 'react-native'
 import React, {useState, useEffect} from 'react'
 
 const EditProfile = ({ route, navigation }) => {
@@ -33,7 +33,9 @@ const EditProfile = ({ route, navigation }) => {
   const { data } = route.params;
   const [_id] = useState(data._id)
   const [nombreUsuario, setNombreUsuario] = useState(data.nombreUsuario)
-  const [contrasenaUsuario, setContrasenaUsuario] = useState(data.contrasenaUsuario)
+  const [contrasenaUsuario] = useState(data.contrasenaUsuario)
+  const [newPass, setNewPass] = useState('')
+  const [oldPass, setOldPass] = useState('')
 
   const editdata = (id) => {
     fetch(`https://turismap-backend-python.onrender.com/update_user/${id}`, {
@@ -41,13 +43,33 @@ const EditProfile = ({ route, navigation }) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({nombreUsuario:nombreUsuario,contrasenaUsuario:contrasenaUsuario,estadoUsuario:'1',rolUsuario:'1'})
+      body: JSON.stringify({nombreUsuario:nombreUsuario,estadoUsuario:'1',rolUsuario:'1'})
     })
     .then(resp => resp.json())
     .then(data => {
       navigation.navigate('Crud')
     })
     .catch(error => console.log(error))
+  }
+
+  const editPass = (id) => {
+    if (contrasenaUsuario == oldPass) {
+      fetch(`https://turismap-backend-python.onrender.com/update_user/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({contrasenaUsuario:newPass,estadoUsuario:'1',rolUsuario:'1'})
+      })
+      .then(resp => resp.json())
+      .then(data => {
+        navigation.navigate('Crud')
+      })
+      .catch(error => console.log(error))
+    }
+    else {
+      console.log('Contraseña incorrecta')
+    }
   }
 
   return (
@@ -82,10 +104,10 @@ const EditProfile = ({ route, navigation }) => {
       <View style={styles.card}>
         <Text style={styles.text}>Change Password</Text>
         <View style={styles.cardContent}>
-          <TextInput style={styles.input} placeholder="Old password" placeholderTextColor="#f8f9fa"/>
-          <TextInput style={styles.input} placeholder="New password" placeholderTextColor="#f8f9fa" onChangeText = {text => setContrasenaUsuario(text)} />
+          <TextInput style={styles.input} placeholder="Old password" placeholderTextColor="#f8f9fa" onChangeText = {text => setOldPass(text)}/>
+          <TextInput style={styles.input} placeholder="New password" placeholderTextColor="#f8f9fa" onChangeText = {text => setNewPass(text)} />
           <Pressable
-                    onPress={() => editdata(_id)}
+                    onPress={() => editPass(_id)}
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
                     style={styles.button}
