@@ -10,6 +10,7 @@ const Crud = ({ navigation }) => {
     const [showAlert, setShowAlert] = useState(false);
     const [showErrorAlert, setShowErrorAlert] = useState(false);
 
+    //Cargar data
     const loadData = () => {
       fetch('https://turismap-backend-python.onrender.com/get_users', {
         method: 'GET',
@@ -30,8 +31,9 @@ const Crud = ({ navigation }) => {
 
     useEffect(() => {
       loadData()
-  }, []);
+    }, []);
 
+    //Buscar usuario
     const searchUser = () => {
       fetch(`https://turismap-backend-python.onrender.com/search_user?q=${encodeURIComponent(search)}`, {
         method: 'GET',
@@ -51,6 +53,7 @@ const Crud = ({ navigation }) => {
     
     type ItemProps = {_id: string; nombreUsuario: string; correoUsuario: string; estadoUsuario: string; rolUsuario: string;};
 
+    //Eliminar Usuario
     const deleteUser = (id) => {
       fetch(`https://turismap-backend-python.onrender.com/delete_user/${id}`, {
           method: 'DELETE',
@@ -69,6 +72,8 @@ const Crud = ({ navigation }) => {
           console.error('Error deleting user:', error);
       });
     };
+
+    //Editar Usuario
     const edit = (user) => {
       const userData = DATA.find(u => u._id === user._id);
       if (userData) {
@@ -76,6 +81,7 @@ const Crud = ({ navigation }) => {
       }
     };
   
+    //Item de la tabla
     const Item = ({ _id, nombreUsuario, correoUsuario, estadoUsuario, rolUsuario }: ItemProps) => (
         <View style={styles.rowList}>
           <View style={styles.item}>
@@ -169,6 +175,7 @@ const Crud = ({ navigation }) => {
                   refreshing = {loading}
               />
             </View>
+
             <AwesomeAlert
               show={showAlert}
               showProgress={false}
