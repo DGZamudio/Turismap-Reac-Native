@@ -1,11 +1,14 @@
 import { StyleSheet, Text, View, FlatList, ScrollView, Pressable, TextInput } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import AntDesign from '@expo/vector-icons/AntDesign';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 const Crud = ({ navigation }) => {
     const [DATA, setData] = useState([]);
     const [loading,setIsLoading] = useState(true)
     const [search, setSearch] = useState("")
+    const [showAlert, setShowAlert] = useState(false);
+    const [showErrorAlert, setShowErrorAlert] = useState(false);
 
     const loadData = () => {
       fetch('https://turismap-backend-python.onrender.com/get_users', {
@@ -17,15 +20,18 @@ const Crud = ({ navigation }) => {
         console.log('Fetched data:', data);
         setData(data);
         setIsLoading(false)
+        setShowAlert(true);
       })
       .catch((error) => {
         console.error('Error al obtener los usuarios:', error);
+        setShowErrorAlert(true);
       });
     }
 
     useEffect(() => {
       loadData()
   }, []);
+
     const searchUser = () => {
       fetch(`https://turismap-backend-python.onrender.com/search_user?q=${encodeURIComponent(search)}`, {
         method: 'GET',
@@ -163,6 +169,32 @@ const Crud = ({ navigation }) => {
                   refreshing = {loading}
               />
             </View>
+            <AwesomeAlert
+              show={showAlert}
+              showProgress={false}
+              title="Success"
+              message="The data has been succesfully loaded"
+              closeOnTouchOutside={true}
+              closeOnHardwareBackPress={false}
+              showCancelButton={false}
+              showConfirmButton={true}
+              confirmText="OK"
+              confirmButtonColor="#00bb00"
+              onConfirmPressed={() => setShowAlert(false)}
+            />
+            <AwesomeAlert
+              show={showErrorAlert}
+              showProgress={false}
+              title="Error"
+              message="There has been an error trying to load the data"
+              closeOnTouchOutside={true}
+              closeOnHardwareBackPress={false}
+              showCancelButton={false}
+              showConfirmButton={true}
+              confirmText="OK"
+              confirmButtonColor="#00bb00"
+              onConfirmPressed={() => setShowErrorAlert(false)}
+            />
         </ScrollView>
     </View>
   )
