@@ -5,6 +5,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 const Crud = ({ navigation }) => {
     const [DATA, setData] = useState([]);
     const [loading,setIsLoading] = useState(true)
+    const [search, setSearch] = useState("")
 
     const loadData = () => {
       fetch('https://turismap-backend-python.onrender.com/get_users', {
@@ -25,9 +26,25 @@ const Crud = ({ navigation }) => {
     useEffect(() => {
       loadData()
   }, []);
-
+    const searchUser = () => {
+      fetch(`https://turismap-backend-python.onrender.com/search_user?q=${encodeURIComponent(search)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Fetched data:', data);
+        setData(data);
+      })
+      .catch((error) => {
+        console.error('Error al obtener los usuarios:', error);
+      });
+    }
+    
     type ItemProps = {_id: string; nombreUsuario: string; correoUsuario: string; estadoUsuario: string; rolUsuario: string;};
-      
+
     const deleteUser = (id) => {
       fetch(`https://turismap-backend-python.onrender.com/delete_user/${id}`, {
           method: 'DELETE',
@@ -51,7 +68,7 @@ const Crud = ({ navigation }) => {
       if (userData) {
           navigation.navigate('EditProfile', { data: userData });
       }
-  };
+    };
   
     const Item = ({ _id, nombreUsuario, correoUsuario, estadoUsuario, rolUsuario }: ItemProps) => (
         <View style={styles.rowList}>
@@ -110,10 +127,12 @@ const Crud = ({ navigation }) => {
                   <AntDesign name="reload1" size={24} color="black" onPress={() => loadData()} />
                 </Pressable>
                 <View style={styles.search}>          
-                  <TextInput placeholder='Search' style={styles.searchContent} />
-                  <AntDesign name="search1" size={24} color="grey" style={{
-                    marginRight:15,
-                  }} />
+                  <TextInput placeholder='Search' style={styles.searchContent} onChangeText={text => setSearch(text)}/>
+                  <Pressable onPress={() => searchUser()}>
+                    <AntDesign name="search1" size={24} color="grey" style={{
+                      marginRight:15,
+                    }} />
+                  </Pressable>
                 </View>
               </View>
               <View style={styles.headerRow}>
@@ -144,9 +163,6 @@ const Crud = ({ navigation }) => {
                   refreshing = {loading}
               />
             </View>
-
-            
-            
         </ScrollView>
     </View>
   )
