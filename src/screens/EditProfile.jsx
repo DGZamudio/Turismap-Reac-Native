@@ -1,5 +1,6 @@
 import { StyleSheet, TextInput, View, Image, Animated, Pressable, Text, Alert } from 'react-native'
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 const EditProfile = ({ route, navigation }) => {
   const scaleAnim = new Animated.Value(1);
@@ -37,7 +38,14 @@ const EditProfile = ({ route, navigation }) => {
   const [newPass, setNewPass] = useState('')
   const [oldPass, setOldPass] = useState('')
 
+  const [showAlert, setShowAlert] = useState(false);
+  const [showLoadingAlert, setShowLoadingAlert] = useState(false);
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+
   const editdata = (id) => {
+    setShowLoadingAlert(true)
     fetch(`https://turismap-backend-python.onrender.com/update_user/${id}`, {
       method: 'PUT',
       headers: {
@@ -47,9 +55,17 @@ const EditProfile = ({ route, navigation }) => {
     })
     .then(resp => resp.json())
     .then(data => {
+      setShowLoadingAlert(false)
+      setAlertMessage('The user has been modified correctly')
+      setShowAlert(true)
       navigation.navigate('Crud')
     })
-    .catch(error => console.log(error))
+    .catch(error => {
+      setShowLoadingAlert(false)
+      setErrorMessage('The was an error trying to edit the user')
+      setShowErrorAlert(true)
+      console.log(error)
+    })
   }
 
   const editPass = (id) => {
@@ -63,11 +79,22 @@ const EditProfile = ({ route, navigation }) => {
       })
       .then(resp => resp.json())
       .then(data => {
+        setShowLoadingAlert(false)
+        setAlertMessage('The password was modified correctly')
+        setShowAlert(true)
         navigation.navigate('Crud')
       })
-      .catch(error => console.log(error))
+      .catch(error => {
+        setShowLoadingAlert(false)
+        setErrorMessage('There was an error trying to edit the user')
+        setShowErrorAlert(true)
+        console.log(error)
+      });
     }
     else {
+      setShowLoadingAlert(false)
+      setErrorMessage('Your password isnt the one that is registered')
+      setShowErrorAlert(true)
       console.log('Contraseña incorrecta')
     }
   }
@@ -104,8 +131,8 @@ const EditProfile = ({ route, navigation }) => {
       <View style={styles.card}>
         <Text style={styles.text}>Change Password</Text>
         <View style={styles.cardContent}>
-          <TextInput style={styles.input} placeholder="Old password" placeholderTextColor="#f8f9fa" onChangeText = {text => setOldPass(text)}/>
-          <TextInput style={styles.input} placeholder="New password" placeholderTextColor="#f8f9fa" onChangeText = {text => setNewPass(text)} />
+          <TextInput style={styles.input} placeholder="Old password" secureTextEntry={true} placeholderTextColor="#f8f9fa" onChangeText = {text => setOldPass(text)}/>
+          <TextInput style={styles.input} placeholder="New password" secureTextEntry={true} placeholderTextColor="#f8f9fa" onChangeText = {text => setNewPass(text)} />
           <Pressable
                     onPress={() => editPass(_id)}
                     onPressIn={handlePressIn}
@@ -126,6 +153,41 @@ const EditProfile = ({ route, navigation }) => {
           </Pressable>
         </View>
       </View>
+            <AwesomeAlert
+              show={showAlert}
+              showProgress={false}
+              title="Success"
+              message={alertMessage}
+              closeOnTouchOutside={true}
+              closeOnHardwareBackPress={true}
+              showCancelButton={false}
+              showConfirmButton={true}
+              confirmText="OK"
+              confirmButtonColor="#00bb00"
+              onConfirmPressed={() => setShowAlert(false)}
+            />
+            <AwesomeAlert
+              show={showErrorAlert}
+              showProgress={false}
+              title="Error"
+              message={errorMessage}
+              closeOnTouchOutside={true}
+              closeOnHardwareBackPress={true}
+              showCancelButton={false}
+              showConfirmButton={true}
+              confirmText="OK"
+              confirmButtonColor="#e23636"
+              onConfirmPressed={() => setShowErrorAlert(false)}
+            />
+            <AwesomeAlert
+              show={showLoadingAlert}
+              showProgress={false}
+              title="Loading ..."
+              closeOnTouchOutside={false}
+              closeOnHardwareBackPress={true}
+              showCancelButton={false}
+              showConfirmButton={false}
+            />
     </View>
   );
 };

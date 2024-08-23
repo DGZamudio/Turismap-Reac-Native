@@ -5,26 +5,36 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 
 const Crud = ({ navigation }) => {
     const [DATA, setData] = useState([]);
-    const [loading,setIsLoading] = useState(true)
-    const [search, setSearch] = useState("")
+    const [loading,setIsLoading] = useState(true);
+    const [search, setSearch] = useState("");
+    const [eliminate, setEliminate] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
+    const [showLoadingAlert, setShowLoadingAlert] = useState(false);
     const [showErrorAlert, setShowErrorAlert] = useState(false);
+    const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('')
+    const [errorMessage, setErrorMessage] = useState('')
 
     //Cargar data
     const loadData = () => {
+      setShowLoadingAlert(true)
       fetch('https://turismap-backend-python.onrender.com/get_users', {
         method: 'GET',
 
       })
       .then((response) => response.json())
       .then((data) => {
+        setShowLoadingAlert(false)
         console.log('Fetched data:', data);
+        setAlertMessage('The data has been succesfully loaded')
         setData(data);
         setIsLoading(false)
         setShowAlert(true);
       })
       .catch((error) => {
+        setShowLoadingAlert(false)
         console.error('Error al obtener los usuarios:', error);
+        setErrorMessage('There has been an error trying to load the data')
         setShowErrorAlert(true);
       });
     }
@@ -35,6 +45,7 @@ const Crud = ({ navigation }) => {
 
     //Buscar usuario
     const searchUser = () => {
+      setShowLoadingAlert(true)
       fetch(`https://turismap-backend-python.onrender.com/search_user?q=${encodeURIComponent(search)}`, {
         method: 'GET',
         headers: {
@@ -43,10 +54,12 @@ const Crud = ({ navigation }) => {
       })
       .then((response) => response.json())
       .then((data) => {
+        setShowLoadingAlert(false)
         console.log('Fetched data:', data);
         setData(data);
       })
       .catch((error) => {
+        setShowLoadingAlert(false)
         console.error('Error al obtener los usuarios:', error);
       });
     }
@@ -55,22 +68,36 @@ const Crud = ({ navigation }) => {
 
     //Eliminar Usuario
     const deleteUser = (id) => {
-      fetch(`https://turismap-backend-python.onrender.com/delete_user/${id}`, {
-          method: 'DELETE',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-      })
-      .then(response => {
-          if (response.ok) {
-              setData(DATA.filter(user => user._id !== id));
-          } else {
-              console.error('Error deleting user:', response.statusText);
-          }
-      })
-      .catch(error => {
-          console.error('Error deleting user:', error);
-      });
+      setShowDeleteAlert(true)
+      setShowLoadingAlert(true)
+      if (eliminate){
+        fetch(`https://turismap-backend-python.onrender.com/delete_user/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                setShowLoadingAlert(false)
+                setData(DATA.filter(user => user._id !== id)); 
+                setAlertMessage('The user has been deleted')       
+                setShowAlert(true);
+            } else {
+                setShowLoadingAlert(false)
+                console.error('Error deleting user:', response.statusText);
+                setErrorMessage('There seems to be an error trying to delete the user')
+                setShowErrorAlert(true)
+            }
+        })
+        .catch(error => {
+            setShowLoadingAlert(false)
+            console.error('Error deleting user:', error);
+            setErrorMessage('There seems to be an error trying to delete the user')
+            setShowErrorAlert(true)
+        });
+      }
+      setShowLoadingAlert(false)
     };
 
     //Editar Usuario
@@ -175,14 +202,13 @@ const Crud = ({ navigation }) => {
                   refreshing = {loading}
               />
             </View>
-
             <AwesomeAlert
               show={showAlert}
               showProgress={false}
               title="Success"
-              message="The data has been succesfully loaded"
+              message={alertMessage}
               closeOnTouchOutside={true}
-              closeOnHardwareBackPress={false}
+              closeOnHardwareBackPress={true}
               showCancelButton={false}
               showConfirmButton={true}
               confirmText="OK"
@@ -193,14 +219,40 @@ const Crud = ({ navigation }) => {
               show={showErrorAlert}
               showProgress={false}
               title="Error"
-              message="There has been an error trying to load the data"
+              message={errorMessage}
               closeOnTouchOutside={true}
-              closeOnHardwareBackPress={false}
+              closeOnHardwareBackPress={true}
               showCancelButton={false}
               showConfirmButton={true}
               confirmText="OK"
-              confirmButtonColor="#00bb00"
+              confirmButtonColor="#e23636"
               onConfirmPressed={() => setShowErrorAlert(false)}
+            />
+            <AwesomeAlert
+              show={showLoadingAlert}
+              showProgress={false}
+              title="Loading ..."
+              closeOnTouchOutside={false}
+              closeOnHardwareBackPress={true}
+              showCancelButton={false}
+              showConfirmButton={false}
+            />
+            <AwesomeAlert
+              show={showDeleteAlert}
+              showProgress={false}
+              title="Are you sure?"
+              message="Are you sure you want to delete the user"
+              closeOnTouchOutside={true}
+              closeOnHardwareBackPress={true}
+              showCancelButton={true}
+              showConfirmButton={true}
+              confirmText="I am sure"
+              confirmButtonColor="#e23636"
+              onCancelPressed={() => setShowDeleteAlert(false)}
+              onConfirmPressed={() => {
+                setEliminate(true);
+                setShowDeleteAlert(false);
+              }}
             />
         </ScrollView>
     </View>

@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import { View, Text, TextInput, Pressable, StyleSheet, Image, ScrollView, Animated } from 'react-native';
 import { Video } from 'expo-av';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 const AddUser = ({ navigation }) => {
   const scaleAnim = new Animated.Value(1);
@@ -35,20 +36,87 @@ const AddUser = ({ navigation }) => {
   const [nombreUsuario, setNombreUsuario] = useState("")
   const [correoUsuario, setCorreoUsuario] = useState("")
   const [contrasenaUsuario, setContrasenaUsuario] = useState("")
+  const [contrasenaUsuario2, setContrasenaUsuario2] = useState("")
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [showLoadingAlert, setShowLoadingAlert] = useState(false);
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const sinCaracteresEspeciales = /^[a-zA-Z0-9]*$/;
+  const regexCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   const insertData = () => {
-    fetch('https://turismap-backend-python.onrender.com/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({nombreUsuario:nombreUsuario,correoUsuario:correoUsuario,contrasenaUsuario:contrasenaUsuario,estadoUsuario:'1',rolUsuario:'1'})
-    })
-    .then(resp => resp.json())
-    .then(data => {
-      navigation.navigate('Crud')
-    })
-    .catch(error => console.log(error))
+        setShowLoadingAlert(true)
+        if (contrasenaUsuario != '') {
+            if (nombreUsuario != '') {
+                if (correoUsuario != '') {
+                    if (contrasenaUsuario == contrasenaUsuario2 ) {
+                        if (contrasenaUsuario.length >= 8) {
+                            if (sinCaracteresEspeciales.test(nombreUsuario)) {
+                                if (regexCorreo.test(correoUsuario)) {
+                                    fetch('https://turismap-backend-python.onrender.com/register', {
+                                        method: 'POST',
+                                        headers: {
+                                          'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({nombreUsuario:nombreUsuario,correoUsuario:correoUsuario,contrasenaUsuario:contrasenaUsuario,estadoUsuario:'1',rolUsuario:'1'})
+                                      })
+                                      .then(resp => resp.json())
+                                      .then(data => {
+                                        setShowLoadingAlert(false)
+                                        setAlertMessage('User was added succesfully')
+                                        setShowAlert(true)
+                                        navigation.navigate('Crud')
+                                      })
+                                      .catch(error => {
+                                          setShowLoadingAlert(false)
+                                          setErrorMessage('There was an error creating the user')
+                                          setShowErrorAlert(true)
+                                          console.log(error)
+                                      })
+                                }
+                                else {
+                                    setShowLoadingAlert(false)
+                                    setErrorMessage('The email is not valid')
+                                    setShowErrorAlert(true)
+                                }
+                            }
+                            else {
+                                setShowLoadingAlert(false)
+                                setErrorMessage('The username cant have special characters')
+                                setShowErrorAlert(true)
+                            }
+                        }
+                        else {
+                            setShowLoadingAlert(false)
+                            setErrorMessage('The password has to be 8 or more characters long')
+                            setShowErrorAlert(true)
+                        }
+                    }
+                    else {
+                        setShowLoadingAlert(false)
+                        setErrorMessage('The passwords arent the same')
+                        setShowErrorAlert(true)
+                    }
+                }
+                else {
+                    setShowLoadingAlert(false)
+                    setErrorMessage('The email cant be empty')
+                    setShowErrorAlert(true)
+                }
+            }
+            else {
+                setShowLoadingAlert(false)
+                setErrorMessage('The username cant be empty')
+                setShowErrorAlert(true)
+            }
+        } 
+        else {
+            setShowLoadingAlert(false)
+            setErrorMessage('The password cant be empty')
+            setShowErrorAlert(true)
+        }
   }
 
   return (
@@ -67,7 +135,7 @@ const AddUser = ({ navigation }) => {
               <TextInput placeholder="Username" style={styles.input} placeholderTextColor="#f8f9fa" value={nombreUsuario} onChangeText = {text => setNombreUsuario(text)}/>
               <TextInput placeholder="Email" style={styles.input} keyboardType="email-address" placeholderTextColor="#f8f9fa" value={correoUsuario} onChangeText = {text => setCorreoUsuario(text)}/>
               <TextInput placeholder="Password" style={styles.input} secureTextEntry={true} placeholderTextColor="#f8f9fa" value={contrasenaUsuario} onChangeText = {text => setContrasenaUsuario(text)}/>
-              <TextInput placeholder="Confirm Password" style={styles.input} secureTextEntry={true} placeholderTextColor="#f8f9fa" />
+              <TextInput placeholder="Confirm Password" style={styles.input} secureTextEntry={true} placeholderTextColor="#f8f9fa" onChangeText = {text => setContrasenaUsuario2(text)}/>
               <Text style={styles.passwordInfo}>
                   Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
               </Text>
@@ -90,6 +158,41 @@ const AddUser = ({ navigation }) => {
                   </Animated.View>
               </Pressable>
           </View>
+          <AwesomeAlert
+              show={showAlert}
+              showProgress={false}
+              title="Success"
+              message={alertMessage}
+              closeOnTouchOutside={true}
+              closeOnHardwareBackPress={true}
+              showCancelButton={false}
+              showConfirmButton={true}
+              confirmText="OK"
+              confirmButtonColor="#00bb00"
+              onConfirmPressed={() => setShowAlert(false)}
+            />
+            <AwesomeAlert
+              show={showErrorAlert}
+              showProgress={false}
+              title="Error"
+              message={errorMessage}
+              closeOnTouchOutside={true}
+              closeOnHardwareBackPress={true}
+              showCancelButton={false}
+              showConfirmButton={true}
+              confirmText="OK"
+              confirmButtonColor="#e23636"
+              onConfirmPressed={() => setShowErrorAlert(false)}
+            />
+            <AwesomeAlert
+              show={showLoadingAlert}
+              showProgress={false}
+              title="Loading ..."
+              closeOnTouchOutside={false}
+              closeOnHardwareBackPress={true}
+              showCancelButton={false}
+              showConfirmButton={false}
+            />
       </ScrollView>
   );
 };
