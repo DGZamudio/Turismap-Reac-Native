@@ -7,7 +7,7 @@ const Crud = ({ navigation }) => {
     const [DATA, setData] = useState([]);
     const [loading,setIsLoading] = useState(true);
     const [search, setSearch] = useState("");
-    const [eliminate, setEliminate] = useState(false);
+    const [userIdToDelete, setUserIdToDelete] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
     const [showLoadingAlert, setShowLoadingAlert] = useState(false);
     const [showErrorAlert, setShowErrorAlert] = useState(false);
@@ -68,36 +68,8 @@ const Crud = ({ navigation }) => {
 
     //Eliminar Usuario
     const deleteUser = (id) => {
-      setShowDeleteAlert(true)
-      setShowLoadingAlert(true)
-      if (eliminate){
-        fetch(`https://turismap-backend-python.onrender.com/delete_user/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-        .then(response => {
-            if (response.ok) {
-                setShowLoadingAlert(false)
-                setData(DATA.filter(user => user._id !== id)); 
-                setAlertMessage('The user has been deleted')       
-                setShowAlert(true);
-            } else {
-                setShowLoadingAlert(false)
-                console.error('Error deleting user:', response.statusText);
-                setErrorMessage('There seems to be an error trying to delete the user')
-                setShowErrorAlert(true)
-            }
-        })
-        .catch(error => {
-            setShowLoadingAlert(false)
-            console.error('Error deleting user:', error);
-            setErrorMessage('There seems to be an error trying to delete the user')
-            setShowErrorAlert(true)
-        });
-      }
-      setShowLoadingAlert(false)
+      setShowDeleteAlert(true);
+      setUserIdToDelete(id);
     };
 
     //Editar Usuario
@@ -250,8 +222,34 @@ const Crud = ({ navigation }) => {
               confirmButtonColor="#e23636"
               onCancelPressed={() => setShowDeleteAlert(false)}
               onConfirmPressed={() => {
-                setEliminate(true);
                 setShowDeleteAlert(false);
+                setShowLoadingAlert(true);
+                fetch(`https://turismap-backend-python.onrender.com/delete_user/${userIdToDelete}`, {
+                  method: 'DELETE',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                })
+                .then(response => {
+                  if (response.ok) {
+                    setShowLoadingAlert(false);
+                    setData(DATA.filter(user => user._id !== userIdToDelete)); 
+                    setAlertMessage('The user has been deleted');
+                    setShowAlert(true);
+                    setShowLoadingAlert(false)
+                  } else {
+                    setShowLoadingAlert(false);
+                    console.error('Error deleting user:', response.statusText);
+                    setErrorMessage('There seems to be an error trying to delete the user');
+                    setShowErrorAlert(true);
+                  }
+                })
+                .catch(error => {
+                  setShowLoadingAlert(false);
+                  console.error('Error deleting user:', error);
+                  setErrorMessage('There seems to be an error trying to delete the user');
+                  setShowErrorAlert(true);
+                });
               }}
             />
         </ScrollView>
