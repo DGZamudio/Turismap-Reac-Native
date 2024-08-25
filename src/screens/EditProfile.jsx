@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput, View, Image, Animated, Pressable, Text, Alert } from 'react-native'
+import { StyleSheet, TextInput, View, Image, Animated, Pressable, Text } from 'react-native'
 import React, {useState} from 'react'
 import AwesomeAlert from 'react-native-awesome-alerts';
 
@@ -37,6 +37,7 @@ const EditProfile = ({ route, navigation }) => {
   const [contrasenaUsuario] = useState(data.contrasenaUsuario)
   const [newPass, setNewPass] = useState('')
   const [oldPass, setOldPass] = useState('')
+  const sinCaracteresEspeciales = /^[a-zA-Z0-9]*$/;
 
   const [showAlert, setShowAlert] = useState(false);
   const [showLoadingAlert, setShowLoadingAlert] = useState(false);
@@ -46,57 +47,71 @@ const EditProfile = ({ route, navigation }) => {
 
   const editdata = (id) => {
     setShowLoadingAlert(true)
-    fetch(`https://turismap-backend-python.onrender.com/update_user/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({nombreUsuario:nombreUsuario,estadoUsuario:'1',rolUsuario:'1'})
-    })
-    .then(resp => resp.json())
-    .then(data => {
-      setShowLoadingAlert(false)
-      setAlertMessage('The user has been modified correctly')
-      setShowAlert(true)
-      navigation.navigate('Crud')
-    })
-    .catch(error => {
-      setShowLoadingAlert(false)
-      setErrorMessage('The was an error trying to edit the user')
-      setShowErrorAlert(true)
-      console.log(error)
-    })
-  }
-
-  const editPass = (id) => {
-    if (contrasenaUsuario == oldPass) {
+    if (nombreUsuario !== '' && sinCaracteresEspeciales.test(nombreUsuario)) {
       fetch(`https://turismap-backend-python.onrender.com/update_user/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({contrasenaUsuario:newPass,estadoUsuario:'1',rolUsuario:'1'})
+        body: JSON.stringify({nombreUsuario:nombreUsuario,estadoUsuario:'1',rolUsuario:'1'})
       })
       .then(resp => resp.json())
       .then(data => {
         setShowLoadingAlert(false)
-        setAlertMessage('The password was modified correctly')
+        setAlertMessage('The user has been modified correctly')
         setShowAlert(true)
         navigation.navigate('Crud')
       })
       .catch(error => {
         setShowLoadingAlert(false)
-        setErrorMessage('There was an error trying to edit the user')
+        setErrorMessage('The was an error trying to edit the user')
         setShowErrorAlert(true)
         console.log(error)
-      });
+      })
     }
-    else {
+    else{
       setShowLoadingAlert(false)
-      setErrorMessage('Your password isnt the one that is registered')
+      setErrorMessage('The user cant have special characters in his name')
       setShowErrorAlert(true)
-      console.log('Contraseña incorrecta')
     }
+  }
+
+  const editPass = (id) => {
+      setShowLoadingAlert(true)
+      if (newPass.length >= 8 && newPass !== '') {
+        fetch(`https://turismap-backend-python.onrender.com/update_user/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({oldPass:oldPass,contrasenaUsuario:newPass,estadoUsuario:'1',rolUsuario:'1'})
+        })
+        .then(resp => resp.json())
+        .then(data => {
+          setShowLoadingAlert(false)
+          if (data.mensaje === 'Usuario actualizado exitosamente') {
+            setAlertMessage('The password was modified correctly');
+            setShowAlert(true);
+            navigation.navigate('Crud');
+          } else {
+              if(data.mensaje === 'La contraseña antigua no es correcta'){
+                setErrorMessage('The passwords arent the same');
+                setShowErrorAlert(true);
+              }
+          }
+        })
+        .catch(error => {
+          setShowLoadingAlert(false)
+          setErrorMessage('There was an error trying to edit the user')
+          setShowErrorAlert(true)
+          console.log(error)
+        });
+      } 
+      else {
+        setShowLoadingAlert(false)
+        setErrorMessage('The password has to be eight characters')
+        setShowErrorAlert(true) 
+      }
   }
 
   return (

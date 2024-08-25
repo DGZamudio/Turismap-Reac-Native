@@ -64,10 +64,17 @@ const RegisterScreen = ({ navigation }) => {
                                   })
                                   .then(resp => resp.json())
                                   .then(data => {
-                                    setShowLoadingAlert(false)
-                                    setAlertMessage('User was added succesfully')
-                                    setShowAlert(true)
-                                    navigation.navigate('Login')
+                                    if (data.mensaje === 'Este usuario ya existe') {
+                                        setShowLoadingAlert(false)
+                                        setErrorMessage('This email is taken')
+                                        setShowErrorAlert(true)
+                                    }
+                                    else {
+                                        setShowLoadingAlert(false)
+                                        setAlertMessage('User was added succesfully')
+                                        setShowAlert(true)
+                                        navigation.navigate('Home')
+                                    }
                                   })
                                   .catch(error => {
                                       setShowLoadingAlert(false)
