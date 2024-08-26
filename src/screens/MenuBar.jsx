@@ -1,16 +1,51 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { createDrawerNavigator, DrawerItemList } from '@react-navigation/drawer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { jwtDecode } from 'jwt-decode';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import HomeScreen from './HomeScreen';
 import EditProfile from './EditProfile';
 import Login from './LoginScreen'
 import NavCrud from './NavCrud'
-import { View, Image, Text } from 'react-native'
+import { View, Image, Text, Pressable } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const Drawer = createDrawerNavigator();
 
 function DrawerNavigator() {
+
+  const [userData, setUserData] = useState(null);
+  const [logged, setLogged] = useState(false);
+
+  const getData = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        const decoded = jwtDecode(token);
+        console.log(decoded)
+        setUserData(decoded);
+        setLogged(true)
+      }
+    } catch (e) {
+      console.error('Error decoding token:', e);
+    }
+  };
+
+  const singOut = async () => {
+    try{
+      await AsyncStorage.removeItem('token');
+      setLogged(false);
+      console.log('Succesfully logged out')
+    }
+    catch (e){
+      console.error(e)
+    }
+  }
+
+  useEffect(() => {
+    getData()
+  }, []);
+
   return (
     <Drawer.Navigator initialRouteName="Home"
     screenOptions={{
@@ -46,10 +81,26 @@ function DrawerNavigator() {
                       borderRadius:50,
                     }} 
               />
-              <Text style={{
-                marginTop:'3%',
-                color:'#FFF',
-              }}>Username</Text>
+              { logged && (
+              <>
+                <Text style={{
+                  marginTop: '3%',
+                  color: '#FFF',
+                }}>{userData.sub.nombreUsuario}</Text>
+                  <Pressable onPress={() => singOut()} style={{
+                    borderRadius:5,
+                    backgroundColor:'#c13636',
+                    flexDirection:'row',
+                    justifyContent:'space-between',
+                    marginLeft:'5%',
+                    marginRight:'5%',
+                    marginTop:'5%',
+                  }}>
+                    <AntDesign name="logout" size={24} color="white" />
+                    <Text style={{ color: '#FFF' }}>Sign Out</Text>
+                  </Pressable>
+              </>
+              )}
             </View>
             <DrawerItemList {...props} />
           </SafeAreaView>
@@ -65,23 +116,17 @@ function DrawerNavigator() {
             ),
           }}
     />
-    <Drawer.Screen name="EditProfile" component={EditProfile}           
+    { logged ? (
+      <>
+        <Drawer.Screen name="EditProfile" component={EditProfile}           
           options={{
             title: 'Edit Profile',
             drawerIcon: () => (
               <AntDesign name="user" size={24} color="white" />
             )
           }}
-    />
-    <Drawer.Screen name="Login" component={Login}           
-          options={{
-            title: 'Sign Out',
-            headerShown: false, 
-            drawerIcon: () => (
-              <AntDesign name="logout" size={24} color="white" />
-            )
-          }}
-    />
+        />
+      { userData.sub.rolUsuario === '2' && (
         <Drawer.Screen name="Crud" component={NavCrud}           
           options={{
             title: 'Lists',
@@ -89,7 +134,22 @@ function DrawerNavigator() {
               <AntDesign name="setting" size={24} color="white" />
             )
           }}
-    />
+        />
+      )}
+      </>
+    ) : (
+      <>
+        <Drawer.Screen name="Login" component={Login}           
+          options={{
+            title: 'Log in',
+            headerShown: false, 
+            drawerIcon: () => (
+              <AntDesign name="logout" size={24} color="white" />
+            )
+          }}
+        />
+      </>
+    )}
     </Drawer.Navigator>
   );
 }

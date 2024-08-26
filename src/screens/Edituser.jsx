@@ -1,10 +1,8 @@
 import { StyleSheet, TextInput, View, Image, Animated, Pressable, Text } from 'react-native'
-import React, {useState, useEffect} from 'react'
-import { jwtDecode } from 'jwt-decode';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, {useState} from 'react'
 import AwesomeAlert from 'react-native-awesome-alerts';
 
-const EditProfile = ({ route, navigation }) => {
+const EditUser = ({ route, navigation }) => {
   const scaleAnim = new Animated.Value(1);
   const shadowAnim = new Animated.Value(0.2);
 
@@ -33,28 +31,9 @@ const EditProfile = ({ route, navigation }) => {
           useNativeDriver: true,
       }).start();
   };
-
-  const { data, setUserData } = useState(null);
-
-  const getData = async () => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      if (token) {
-        const decoded = jwtDecode(token);
-        console.log(decoded)
-        setUserData(decoded);
-      }
-    } catch (e) {
-      console.error('Error decoding token:', e);
-    }
-  };
-
-  useEffect(() => {
-    getData()
-  }, []);
-
-  const [_id] = useState(data.sub._id)
-  const [nombreUsuario, setNombreUsuario] = useState(data.sub.nombreUsuario)
+  const { data } = route.params;
+  const [_id] = useState(data._id)
+  const [nombreUsuario, setNombreUsuario] = useState(data.nombreUsuario)
   const [newPass, setNewPass] = useState('')
   const [oldPass, setOldPass] = useState('')
   const sinCaracteresEspeciales = /^[a-zA-Z0-9]*$/;
@@ -300,4 +279,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EditProfile
+export default EditUser

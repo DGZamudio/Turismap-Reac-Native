@@ -1,6 +1,8 @@
 import React, {useState} from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, TextInput, Pressable, StyleSheet, Image, ScrollView, Animated } from 'react-native';
 import { Video } from 'expo-av';
+import { CommonActions } from '@react-navigation/native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 
 const RegisterScreen = ({ navigation }) => {
@@ -46,6 +48,14 @@ const RegisterScreen = ({ navigation }) => {
   const sinCaracteresEspeciales = /^[a-zA-Z0-9]*$/;
   const regexCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
+  const storeData = async (value) => {
+    try {
+      await AsyncStorage.setItem('token', value);
+    } catch (e) {
+        console.log(e)
+    }
+  };
+
   const insertData = () => {
     setShowLoadingAlert(true)
     if (contrasenaUsuario != '') {
@@ -70,10 +80,22 @@ const RegisterScreen = ({ navigation }) => {
                                         setShowErrorAlert(true)
                                     }
                                     else {
-                                        setShowLoadingAlert(false)
-                                        setAlertMessage('User was added succesfully')
-                                        setShowAlert(true)
-                                        navigation.navigate('Home')
+                                        if (data.access_token) {
+                                            setShowLoadingAlert(false)
+                                            setAlertMessage('User was added succesfully')
+                                            storeData(data.access_token)
+                                            setShowAlert(true)
+                                            navigation.dispatch(
+                                                CommonActions.reset({
+                                                    index: 0,
+                                                    routes: [{ name: 'Home' }],
+                                                })
+                                            );
+                                          } else {
+                                            setShowLoadingAlert(false)
+                                            setErrorMessage('Register failed try again');
+                                            setShowErrorAlert(true);
+                                          }
                                     }
                                   })
                                   .catch(error => {
@@ -164,6 +186,9 @@ const RegisterScreen = ({ navigation }) => {
                       <Text style={styles.buttonText}>Create User</Text>
                   </Animated.View>
               </Pressable>
+              <Pressable onPress={() => navigation.navigate('Login')} style={styles.loginButton}>
+                    <Text style={styles.loginText}>Sign in</Text>
+                </Pressable>
           </View>
           <AwesomeAlert
               show={showAlert}

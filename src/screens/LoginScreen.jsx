@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, TextInput, Pressable, StyleSheet, Image, ScrollView, Animated } from 'react-native';
 import { Video } from 'expo-av';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 const LoginScreen = ({ navigation }) => {
     const scaleAnim = new Animated.Value(1);
@@ -32,6 +34,74 @@ const LoginScreen = ({ navigation }) => {
         }).start();
     };
 
+    const regexCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const [correoUsuario, setCorreoUsuario] = useState("")
+    const [contrasenaUsuario, setContrasenaUsuario] = useState("")
+
+    const [showAlert, setShowAlert] = useState(false);
+    const [showLoadingAlert, setShowLoadingAlert] = useState(false);
+    const [showErrorAlert, setShowErrorAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('')
+    const [errorMessage, setErrorMessage] = useState('')
+
+    const storeData = async (value) => {
+        try {
+          await AsyncStorage.setItem('token', value);
+        } catch (e) {
+            console.error(e)
+        }
+      };
+
+    const login = () => {
+        setShowLoadingAlert(true)
+        if(correoUsuario === ''){
+
+        }
+        else {
+            if(contrasenaUsuario === ''){
+                    
+            }
+            else {
+                if(regexCorreo.test(correoUsuario)){
+                    fetch('https://turismap-backend-python.onrender.com/login', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({correoUsuario:correoUsuario,contrasenaUsuario:contrasenaUsuario})
+                    })
+                    .then(resp => resp.json())
+                    .then(data => {
+                        if (data.mensaje === 'Contraseña incorrecta') {
+                            setShowLoadingAlert(false)
+                            setErrorMessage('Invalid password');
+                            setShowErrorAlert(true);
+                        }
+                        else {
+                            if (data.access_token) {
+                                setShowLoadingAlert(false)
+                                setAlertMessage('User was logged succesfully')
+                                storeData(data.access_token)
+                                setShowAlert(true)
+                                navigation.navigate('Redirect')
+                          } else {
+                            setShowLoadingAlert(false)
+                            setErrorMessage('Login failed try again');
+                            setShowErrorAlert(true);
+                          }
+                        }
+                    })
+                    .catch(error => {
+                        setShowLoadingAlert(false)
+                        setErrorMessage('There was an error logging in');
+                        setShowErrorAlert(true);
+                        console.error('Error:', error);
+                      });
+                }
+            }
+        }
+    }
+
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Video
@@ -45,8 +115,8 @@ const LoginScreen = ({ navigation }) => {
             <View style={styles.card}>
                 <Text style={styles.title}>Turismap</Text>
                 <Image source={require('../../assets/Turismap Logo Minimalist.png')} style={styles.logo} />
-                <TextInput placeholder="Username" style={styles.input} placeholderTextColor="#f8f9fa" />
-                <TextInput placeholder="Password" style={styles.input} secureTextEntry={true} placeholderTextColor="#f8f9fa" />
+                <TextInput placeholder="Email" style={styles.input} placeholderTextColor="#f8f9fa" onChangeText={text => setCorreoUsuario(text)}/>
+                <TextInput placeholder="Password" style={styles.input} secureTextEntry={true} placeholderTextColor="#f8f9fa" onChangeText={text => setContrasenaUsuario(text)}/>
                 <View style={styles.recov}>
                     <Text style={styles.passwordInfo}>If you forgot your password </Text>
                     <Pressable
@@ -58,7 +128,7 @@ const LoginScreen = ({ navigation }) => {
                     </Pressable>
                 </View>
                 <Pressable
-                    onPress={() => navigation.navigate('Home')}
+                    onPress={() => login()}
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
                     style={styles.button}
@@ -79,6 +149,41 @@ const LoginScreen = ({ navigation }) => {
                     <Text style={styles.loginText}>Sign up</Text>
                 </Pressable>
             </View>
+            <AwesomeAlert
+              show={showAlert}
+              showProgress={false}
+              title="Success"
+              message={alertMessage}
+              closeOnTouchOutside={true}
+              closeOnHardwareBackPress={true}
+              showCancelButton={false}
+              showConfirmButton={true}
+              confirmText="OK"
+              confirmButtonColor="#00bb00"
+              onConfirmPressed={() => setShowAlert(false)}
+            />
+            <AwesomeAlert
+              show={showErrorAlert}
+              showProgress={false}
+              title="Error"
+              message={errorMessage}
+              closeOnTouchOutside={true}
+              closeOnHardwareBackPress={true}
+              showCancelButton={false}
+              showConfirmButton={true}
+              confirmText="OK"
+              confirmButtonColor="#e23636"
+              onConfirmPressed={() => setShowErrorAlert(false)}
+            />
+            <AwesomeAlert
+              show={showLoadingAlert}
+              showProgress={false}
+              title="Loading ..."
+              closeOnTouchOutside={false}
+              closeOnHardwareBackPress={true}
+              showCancelButton={false}
+              showConfirmButton={false}
+            />
         </ScrollView>
     );
 };

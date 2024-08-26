@@ -34,8 +34,7 @@ const HomeScreen = () => {
       { latitude: 4.601158, longitude: -74.070132 }, 
       { latitude: 4.602165, longitude: -74.074427 },
     ];
-  
-  
+
     return(
         <View style={styles.container}>
           <View style={styles.search}>          

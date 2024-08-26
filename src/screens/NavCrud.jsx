@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AddUser from './AddUser';
 import Crud from './Crud';
-import EditProfile from './EditProfile';
+import EditUser from './Edituser';
 
 
 const Stack = createStackNavigator();
@@ -29,7 +29,7 @@ const NavCrud = () => {
           }}>
         <Stack.Screen name="Crud" component={Crud} options={{ headerShown: false }}/>
         <Stack.Screen name="AddUser" component={AddUser}/>
-        <Stack.Screen name="EditProfile" component={EditProfile}/>
+        <Stack.Screen name="EditProfile" component={EditUser}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -55,7 +55,6 @@ const Crud = ({ navigation }) => {
       .then((response) => response.json())
       .then((data) => {
         setShowLoadingAlert(false)
-        console.log('Fetched data:', data);
         setData(data);
       })
       .catch((error) => {

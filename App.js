@@ -6,7 +6,7 @@ import LoginScreen from './src/screens/LoginScreen';
 import MenuBar from './src/screens/MenuBar';
 import RecoverPass from './src/screens/RecoverPass';
 import NewPasswordScreen from './src/screens/NewPasswordScreen';
-
+import Redirect from './src/screens/Redirect';
 
 const Stack = createStackNavigator();
 
@@ -19,6 +19,7 @@ const App = () => {
         <Stack.Screen name="Home" component={MenuBar} options={{ headerShown: false }}/>
         <Stack.Screen name="RecoverPass" component={RecoverPass} options={{ headerShown: false }}/>
         <Stack.Screen name="NewPasswordScreen" component={NewPasswordScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="Redirect" component={Redirect} options={{ headerShown: false }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
