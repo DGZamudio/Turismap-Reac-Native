@@ -55,11 +55,15 @@ const LoginScreen = ({ navigation }) => {
     const login = () => {
         setShowLoadingAlert(true)
         if(correoUsuario === ''){
-
+            setShowLoadingAlert(false)
+            setErrorMessage('Email cant be empty');
+            setShowErrorAlert(true);      
         }
         else {
             if(contrasenaUsuario === ''){
-                    
+                setShowLoadingAlert(false)
+                setErrorMessage('Pasword cant be empty');
+                setShowErrorAlert(true);      
             }
             else {
                 if(regexCorreo.test(correoUsuario)){
