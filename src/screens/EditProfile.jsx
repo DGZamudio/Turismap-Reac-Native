@@ -1,7 +1,6 @@
 import { StyleSheet, TextInput, View, Image, Animated, Pressable, Text } from 'react-native'
-import React, {useState, useEffect} from 'react'
-import { jwtDecode } from 'jwt-decode';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, {useState} from 'react'
+import { CommonActions } from '@react-navigation/native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 
 const EditProfile = ({ route, navigation }) => {
@@ -34,27 +33,9 @@ const EditProfile = ({ route, navigation }) => {
       }).start();
   };
 
-  const { data, setUserData } = useState(null);
-
-  const getData = async () => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      if (token) {
-        const decoded = jwtDecode(token);
-        console.log(decoded)
-        setUserData(decoded);
-      }
-    } catch (e) {
-      console.error('Error decoding token:', e);
-    }
-  };
-
-  useEffect(() => {
-    getData()
-  }, []);
-
-  const [_id] = useState(data.sub._id)
-  const [nombreUsuario, setNombreUsuario] = useState(data.sub.nombreUsuario)
+  const { data } = route.params;
+  const [_id] = useState(data._id)
+  const [nombreUsuario, setNombreUsuario] = useState(data.nombreUsuario)
   const [newPass, setNewPass] = useState('')
   const [oldPass, setOldPass] = useState('')
   const sinCaracteresEspeciales = /^[a-zA-Z0-9]*$/;
@@ -80,7 +61,12 @@ const EditProfile = ({ route, navigation }) => {
         setShowLoadingAlert(false)
         setAlertMessage('The user has been modified correctly')
         setShowAlert(true)
-        navigation.navigate('Crud')
+        navigation.dispatch(
+          CommonActions.reset({
+              index: 0,
+              routes: [{ name: 'Home' }],
+          })
+      );
       })
       .catch(error => {
         setShowLoadingAlert(false)
@@ -112,7 +98,12 @@ const EditProfile = ({ route, navigation }) => {
           if (data.mensaje === 'Usuario actualizado exitosamente') {
             setAlertMessage('The password was modified correctly');
             setShowAlert(true);
-            navigation.navigate('Crud');
+            navigation.dispatch(
+              CommonActions.reset({
+                  index: 0,
+                  routes: [{ name: 'Home' }],
+              })
+          );
           } else {
               if(data.mensaje === 'La contraseña antigua no es correcta'){
                 setErrorMessage('The password related to this user isnt the one you gived');

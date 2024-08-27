@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View, FlatList, ScrollView, Pressable, TextInput } from 'react-native'
-import React, {useEffect, useState} from 'react'
+import React, { useState } from 'react'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import AwesomeAlert from 'react-native-awesome-alerts';
 
 const Crud = ({ navigation }) => {
+    const [showCrud, setShowCrud] = useState('0')
     const [DATA, setData] = useState([]);
     const [loading,setIsLoading] = useState(true);
     const [search, setSearch] = useState("");
@@ -25,7 +26,6 @@ const Crud = ({ navigation }) => {
       .then((response) => response.json())
       .then((data) => {
         setShowLoadingAlert(false)
-        console.log('Fetched data:', data);
         setAlertMessage('The data has been succesfully loaded')
         setData(data);
         setIsLoading(false)
@@ -38,10 +38,6 @@ const Crud = ({ navigation }) => {
         setShowErrorAlert(true);
       });
     }
-
-    useEffect(() => {
-      loadData()
-    }, []);
 
     //Buscar usuario
     const searchUser = () => {
@@ -62,13 +58,54 @@ const Crud = ({ navigation }) => {
         console.error('Error al obtener los usuarios:', error);
       });
     }
+
+    const loadData2 = () => {
+      setShowLoadingAlert(true)
+      fetch('https://turismap-backend-python.onrender.com/get_item', {
+        method: 'GET',
+
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        setShowLoadingAlert(false)
+        setAlertMessage('The data has been succesfully loaded')
+        setData(data);
+        setIsLoading(false)
+        setShowAlert(true);
+      })
+      .catch((error) => {
+        setShowLoadingAlert(false)
+        console.error('Error al obtener los sitios turisticos:', error);
+        setErrorMessage('There has been an error trying to load the data')
+        setShowErrorAlert(true);
+      });
+    }
+
+    const searchData = () => {
+      fetch(`https://turismap-backend-python.onrender.com/search_item?q=${encodeURIComponent(search)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        setShowLoadingAlert(false)
+        setData(data);
+      })
+      .catch((error) => {
+        setShowLoadingAlert(false)
+        console.error('Error al obtener los usuarios:', error);
+      });
+    }
     
     type ItemProps = {_id: string; nombreUsuario: string; correoUsuario: string; estadoUsuario: string; rolUsuario: string;};
+    type ItemProps2 = {_id: string; nombreSitiosTuristicos: string; estadoSitiosTuristicos: string;}
 
     //Eliminar Usuario
     const deleteUser = (id) => {
       setShowDeleteAlert(true);
-      setUserIdToDelete(id);
+      setUserIdToDelete(id); 
     };
 
     //Editar Usuario
@@ -79,7 +116,7 @@ const Crud = ({ navigation }) => {
       }
     };
   
-    //Item de la tabla
+    //Item de la tabla usuario
     const Item = ({ _id, nombreUsuario, correoUsuario, estadoUsuario, rolUsuario }: ItemProps) => (
         <View style={styles.rowList}>
           <View style={styles.item}>
@@ -112,66 +149,162 @@ const Crud = ({ navigation }) => {
         </View>
     );
 
+    const Item2 = ({ _id, nombreSitiosTuristicos, estadoSitiosTuristicos}: ItemProps2) => (
+        <View style={styles.rowList}>
+          <View style={styles.item}>
+            <Text style={styles.itemTitle}>{_id}</Text>
+          </View>
+          <View style={styles.item}>
+            <Text style={styles.itemTitle}>{nombreSitiosTuristicos}</Text>
+          </View>
+          <View style={styles.item}>
+            <Text style={styles.itemTitle}>{estadoSitiosTuristicos}</Text>
+          </View>
+          <View style={styles.item}>
+            <View style={styles.rowIcon}>
+              <Pressable style={styles.editItemn} >
+                <AntDesign name="edit" size={24} color="black" 
+                onPress={() => edit({_id, nombreSitiosTuristicos})} />
+              </Pressable>
+              <Pressable style={styles.delItemn} 
+              onPress={() => deleteUser(_id)}>
+                <AntDesign name="delete" size={24} color="black"/>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+    );
+
   return (
     <View style={styles.container}>
         <ScrollView style={styles.card}>
             <Text style={styles.title}>Lists</Text>
-            <View style={styles.search1}>
-              <View style={styles.search}>          
-                <TextInput placeholder='Search' style={styles.searchContent} />
-                <AntDesign name="search1" size={24} color="grey" style={{
-                  marginRight:15,
-                }} />
-              </View>
-            </View>
             <View style={styles.crud}>
-              <Text style={styles.title}>Users</Text>
               <View style={styles.buttons}>
-                <Pressable onPress={() => navigation.navigate('AddUser')} style={styles.addButton}>
-                  <Text style={{color:'#FFF'}}>
-                    Add
-                  </Text>
-                  <AntDesign name="adduser" size={24} color="white" />
-                </Pressable>
-                <Pressable style={styles.refresh}>
-                  <AntDesign name="reload1" size={24} color="black" onPress={() => loadData()} />
-                </Pressable>
-                <View style={styles.search}>          
-                  <TextInput placeholder='Search' style={styles.searchContent} onChangeText={text => setSearch(text)}/>
-                  <Pressable onPress={() => searchUser()}>
-                    <AntDesign name="search1" size={24} color="grey" style={{
-                      marginRight:15,
-                    }} />
+                <Text style={styles.title}>Users</Text>
+                {showCrud === '0' && (
+                  <Pressable onPress={() => {loadData(); setShowCrud('1')}}>
+                    <AntDesign name="plus" size={24} color="white" />
                   </Pressable>
+                )}
+                {showCrud === '1' && (
+                    <Pressable onPress={() => setShowCrud('0')}>
+                      <AntDesign name="minus" size={24} color="white" />
+                    </Pressable>
+
+                )}
+              </View>
+              {showCrud === '1' && (
+                <>
+                <View style={styles.buttons}>
+                  <Pressable onPress={() => navigation.navigate('AddUser')} style={styles.addButton}>
+                    <Text style={{color:'#FFF'}}>
+                      Add
+                    </Text>
+                    <AntDesign name="adduser" size={24} color="white" />
+                  </Pressable>
+                  <Pressable style={styles.refresh}>
+                    <AntDesign name="reload1" size={24} color="black" onPress={() => loadData()} />
+                  </Pressable>
+                  <View style={styles.search}>          
+                    <TextInput placeholder='Search' style={styles.searchContent} onChangeText={text => setSearch(text)}/>
+                    <Pressable onPress={() => searchUser()}>
+                      <AntDesign name="search1" size={24} color="grey" style={{
+                        marginRight:15,
+                      }} />
+                    </Pressable>
+                  </View>
                 </View>
+                <View style={styles.headerRow}>
+                    <View style={styles.headerItem}>
+                      <Text style={styles.listTitle}>Id</Text>
+                    </View>
+                    <View style={styles.headerItem}>
+                      <Text style={styles.listTitle}>Name</Text>
+                    </View>
+                    <View style={styles.headerItem}>
+                      <Text style={styles.listTitle}>Email</Text>
+                    </View>
+                    <View style={styles.headerItem}>
+                      <Text style={styles.listTitle}>State</Text>
+                    </View>
+                    <View style={styles.headerItem}>
+                      <Text style={styles.listTitle}>Role</Text>
+                    </View>
+                    <View style={styles.headerItem}>
+                      <Text style={styles.listTitle}>Options</Text>
+                    </View>
+                </View>
+                <FlatList
+                    data={DATA}
+                    renderItem={({ item }) => <Item _id={item._id} nombreUsuario={item.nombreUsuario} correoUsuario={item.correoUsuario} estadoUsuario={item.estadoUsuario} rolUsuario={item.rolUsuario} />}
+                    keyExtractor={item => item._id}
+                    onRefresh={() => loadData()}
+                    refreshing = {loading}
+                />
+              </>
+                )}
+            </View>
+
+
+            <View style={styles.crud}>
+              <View style={styles.buttons}>
+                <Text style={styles.title}>Turistic places</Text>
+                {showCrud === '0' && (
+                  <Pressable onPress={() => {loadData2(); setShowCrud('2')}}>
+                    <AntDesign name="plus" size={24} color="white" />
+                  </Pressable>
+                )}
+                {showCrud === '2' && (
+                  <Pressable onPress={() => setShowCrud('0')}>
+                    <AntDesign name="minus" size={24} color="white" />
+                  </Pressable>
+                )}
               </View>
-              <View style={styles.headerRow}>
-                  <View style={styles.headerItem}>
-                    <Text style={styles.listTitle}>Id</Text>
+              {showCrud === '2' && (
+                <>
+                <View style={styles.buttons}>
+                  <Pressable onPress={() => navigation.navigate('AddLocal')} style={styles.addButton}>
+                    <Text style={{color:'#FFF'}}>
+                      Add
+                    </Text>
+                    <AntDesign name="adduser" size={24} color="white" />
+                  </Pressable>
+                  <Pressable style={styles.refresh}>
+                    <AntDesign name="reload1" size={24} color="black" onPress={() => loadData2()} />
+                  </Pressable>
+                  <View style={styles.search}>          
+                    <TextInput placeholder='Search' style={styles.searchContent} onChangeText={text => setSearch(text)}/>
+                    <Pressable onPress={() => searchData()}>
+                      <AntDesign name="search1" size={24} color="grey" style={{
+                        marginRight:15,
+                      }} />
+                    </Pressable>
                   </View>
-                  <View style={styles.headerItem}>
-                    <Text style={styles.listTitle}>Name</Text>
-                  </View>
-                  <View style={styles.headerItem}>
-                    <Text style={styles.listTitle}>Email</Text>
-                  </View>
-                  <View style={styles.headerItem}>
-                    <Text style={styles.listTitle}>State</Text>
-                  </View>
-                  <View style={styles.headerItem}>
-                    <Text style={styles.listTitle}>Role</Text>
-                  </View>
-                  <View style={styles.headerItem}>
-                    <Text style={styles.listTitle}>Options</Text>
-                  </View>
-              </View>
-              <FlatList
-                  data={DATA}
-                  renderItem={({ item }) => <Item _id={item._id} nombreUsuario={item.nombreUsuario} correoUsuario={item.correoUsuario} estadoUsuario={item.estadoUsuario} rolUsuario={item.rolUsuario} />}
-                  keyExtractor={item => item._id}
-                  onRefresh={() => loadData()}
-                  refreshing = {loading}
-              />
+                </View>
+                <View style={styles.headerRow}>
+                    <View style={styles.headerItem}>
+                      <Text style={styles.listTitle}>Id</Text>
+                    </View>
+                    <View style={styles.headerItem}>
+                      <Text style={styles.listTitle}>Name</Text>
+                    </View>
+                    <View style={styles.headerItem}>
+                      <Text style={styles.listTitle}>State</Text>
+                    </View>
+                    <View style={styles.headerItem}>
+                      <Text style={styles.listTitle}>Options</Text>
+                    </View>
+                </View>
+                <FlatList
+                    data={DATA}
+                    renderItem={({ item }) => <Item2 _id={item._id} nombreSitiosTuristicos={item.nombreSitiosTuristicos} estadoSitiosTuristicos={item.estadoSitiosTuristicos}/>}
+                    keyExtractor={item => item._id}
+                    onRefresh={() => loadData2()}
+                    refreshing = {loading}
+                />
+              </>
+                )}
             </View>
             <AwesomeAlert
               show={showAlert}
@@ -223,32 +356,63 @@ const Crud = ({ navigation }) => {
               onConfirmPressed={() => {
                 setShowDeleteAlert(false);
                 setShowLoadingAlert(true);
-                fetch(`https://turismap-backend-python.onrender.com/delete_user/${userIdToDelete}`, {
-                  method: 'DELETE',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                })
-                .then(response => {
-                  if (response.ok) {
+                {showCrud === '1' && (
+                  fetch(`https://turismap-backend-python.onrender.com/delete_user/${userIdToDelete}`, {
+                    method: 'DELETE',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                  })
+                  .then(response => {
+                    if (response.ok) {
+                      setShowLoadingAlert(false);
+                      setData(DATA.filter(user => user._id !== userIdToDelete)); 
+                      setAlertMessage('The user has been deleted');
+                      setShowAlert(true);
+                      setShowLoadingAlert(false)
+                    } else {
+                      setShowLoadingAlert(false);
+                      console.error('Error deleting user:', response.statusText);
+                      setErrorMessage('There seems to be an error trying to delete the user');
+                      setShowErrorAlert(true);
+                    }
+                  })
+                  .catch(error => {
                     setShowLoadingAlert(false);
-                    setData(DATA.filter(user => user._id !== userIdToDelete)); 
-                    setAlertMessage('The user has been deleted');
-                    setShowAlert(true);
-                    setShowLoadingAlert(false)
-                  } else {
-                    setShowLoadingAlert(false);
-                    console.error('Error deleting user:', response.statusText);
+                    console.error('Error deleting user:', error);
                     setErrorMessage('There seems to be an error trying to delete the user');
                     setShowErrorAlert(true);
-                  }
-                })
-                .catch(error => {
-                  setShowLoadingAlert(false);
-                  console.error('Error deleting user:', error);
-                  setErrorMessage('There seems to be an error trying to delete the user');
-                  setShowErrorAlert(true);
-                });
+                  })
+                )}
+
+                {showCrud === '2' && (
+                  fetch(`https://turismap-backend-python.onrender.com/delete_item/${userIdToDelete}`, {
+                    method: 'DELETE',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                  })
+                  .then(response => {
+                    if (response.ok) {
+                      setShowLoadingAlert(false);
+                      setData(DATA.filter(user => user._id !== userIdToDelete)); 
+                      setAlertMessage('The local has been deleted');
+                      setShowAlert(true);
+                      setShowLoadingAlert(false)
+                    } else {
+                      setShowLoadingAlert(false);
+                      console.error('Error deleting local:', response.statusText);
+                      setErrorMessage('There seems to be an error trying to delete the local');
+                      setShowErrorAlert(true);
+                    }
+                  })
+                  .catch(error => {
+                    setShowLoadingAlert(false);
+                    console.error('Error deleting local:', error);
+                    setErrorMessage('There seems to be an error trying to delete the local');
+                    setShowErrorAlert(true);
+                  })
+                )}
               }}
             />
         </ScrollView>

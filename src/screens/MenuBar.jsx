@@ -22,7 +22,6 @@ function DrawerNavigator() {
       const token = await AsyncStorage.getItem('token');
       if (token) {
         const decoded = jwtDecode(token);
-        console.log(decoded)
         setUserData(decoded);
         setLogged(true)
       }
@@ -118,7 +117,7 @@ function DrawerNavigator() {
     />
     { logged ? (
       <>
-        <Drawer.Screen name="EditProfile" component={EditProfile}           
+        <Drawer.Screen name="EditProfile" component={EditProfile} initialParams={{ data: userData.sub }}
           options={{
             title: 'Edit Profile',
             drawerIcon: () => (

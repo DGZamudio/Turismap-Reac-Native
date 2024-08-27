@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
-import { View, StyleSheet, StatusBar, TextInput } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, StyleSheet, StatusBar, TextInput, Pressable } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import MapView, { Polygon } from 'react-native-maps'
+import MapView, { Polygon, Marker } from 'react-native-maps'
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 const HomeScreen = () => {
     const initialRegion = {
@@ -13,6 +14,13 @@ const HomeScreen = () => {
 
     const mapRef = useRef(null);
     const [region, setRegion] = useState(initialRegion);
+    const [DATA, setData] = useState([]);
+    const [search, setSearch] = useState("");
+    const [showAlert, setShowAlert] = useState(false);
+    const [showLoadingAlert, setShowLoadingAlert] = useState(false);
+    const [showErrorAlert, setShowErrorAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('')
+    const [errorMessage, setErrorMessage] = useState('')
   
     const polygonCoordinates = [
       { latitude: 4.602259, longitude: -74.076613 },
@@ -35,6 +43,50 @@ const HomeScreen = () => {
       { latitude: 4.602165, longitude: -74.074427 },
     ];
 
+    const loadData2 = () => {
+      setShowLoadingAlert(true)
+      fetch('https://turismap-backend-python.onrender.com/get_item', {
+        method: 'GET',
+
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        setShowLoadingAlert(false)
+        setAlertMessage('The data has been succesfully loaded')
+        setData(data);
+        setShowAlert(true);
+      })
+      .catch((error) => {
+        setShowLoadingAlert(false)
+        console.error('Error al obtener los sitios turisticos:', error);
+        setErrorMessage('There has been an error trying to load the data')
+        setShowErrorAlert(true);
+      });
+    }
+
+    const searchData = () => {
+      fetch(`https://turismap-backend-python.onrender.com/search_item?q=${encodeURIComponent(search)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        setShowLoadingAlert(false)
+        setData(data);
+      })
+      .catch((error) => {
+        setShowLoadingAlert(false)
+        console.error('Error al obtener los usuarios:', error);
+      });
+    }
+
+    useEffect(() => {
+      loadData2()
+    }, [])
+    
+
     return(
         <View style={styles.container}>
           <View style={styles.search}>          
@@ -42,6 +94,9 @@ const HomeScreen = () => {
             <AntDesign name="search1" size={24} color="grey" style={{
               marginRight:15,
             }} />
+            <Pressable style={styles.refresh}>
+              <AntDesign name="reload1" size={24} color="black" onPress={() => loadData2()} />
+            </Pressable>
           </View>
           <StatusBar setStatusBarStyle='light-content'></StatusBar>
           <MapView
@@ -52,7 +107,18 @@ const HomeScreen = () => {
             showsUserLocation={true}
             region={region}
             initialRegion={initialRegion}
-          >  
+          >
+          {DATA.map((sitio) => (
+            <Marker
+              key={sitio._id}
+              coordinate={{
+                latitude: parseFloat(sitio.altitudSitiosTuristicos),
+                longitude: parseFloat(sitio.latitudSitiosTuristicos),
+              }}
+              title={sitio.nombreSitiosTuristicos}
+              description={sitio.descripcionSitiosTuristicos}
+            />
+          ))}
             <Polygon
               coordinates={polygonCoordinates}
               strokeColor="rgba(0,255,0,255)"
@@ -60,6 +126,41 @@ const HomeScreen = () => {
               strokeWidth={2}
             />
           </MapView>
+            <AwesomeAlert
+              show={showAlert}
+              showProgress={false}
+              title="Success"
+              message={alertMessage}
+              closeOnTouchOutside={true}
+              closeOnHardwareBackPress={true}
+              showCancelButton={false}
+              showConfirmButton={true}
+              confirmText="OK"
+              confirmButtonColor="#00bb00"
+              onConfirmPressed={() => setShowAlert(false)}
+            />
+            <AwesomeAlert
+              show={showErrorAlert}
+              showProgress={false}
+              title="Error"
+              message={errorMessage}
+              closeOnTouchOutside={true}
+              closeOnHardwareBackPress={true}
+              showCancelButton={false}
+              showConfirmButton={true}
+              confirmText="OK"
+              confirmButtonColor="#e23636"
+              onConfirmPressed={() => setShowErrorAlert(false)}
+            />
+            <AwesomeAlert
+              show={showLoadingAlert}
+              showProgress={false}
+              title="Loading ..."
+              closeOnTouchOutside={false}
+              closeOnHardwareBackPress={true}
+              showCancelButton={false}
+              showConfirmButton={false}
+            />
         </View>
     );
 };

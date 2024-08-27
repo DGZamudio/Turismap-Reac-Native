@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import AddUser from './AddUser';
 import Crud from './Crud';
 import EditUser from './Edituser';
-
+import AddLocal from './AddLocal';
 
 const Stack = createStackNavigator();
 
@@ -29,6 +29,7 @@ const NavCrud = () => {
           }}>
         <Stack.Screen name="Crud" component={Crud} options={{ headerShown: false }}/>
         <Stack.Screen name="AddUser" component={AddUser}/>
+        <Stack.Screen name="AddLocal" component={AddLocal}/>
         <Stack.Screen name="EditProfile" component={EditUser}/>
       </Stack.Navigator>
     </NavigationContainer>

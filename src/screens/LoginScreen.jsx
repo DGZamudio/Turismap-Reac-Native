@@ -119,7 +119,7 @@ const LoginScreen = ({ navigation }) => {
             <View style={styles.card}>
                 <Text style={styles.title}>Turismap</Text>
                 <Image source={require('../../assets/Turismap Logo Minimalist.png')} style={styles.logo} />
-                <TextInput placeholder="Email" style={styles.input} placeholderTextColor="#f8f9fa" onChangeText={text => setCorreoUsuario(text)}/>
+                <TextInput placeholder="Email" keyboardType="email-address" style={styles.input} placeholderTextColor="#f8f9fa" onChangeText={text => setCorreoUsuario(text)}/>
                 <TextInput placeholder="Password" style={styles.input} secureTextEntry={true} placeholderTextColor="#f8f9fa" onChangeText={text => setContrasenaUsuario(text)}/>
                 <View style={styles.recov}>
                     <Text style={styles.passwordInfo}>If you forgot your password </Text>
