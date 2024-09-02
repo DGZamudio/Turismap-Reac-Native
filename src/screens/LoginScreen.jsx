@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, TextInput, Pressable, StyleSheet, Image, ScrollView, Animated } from 'react-native';
 import { Video } from 'expo-av';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import themeContext from '../theme/themeContext';
 
 const LoginScreen = ({ navigation }) => {
     const scaleAnim = new Animated.Value(1);
@@ -35,6 +36,7 @@ const LoginScreen = ({ navigation }) => {
     };
 
     const regexCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const theme = useContext(themeContext)
     const [correoUsuario, setCorreoUsuario] = useState("")
     const [contrasenaUsuario, setContrasenaUsuario] = useState("")
 
@@ -109,7 +111,7 @@ const LoginScreen = ({ navigation }) => {
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Video
-                source={{uri: 'https://www.dropbox.com/scl/fi/ftmbd9ukbng2txtiilwhd/background.mp4?rlkey=81y4h7vwk7fprh35m9ia9c6jk&st=jx8rmazt&raw=1'}}
+                source={{ uri: theme.uri }}
                 style={styles.backgroundVideo}
                 isMuted={true}
                 isLooping
@@ -117,7 +119,7 @@ const LoginScreen = ({ navigation }) => {
                 resizeMode="cover"
             />
             <View style={styles.card}>
-                <Text style={styles.title}>Turismap</Text>
+                <Text style={[styles.title]}>Turismap</Text>
                 <Image source={require('../../assets/Turismap Logo Minimalist.png')} style={styles.logo} />
                 <TextInput placeholder="Email" keyboardType="email-address" style={styles.input} placeholderTextColor="#f8f9fa" onChangeText={text => setCorreoUsuario(text)}/>
                 <TextInput placeholder="Password" style={styles.input} secureTextEntry={true} placeholderTextColor="#f8f9fa" onChangeText={text => setContrasenaUsuario(text)}/>
@@ -210,7 +212,7 @@ const styles = StyleSheet.create({
         zIndex: -1,
     },
     card: {
-        backgroundColor: '#343a4011',
+        backgroundColor: '#343a408a',
         padding: 20,
         borderRadius: 10,
         width: '90%',

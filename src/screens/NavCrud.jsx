@@ -5,26 +5,28 @@ import AddUser from './AddUser';
 import Crud from './Crud';
 import EditUser from './Edituser';
 import AddLocal from './AddLocal';
+import themeContext from '../theme/themeContext';
 
 const Stack = createStackNavigator();
 
 const NavCrud = () => {
+  theme = React.useContext(themeContext)
   return (
     <NavigationContainer independent={true}>
       <Stack.Navigator initialRouteName="Crud"
           screenOptions={{
-            headerTintColor:'#FFF',
+            headerTintColor: theme.title,
             drawerStyle: {
-              backgroundColor: '#212121',
+              backgroundColor: theme.bg2,
             },
             headerStyle: {
-              backgroundColor:'#212121',
+              backgroundColor: theme.bg2,
             },
             headerTitleStyle:{
-              color:'#212121',
+              color: theme.bg2,
             },
             drawerLabelStyle:{
-              color:'#FFF',
+              color:theme.bg2,
             },
           }}>
         <Stack.Screen name="Crud" component={Crud} options={{ headerShown: false }}/>

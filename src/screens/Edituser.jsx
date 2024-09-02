@@ -1,8 +1,10 @@
 import { StyleSheet, TextInput, View, Image, Animated, Pressable, Text } from 'react-native'
-import React, {useState} from 'react'
+import React, {useState, useContext} from 'react'
 import AwesomeAlert from 'react-native-awesome-alerts';
+import themeContext from '../theme/themeContext';
 
 const EditUser = ({ route, navigation }) => {
+  const theme = useContext(themeContext)
   const scaleAnim = new Animated.Value(1);
   const shadowAnim = new Animated.Value(0.2);
 
@@ -114,18 +116,18 @@ const EditUser = ({ route, navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.text}>Edit profile</Text>
+    <View style={[styles.container, {backgroundColor: theme.bg1}]}>
+      <View style={[styles.card, {backgroundColor: theme.bg2}]}>
+        <Text style={[styles.text, {color: theme.title, borderBottomColor: theme.title}]}>Edit profile</Text>
         <View style={styles.cardContent}>
           <Image source={require('../../assets/pfp.jpg')} style={styles.pfp} />
-          <TextInput style={styles.input} placeholder="Username" placeholderTextColor="#f8f9fa" value={nombreUsuario} onChangeText = {text => setNombreUsuario(text)}/>
+          <TextInput style={[styles.input, {color: theme.text, borderBottomColor: theme.title}]} placeholder="Username" placeholderTextColor={theme.text} value={nombreUsuario} onChangeText = {text => setNombreUsuario(text)}/>
 
           <Pressable
                     onPress={() => editdata(_id)}
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
-                    style={styles.button}
+                    style={[styles.button, {backgroundColor: theme.title}]}
                 >
                     <Animated.View
                         style={[
@@ -136,22 +138,22 @@ const EditUser = ({ route, navigation }) => {
                             },
                         ]}
                     >
-                        <Text style={styles.buttonText}>Save Changes</Text>
+                        <Text style={[styles.buttonText, {color: theme.bg1}]}>Save Changes</Text>
                     </Animated.View>
           </Pressable>
         </View>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.text}>Change Password</Text>
+      <View style={[styles.card, {backgroundColor: theme.bg2}]}>
+        <Text style={[styles.text, {color: theme.title, borderBottomColor: theme.title}]}>Change Password</Text>
         <View style={styles.cardContent}>
-          <TextInput style={styles.input} placeholder="Old password" secureTextEntry={true} placeholderTextColor="#f8f9fa" onChangeText = {text => setOldPass(text)}/>
-          <TextInput style={styles.input} placeholder="New password" secureTextEntry={true} placeholderTextColor="#f8f9fa" onChangeText = {text => setNewPass(text)} />
+          <TextInput style={[styles.input, {color: theme.text, borderBottomColor: theme.title}]} placeholder="Old password" secureTextEntry={true} placeholderTextColor={theme.text} onChangeText = {text => setOldPass(text)}/>
+          <TextInput style={[styles.input, {color: theme.text, borderBottomColor: theme.title}]} placeholder="New password" secureTextEntry={true} placeholderTextColor={theme.text} onChangeText = {text => setNewPass(text)} />
           <Pressable
                     onPress={() => editPass(_id)}
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
-                    style={styles.button}
+                    style={[styles.button, {backgroundColor: theme.title}]}
                 >
                     <Animated.View
                         style={[
@@ -162,7 +164,7 @@ const EditUser = ({ route, navigation }) => {
                             },
                         ]}
                     >
-                        <Text style={styles.buttonText}>Save Password</Text>
+                        <Text style={[styles.buttonText, {color: theme.bg1}]}>Save Password</Text>
                     </Animated.View>
           </Pressable>
         </View>

@@ -1,7 +1,8 @@
-import React, {useState} from 'react'
+import React, {useContext, useState} from 'react'
 import { View, Text, TextInput, Pressable, StyleSheet, Image, ScrollView, Animated } from 'react-native';
 import { Video } from 'expo-av';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import themeContext from '../theme/themeContext';
 
 const AddLocal = ({ navigation }) => {
   const scaleAnim = new Animated.Value(1);
@@ -33,6 +34,7 @@ const AddLocal = ({ navigation }) => {
       }).start();
   };
 
+  const theme = useContext(themeContext)
   const [nombreLocal, setNombreLocal] = useState("")
   const [descripcion, setDescripcion] = useState("")
   const [altitud, setAltitud] = useState("")
@@ -72,7 +74,7 @@ const AddLocal = ({ navigation }) => {
   return (
       <ScrollView contentContainerStyle={styles.container}>
           <Video
-              source={{uri: 'https://www.dropbox.com/scl/fi/ftmbd9ukbng2txtiilwhd/background.mp4?rlkey=81y4h7vwk7fprh35m9ia9c6jk&st=jx8rmazt&raw=1'}}
+              source={{uri: theme.uri}}
               style={styles.backgroundVideo}
               isMuted={true}
               isLooping

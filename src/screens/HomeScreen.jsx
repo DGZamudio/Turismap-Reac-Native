@@ -1,10 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { View, StyleSheet, StatusBar, TextInput, Pressable } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MapView, { Polygon, Marker } from 'react-native-maps'
 import AwesomeAlert from 'react-native-awesome-alerts';
+import themeContext from '../theme/themeContext';
 
 const HomeScreen = () => {
+
+  const theme = useContext(themeContext)
+
     const initialRegion = {
       latitude: 4.597841,
       longitude: -74.076184,
@@ -102,7 +106,7 @@ const HomeScreen = () => {
           <MapView
             ref={mapRef}
             style={styles.map}
-            customMapStyle={mapDarkStyle}
+            customMapStyle={theme.map}
             loadingEnabled={true}
             showsUserLocation={true}
             region={region}
@@ -121,7 +125,7 @@ const HomeScreen = () => {
           ))}
             <Polygon
               coordinates={polygonCoordinates}
-              strokeColor="rgba(0,255,0,255)"
+              strokeColor={theme.title}
               fillColor="transparent" 
               strokeWidth={2}
             />
@@ -164,251 +168,6 @@ const HomeScreen = () => {
         </View>
     );
 };
-const mapDarkStyle =[
-    
-        {
-          "elementType": "geometry",
-          "stylers": [
-            {
-              "color": "#212121"
-            }
-          ]
-        },
-        {
-          "elementType": "labels.text.fill",
-          "stylers": [
-            {
-              "color": "#757575"
-            }
-          ]
-        },
-        {
-          "elementType": "labels.text.stroke",
-          "stylers": [
-            {
-              "color": "#212121"
-            }
-          ]
-        },
-        {
-          "featureType": "administrative",
-          "elementType": "geometry",
-          "stylers": [
-            {
-              "color": "#757575"
-            },
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          "featureType": "administrative.country",
-          "elementType": "labels.text.fill",
-          "stylers": [
-            {
-              "color": "#9e9e9e"
-            }
-          ]
-        },
-        {
-          "featureType": "administrative.land_parcel",
-          "stylers": [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          "featureType": "administrative.land_parcel",
-          "elementType": "labels",
-          "stylers": [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          "featureType": "administrative.locality",
-          "elementType": "labels.text.fill",
-          "stylers": [
-            {
-              "color": "#bdbdbd"
-            }
-          ]
-        },
-        {
-          "featureType": "poi",
-          "stylers": [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          "featureType": "poi",
-          "elementType": "labels.text",
-          "stylers": [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          "featureType": "poi",
-          "elementType": "labels.text.fill",
-          "stylers": [
-            {
-              "color": "#757575"
-            }
-          ]
-        },
-        {
-          "featureType": "poi.park",
-          "elementType": "geometry",
-          "stylers": [
-            {
-              "color": "#181818"
-            }
-          ]
-        },
-        {
-          "featureType": "poi.park",
-          "elementType": "labels.text.fill",
-          "stylers": [
-            {
-              "color": "#616161"
-            }
-          ]
-        },
-        {
-          "featureType": "poi.park",
-          "elementType": "labels.text.stroke",
-          "stylers": [
-            {
-              "color": "#1b1b1b"
-            }
-          ]
-        },
-        {
-          "featureType": "road",
-          "elementType": "geometry.fill",
-          "stylers": [
-            {
-              "color": "#2c2c2c"
-            }
-          ]
-        },
-        {
-          "featureType": "road",
-          "elementType": "labels.icon",
-          "stylers": [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          "featureType": "road",
-          "elementType": "labels.text.fill",
-          "stylers": [
-            {
-              "color": "#8a8a8a"
-            }
-          ]
-        },
-        {
-          "featureType": "road.arterial",
-          "elementType": "geometry",
-          "stylers": [
-            {
-              "color": "#373737"
-            }
-          ]
-        },
-        {
-          "featureType": "road.highway",
-          "elementType": "geometry",
-          "stylers": [
-            {
-              "color": "#3c3c3c"
-            }
-          ]
-        },
-        {
-          "featureType": "road.highway.controlled_access",
-          "elementType": "geometry",
-          "stylers": [
-            {
-              "color": "#4e4e4e"
-            }
-          ]
-        },
-        {
-          "featureType": "road.local",
-          "elementType": "labels",
-          "stylers": [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          "featureType": "road.local",
-          "elementType": "labels.text.fill",
-          "stylers": [
-            {
-              "color": "#616161"
-            }
-          ]
-        },
-        {
-          "featureType": "transit",
-          "stylers": [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          "featureType": "transit",
-          "elementType": "labels.text.fill",
-          "stylers": [
-            {
-              "color": "#757575"
-            }
-          ]
-        },
-        {
-          "featureType": "water",
-          "elementType": "geometry",
-          "stylers": [
-            {
-              "color": "#000000"
-            }
-          ]
-        },
-        {
-          "featureType": "water",
-          "elementType": "labels.text.fill",
-          "stylers": [
-            {
-              "color": "#3d3d3d"
-            }
-          ]
-        }
-      
-]
-const mapStandardStyle = [
-    {
-        "elementType": "labels.icon",
-        "stylers": [
-          {
-            "visibility": "off"
-          }
-        ]
-      }
-]
 const styles = StyleSheet.create({
     container: {
         flex:1,

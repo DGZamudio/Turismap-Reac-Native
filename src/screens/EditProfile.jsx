@@ -1,7 +1,8 @@
 import { StyleSheet, TextInput, View, Image, Animated, Pressable, Text } from 'react-native'
-import React, {useState} from 'react'
+import React, {useContext, useState} from 'react'
 import { CommonActions } from '@react-navigation/native';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import themeContext from '../theme/themeContext';
 
 const EditProfile = ({ route, navigation }) => {
   const scaleAnim = new Animated.Value(1);
@@ -33,6 +34,7 @@ const EditProfile = ({ route, navigation }) => {
       }).start();
   };
 
+  const theme = useContext(themeContext)
   const { data } = route.params;
   const [_id] = useState(data._id)
   const [nombreUsuario, setNombreUsuario] = useState(data.nombreUsuario)
@@ -126,18 +128,18 @@ const EditProfile = ({ route, navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.text}>Edit profile</Text>
+    <View style={[styles.container, {backgroundColor: theme.bg1}]}>
+      <View style={[styles.card, {backgroundColor: theme.bg2}]}>
+        <Text style={[styles.text, {color: theme.title, borderBottomColor: theme.title}]}>Edit profile</Text>
         <View style={styles.cardContent}>
           <Image source={require('../../assets/pfp.jpg')} style={styles.pfp} />
-          <TextInput style={styles.input} placeholder="Username" placeholderTextColor="#f8f9fa" value={nombreUsuario} onChangeText = {text => setNombreUsuario(text)}/>
+          <TextInput style={[styles.input, {color: theme.text, borderBottomColor: theme.title}]} placeholder="Username" placeholderTextColor={theme.text} value={nombreUsuario} onChangeText = {text => setNombreUsuario(text)}/>
 
           <Pressable
                     onPress={() => editdata(_id)}
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
-                    style={styles.button}
+                    style={[styles.button, {backgroundColor: theme.title}]}
                 >
                     <Animated.View
                         style={[
@@ -148,22 +150,22 @@ const EditProfile = ({ route, navigation }) => {
                             },
                         ]}
                     >
-                        <Text style={styles.buttonText}>Save Changes</Text>
+                        <Text style={[styles.buttonText, {color: theme.bg1}]}>Save Changes</Text>
                     </Animated.View>
           </Pressable>
         </View>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.text}>Change Password</Text>
+      <View style={[styles.card, {backgroundColor: theme.bg2}]}>
+        <Text style={[styles.text, {color: theme.title, borderBottomColor: theme.title}]}>Change Password</Text>
         <View style={styles.cardContent}>
-          <TextInput style={styles.input} placeholder="Old password" secureTextEntry={true} placeholderTextColor="#f8f9fa" onChangeText = {text => setOldPass(text)}/>
-          <TextInput style={styles.input} placeholder="New password" secureTextEntry={true} placeholderTextColor="#f8f9fa" onChangeText = {text => setNewPass(text)} />
+          <TextInput style={[styles.input, {color: theme.text, borderBottomColor: theme.title}]} placeholder="Old password" secureTextEntry={true} placeholderTextColor={theme.text} onChangeText = {text => setOldPass(text)}/>
+          <TextInput style={[styles.input, {color: theme.text, borderBottomColor: theme.title}]} placeholder="New password" secureTextEntry={true} placeholderTextColor={theme.text} onChangeText = {text => setNewPass(text)} />
           <Pressable
                     onPress={() => editPass(_id)}
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
-                    style={styles.button}
+                    style={[styles.button, {backgroundColor: theme.title}]}
                 >
                     <Animated.View
                         style={[
@@ -174,7 +176,7 @@ const EditProfile = ({ route, navigation }) => {
                             },
                         ]}
                     >
-                        <Text style={styles.buttonText}>Save Password</Text>
+                        <Text style={[styles.buttonText, {color: theme.bg1}]}>Save Password</Text>
                     </Animated.View>
           </Pressable>
         </View>
@@ -223,14 +225,12 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#050505',
     },
     card: {
       margin:'5%',
       width: '80%',
       height: '40%',
       borderRadius: 30,
-      backgroundColor: '#212121',
       shadowColor: '#191919',
       shadowOffset: { width: 15, height: 15 },
       shadowOpacity: 10,
@@ -240,13 +240,11 @@ const styles = StyleSheet.create({
     input: {
         margin:'5%',
         backgroundColor: 'transparent',       
-        borderBottomColor: '#fff',
         borderBottomWidth: 1,
         borderRadius: 15,
         width: '80%',
         padding: 10,
         marginBottom: 10,
-        color: '#f8f9fa',
     },
     cardContent: {
       justifyContent:'center',
@@ -254,11 +252,9 @@ const styles = StyleSheet.create({
     },
     text:{
       margin:'3%',
-      color:'#FFF',
       fontWeight: 'bold',
       fontSize: 15,
       borderBottomWidth: 1,
-      borderBottomColor: '#f8f9fa',
       textAlign:'center',
     },
     pfp: {
@@ -270,7 +266,6 @@ const styles = StyleSheet.create({
       marginTop:'10%',
       borderRadius: 30,
       overflow: 'hidden',
-      backgroundColor: '#fff',
   },
   buttonContent: {
       backgroundColor: 'transparent', 
@@ -285,7 +280,6 @@ const styles = StyleSheet.create({
       elevation: 5,
   },
   buttonText: {
-      color: '#000',
       fontWeight: 'bold',
       fontSize: 15,
   },

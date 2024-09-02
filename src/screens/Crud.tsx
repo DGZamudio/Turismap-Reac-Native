@@ -1,9 +1,11 @@
 import { StyleSheet, Text, View, FlatList, ScrollView, Pressable, TextInput } from 'react-native'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import themeContext from '../theme/themeContext';
 
 const Crud = ({ navigation }) => {
+    const theme = useContext(themeContext)
     const [showCrud, setShowCrud] = useState('0')
     const [DATA, setData] = useState([]);
     const [loading,setIsLoading] = useState(true);
@@ -120,19 +122,19 @@ const Crud = ({ navigation }) => {
     const Item = ({ _id, nombreUsuario, correoUsuario, estadoUsuario, rolUsuario }: ItemProps) => (
         <View style={styles.rowList}>
           <View style={styles.item}>
-            <Text style={styles.itemTitle}>{_id}</Text>
+            <Text style={[styles.itemTitle, { color: theme.text }]}>{_id}</Text>
           </View>
           <View style={styles.item}>
-            <Text style={styles.itemTitle}>{nombreUsuario}</Text>
+            <Text style={[styles.itemTitle, { color: theme.text }]}>{nombreUsuario}</Text>
           </View>
           <View style={styles.item}>
-            <Text style={styles.itemTitle}>{correoUsuario}</Text>
+            <Text style={[styles.itemTitle, { color: theme.text }]}>{correoUsuario}</Text>
           </View>
           <View style={styles.item}>
-            <Text style={styles.itemTitle}>{estadoUsuario}</Text>
+            <Text style={[styles.itemTitle, { color: theme.text }]}>{estadoUsuario}</Text>
           </View>
           <View style={styles.item}>
-            <Text style={styles.itemTitle}>{rolUsuario}</Text>
+            <Text style={[styles.itemTitle, { color: theme.text }]}>{rolUsuario}</Text>
           </View>
           <View style={styles.item}>
             <View style={styles.rowIcon}>
@@ -140,10 +142,10 @@ const Crud = ({ navigation }) => {
                 <AntDesign name="edit" size={24} color="black" 
                 onPress={() => edit({_id, nombreUsuario})} />
               </Pressable>
-              <Pressable style={styles.delItemn} 
+            {/*<Pressable style={styles.delItemn} 
               onPress={() => deleteUser(_id)}>
                 <AntDesign name="delete" size={24} color="black"/>
-              </Pressable>
+              </Pressable>*/}
             </View>
           </View>
         </View>
@@ -152,13 +154,13 @@ const Crud = ({ navigation }) => {
     const Item2 = ({ _id, nombreSitiosTuristicos, estadoSitiosTuristicos}: ItemProps2) => (
         <View style={styles.rowList}>
           <View style={styles.item}>
-            <Text style={styles.itemTitle}>{_id}</Text>
+            <Text style={[styles.itemTitle, { color: theme.text }]}>{_id}</Text>
           </View>
           <View style={styles.item}>
-            <Text style={styles.itemTitle}>{nombreSitiosTuristicos}</Text>
+            <Text style={[styles.itemTitle, { color: theme.text }]}>{nombreSitiosTuristicos}</Text>
           </View>
           <View style={styles.item}>
-            <Text style={styles.itemTitle}>{estadoSitiosTuristicos}</Text>
+            <Text style={[styles.itemTitle, { color: theme.text }]}>{estadoSitiosTuristicos}</Text>
           </View>
           <View style={styles.item}>
             <View style={styles.rowIcon}>
@@ -176,20 +178,20 @@ const Crud = ({ navigation }) => {
     );
 
   return (
-    <View style={styles.container}>
-        <ScrollView style={styles.card}>
-            <Text style={styles.title}>Lists</Text>
-            <View style={styles.crud}>
+    <View style={[styles.container, {backgroundColor: theme.bg1}]}>
+        <ScrollView style={[styles.card, {backgroundColor: theme.bg2}]}>
+            <Text style={[styles.title, {color: theme.title, borderBottomColor: theme.title}]}>Lists</Text>
+            <View style={[styles.crud, {backgroundColor: theme.bg3}]}>
               <View style={styles.buttons}>
-                <Text style={styles.title}>Users</Text>
+                <Text style={[styles.title, {color: theme.title, borderBottomColor: theme.title}]}>Users</Text>
                 {showCrud === '0' && (
                   <Pressable onPress={() => {loadData(); setShowCrud('1')}}>
-                    <AntDesign name="plus" size={24} color="white" />
+                    <AntDesign name="plus" size={24} color={theme.title} />
                   </Pressable>
                 )}
                 {showCrud === '1' && (
                     <Pressable onPress={() => setShowCrud('0')}>
-                      <AntDesign name="minus" size={24} color="white" />
+                      <AntDesign name="minus" size={24} color={theme.title} />
                     </Pressable>
 
                 )}
@@ -217,22 +219,22 @@ const Crud = ({ navigation }) => {
                 </View>
                 <View style={styles.headerRow}>
                     <View style={styles.headerItem}>
-                      <Text style={styles.listTitle}>Id</Text>
+                      <Text style={[styles.listTitle, {color: theme.title, borderBottomColor: theme.title}]}>Id</Text>
                     </View>
                     <View style={styles.headerItem}>
-                      <Text style={styles.listTitle}>Name</Text>
+                      <Text style={[styles.listTitle, {color: theme.title, borderBottomColor: theme.title}]}>Name</Text>
                     </View>
                     <View style={styles.headerItem}>
-                      <Text style={styles.listTitle}>Email</Text>
+                      <Text style={[styles.listTitle, {color: theme.title, borderBottomColor: theme.title}]}>Email</Text>
                     </View>
                     <View style={styles.headerItem}>
-                      <Text style={styles.listTitle}>State</Text>
+                      <Text style={[styles.listTitle, {color: theme.title, borderBottomColor: theme.title}]}>State</Text>
                     </View>
                     <View style={styles.headerItem}>
-                      <Text style={styles.listTitle}>Role</Text>
+                      <Text style={[styles.listTitle, {color: theme.title, borderBottomColor: theme.title}]}>Role</Text>
                     </View>
                     <View style={styles.headerItem}>
-                      <Text style={styles.listTitle}>Options</Text>
+                      <Text style={[styles.listTitle, {color: theme.title, borderBottomColor: theme.title}]}>Options</Text>
                     </View>
                 </View>
                 <FlatList
@@ -247,17 +249,17 @@ const Crud = ({ navigation }) => {
             </View>
 
 
-            <View style={styles.crud}>
+            <View style={[styles.crud, {backgroundColor: theme.bg3}]}>
               <View style={styles.buttons}>
-                <Text style={styles.title}>Turistic places</Text>
+                <Text style={[styles.title, {color: theme.title, borderBottomColor: theme.title}]}>Turistic places</Text>
                 {showCrud === '0' && (
                   <Pressable onPress={() => {loadData2(); setShowCrud('2')}}>
-                    <AntDesign name="plus" size={24} color="white" />
+                    <AntDesign name="plus" size={24} color={theme.title} />
                   </Pressable>
                 )}
                 {showCrud === '2' && (
                   <Pressable onPress={() => setShowCrud('0')}>
-                    <AntDesign name="minus" size={24} color="white" />
+                    <AntDesign name="minus" size={24} color={theme.title} />
                   </Pressable>
                 )}
               </View>
@@ -284,16 +286,16 @@ const Crud = ({ navigation }) => {
                 </View>
                 <View style={styles.headerRow}>
                     <View style={styles.headerItem}>
-                      <Text style={styles.listTitle}>Id</Text>
+                      <Text style={[styles.listTitle, {color: theme.title, borderBottomColor: theme.title}]}>Id</Text>
                     </View>
                     <View style={styles.headerItem}>
-                      <Text style={styles.listTitle}>Name</Text>
+                      <Text style={[styles.listTitle, {color: theme.title, borderBottomColor: theme.title}]}>Name</Text>
                     </View>
                     <View style={styles.headerItem}>
-                      <Text style={styles.listTitle}>State</Text>
+                      <Text style={[styles.listTitle, {color: theme.title, borderBottomColor: theme.title}]}>State</Text>
                     </View>
                     <View style={styles.headerItem}>
-                      <Text style={styles.listTitle}>Options</Text>
+                      <Text style={[styles.listTitle, {color: theme.title, borderBottomColor: theme.title}]}>Options</Text>
                     </View>
                 </View>
                 <FlatList
@@ -424,7 +426,6 @@ export default Crud
 
 const styles = StyleSheet.create({
     container:{
-        backgroundColor:'#050505',
         flex:1,
         justifyContent:'center',
         alignItems:'center',
@@ -433,7 +434,6 @@ const styles = StyleSheet.create({
         margin: '15%',
         width: '90%',
         borderRadius: 30,
-        backgroundColor: '#212121',
         shadowColor: '#191919',
         shadowOffset: { width: 15, height: 15 },
         shadowOpacity: 10,
@@ -451,7 +451,6 @@ const styles = StyleSheet.create({
         margin: '5%',
         width: '90%',
         borderRadius: 30,
-        backgroundColor: '#303030',
         shadowColor: '#191919',
         shadowOffset: { width: 15, height: 15 },
         shadowOpacity: 10,
@@ -529,18 +528,14 @@ const styles = StyleSheet.create({
         flex: 1,
       },
       title:{
-        color:'#FFF',
         fontSize: 25,
         fontWeight: 'bold',
-        borderBottomColor: '#FFF',
         borderBottomWidth: 1,
         textAlign: 'center',
       },
       listTitle:{
         textAlign: 'center',
-        color: '#FFF',
         fontSize: 12,
-        borderBottomColor: '#FFF',
         borderBottomWidth: 1,
         margin: '2%',
       },
