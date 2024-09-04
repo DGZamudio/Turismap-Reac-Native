@@ -12,12 +12,14 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { EventRegister } from 'react-native-event-listeners';
 import themeContext from '../theme/themeContext';
 import Svg, { Circle, Path } from 'react-native-svg';
+import { useAlert } from './Alert';
 
 const Drawer = createDrawerNavigator();
 
 function DrawerNavigator() {
 
   const theme = useContext(themeContext)
+  const { showAlert, hideAlert } = useAlert();
   const [userData, setUserData] = useState(null);
   const [logged, setLogged] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
@@ -37,12 +39,15 @@ function DrawerNavigator() {
 
   const singOut = async () => {
     try{
+      hideAlert()
       await AsyncStorage.removeItem('token');
       setLogged(false);
-      console.log('Succesfully logged out')
+      showAlert('Succesfully logged out', 'success')
     }
     catch (e){
+      hideAlert()
       console.error(e)
+      showAlert('There was an error trying to log out try again', 'error')
     }
   }
 

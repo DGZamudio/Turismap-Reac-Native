@@ -3,6 +3,7 @@ import React, { useContext, useState } from 'react'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import themeContext from '../theme/themeContext';
+import { useAlert } from './Alert';
 
 const Crud = ({ navigation }) => {
     const theme = useContext(themeContext)
@@ -11,39 +12,34 @@ const Crud = ({ navigation }) => {
     const [loading,setIsLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [userIdToDelete, setUserIdToDelete] = useState(null);
-    const [showAlert, setShowAlert] = useState(false);
-    const [showLoadingAlert, setShowLoadingAlert] = useState(false);
-    const [showErrorAlert, setShowErrorAlert] = useState(false);
     const [showDeleteAlert, setShowDeleteAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState('')
-    const [errorMessage, setErrorMessage] = useState('')
+    const { showAlert, hideAlert } = useAlert();
 
     //Cargar data
     const loadData = () => {
-      setShowLoadingAlert(true)
+      showAlert('', 'loading')
+      useAlert
       fetch('https://turismap-backend-python.onrender.com/get_users', {
         method: 'GET',
 
       })
       .then((response) => response.json())
       .then((data) => {
-        setShowLoadingAlert(false)
-        setAlertMessage('The data has been succesfully loaded')
+        hideAlert()
         setData(data);
         setIsLoading(false)
-        setShowAlert(true);
+        showAlert('The data has been succesfully loaded', 'success');
       })
       .catch((error) => {
-        setShowLoadingAlert(false)
+        hideAlert()
         console.error('Error al obtener los usuarios:', error);
-        setErrorMessage('There has been an error trying to load the data')
-        setShowErrorAlert(true);
+        showAlert('There has been an error trying to load the data', 'error')
       });
     }
 
     //Buscar usuario
     const searchUser = () => {
-      setShowLoadingAlert(true)
+      showAlert('', 'loading')
       fetch(`https://turismap-backend-python.onrender.com/search_user?q=${encodeURIComponent(search)}`, {
         method: 'GET',
         headers: {
@@ -52,38 +48,37 @@ const Crud = ({ navigation }) => {
       })
       .then((response) => response.json())
       .then((data) => {
-        setShowLoadingAlert(false)
+        hideAlert()
         setData(data);
       })
       .catch((error) => {
-        setShowLoadingAlert(false)
+        hideAlert()
         console.error('Error al obtener los usuarios:', error);
       });
     }
 
     const loadData2 = () => {
-      setShowLoadingAlert(true)
+      showAlert('', 'loading')
       fetch('https://turismap-backend-python.onrender.com/get_item', {
         method: 'GET',
 
       })
       .then((response) => response.json())
       .then((data) => {
-        setShowLoadingAlert(false)
-        setAlertMessage('The data has been succesfully loaded')
+        hideAlert()
         setData(data);
         setIsLoading(false)
-        setShowAlert(true);
+        showAlert('The data has been succesfully loaded', 'success')
       })
       .catch((error) => {
-        setShowLoadingAlert(false)
+        hideAlert()
         console.error('Error al obtener los sitios turisticos:', error);
-        setErrorMessage('There has been an error trying to load the data')
-        setShowErrorAlert(true);
+        showAlert('There has been an error trying to load the data', 'error')
       });
     }
 
     const searchData = () => {
+      showAlert('', 'loading')
       fetch(`https://turismap-backend-python.onrender.com/search_item?q=${encodeURIComponent(search)}`, {
         method: 'GET',
         headers: {
@@ -92,11 +87,11 @@ const Crud = ({ navigation }) => {
       })
       .then((response) => response.json())
       .then((data) => {
-        setShowLoadingAlert(false)
+        hideAlert()
         setData(data);
       })
       .catch((error) => {
-        setShowLoadingAlert(false)
+        hideAlert()
         console.error('Error al obtener los usuarios:', error);
       });
     }
@@ -309,41 +304,6 @@ const Crud = ({ navigation }) => {
                 )}
             </View>
             <AwesomeAlert
-              show={showAlert}
-              showProgress={false}
-              title="Success"
-              message={alertMessage}
-              closeOnTouchOutside={true}
-              closeOnHardwareBackPress={true}
-              showCancelButton={false}
-              showConfirmButton={true}
-              confirmText="OK"
-              confirmButtonColor="#00bb00"
-              onConfirmPressed={() => setShowAlert(false)}
-            />
-            <AwesomeAlert
-              show={showErrorAlert}
-              showProgress={false}
-              title="Error"
-              message={errorMessage}
-              closeOnTouchOutside={true}
-              closeOnHardwareBackPress={true}
-              showCancelButton={false}
-              showConfirmButton={true}
-              confirmText="OK"
-              confirmButtonColor="#e23636"
-              onConfirmPressed={() => setShowErrorAlert(false)}
-            />
-            <AwesomeAlert
-              show={showLoadingAlert}
-              showProgress={false}
-              title="Loading ..."
-              closeOnTouchOutside={false}
-              closeOnHardwareBackPress={true}
-              showCancelButton={false}
-              showConfirmButton={false}
-            />
-            <AwesomeAlert
               show={showDeleteAlert}
               showProgress={false}
               title="Are you sure?"
@@ -357,7 +317,7 @@ const Crud = ({ navigation }) => {
               onCancelPressed={() => setShowDeleteAlert(false)}
               onConfirmPressed={() => {
                 setShowDeleteAlert(false);
-                setShowLoadingAlert(true);
+                showAlert('', 'loading');
                 {showCrud === '1' && (
                   fetch(`https://turismap-backend-python.onrender.com/delete_user/${userIdToDelete}`, {
                     method: 'DELETE',
@@ -367,23 +327,19 @@ const Crud = ({ navigation }) => {
                   })
                   .then(response => {
                     if (response.ok) {
-                      setShowLoadingAlert(false);
+                      hideAlert();
                       setData(DATA.filter(user => user._id !== userIdToDelete)); 
-                      setAlertMessage('The user has been deleted');
-                      setShowAlert(true);
-                      setShowLoadingAlert(false)
+                      showAlert('The user has been deleted', 'succes');
                     } else {
-                      setShowLoadingAlert(false);
+                      hideAlert();
                       console.error('Error deleting user:', response.statusText);
-                      setErrorMessage('There seems to be an error trying to delete the user');
-                      setShowErrorAlert(true);
+                      showAlert('There seems to be an error trying to delete the user', 'error');
                     }
                   })
                   .catch(error => {
-                    setShowLoadingAlert(false);
+                    hideAlert();
                     console.error('Error deleting user:', error);
-                    setErrorMessage('There seems to be an error trying to delete the user');
-                    setShowErrorAlert(true);
+                    showAlert('There seems to be an error trying to delete the user', 'error');
                   })
                 )}
 
@@ -396,23 +352,19 @@ const Crud = ({ navigation }) => {
                   })
                   .then(response => {
                     if (response.ok) {
-                      setShowLoadingAlert(false);
+                      hideAlert();
                       setData(DATA.filter(user => user._id !== userIdToDelete)); 
-                      setAlertMessage('The local has been deleted');
-                      setShowAlert(true);
-                      setShowLoadingAlert(false)
+                      showAlert('The local has been deleted', 'success');
                     } else {
-                      setShowLoadingAlert(false);
+                      hideAlert();
                       console.error('Error deleting local:', response.statusText);
-                      setErrorMessage('There seems to be an error trying to delete the local');
-                      setShowErrorAlert(true);
+                      showAlert('There seems to be an error trying to delete the local', 'error');
                     }
                   })
                   .catch(error => {
-                    setShowLoadingAlert(false);
+                    hideAlert();
                     console.error('Error deleting local:', error);
-                    setErrorMessage('There seems to be an error trying to delete the local');
-                    setShowErrorAlert(true);
+                    showAlert('There seems to be an error trying to delete the local', 'error');
                   })
                 )}
               }}

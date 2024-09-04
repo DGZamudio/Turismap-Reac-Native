@@ -2,8 +2,8 @@ import React, { useContext, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, TextInput, Pressable, StyleSheet, Image, ScrollView, Animated } from 'react-native';
 import { Video } from 'expo-av';
-import AwesomeAlert from 'react-native-awesome-alerts';
 import themeContext from '../theme/themeContext';
+import { useAlert } from './Alert';
 
 const LoginScreen = ({ navigation }) => {
     const scaleAnim = new Animated.Value(1);
@@ -40,11 +40,7 @@ const LoginScreen = ({ navigation }) => {
     const [correoUsuario, setCorreoUsuario] = useState("")
     const [contrasenaUsuario, setContrasenaUsuario] = useState("")
 
-    const [showAlert, setShowAlert] = useState(false);
-    const [showLoadingAlert, setShowLoadingAlert] = useState(false);
-    const [showErrorAlert, setShowErrorAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState('')
-    const [errorMessage, setErrorMessage] = useState('')
+    const { showAlert, hideAlert } = useAlert();
 
     const storeData = async (value) => {
         try {
@@ -55,17 +51,15 @@ const LoginScreen = ({ navigation }) => {
       };
 
     const login = () => {
-        setShowLoadingAlert(true)
+        showAlert('alert', 'loading')
         if(correoUsuario === ''){
-            setShowLoadingAlert(false)
-            setErrorMessage('Email cant be empty');
-            setShowErrorAlert(true);      
+            hideAlert()
+            showAlert('Email cant be empty', 'error');
         }
         else {
             if(contrasenaUsuario === ''){
-                setShowLoadingAlert(false)
-                setErrorMessage('Pasword cant be empty');
-                setShowErrorAlert(true);      
+                hideAlert()
+                showAlert('Pasword cant be empty', 'error');    
             }
             else {
                 if(regexCorreo.test(correoUsuario)){
@@ -79,28 +73,24 @@ const LoginScreen = ({ navigation }) => {
                     .then(resp => resp.json())
                     .then(data => {
                         if (data.mensaje === 'Contraseña incorrecta') {
-                            setShowLoadingAlert(false)
-                            setErrorMessage('Invalid password');
-                            setShowErrorAlert(true);
+                            hideAlert()
+                            showAlert('Invalid password', 'error');
                         }
                         else {
                             if (data.access_token) {
-                                setShowLoadingAlert(false)
-                                setAlertMessage('User was logged succesfully')
+                                hideAlert()
+                                showAlert('User was logged succesfully', 'succes')
                                 storeData(data.access_token)
-                                setShowAlert(true)
                                 navigation.navigate('Redirect')
                           } else {
-                            setShowLoadingAlert(false)
-                            setErrorMessage('Login failed try again');
-                            setShowErrorAlert(true);
+                            hideAlert()
+                            showAlert('Login failed try again', 'error');
                           }
                         }
                     })
                     .catch(error => {
-                        setShowLoadingAlert(false)
-                        setErrorMessage('There was an error logging in');
-                        setShowErrorAlert(true);
+                        hideAlert()
+                        showAlert('There was an error logging in', 'error');
                         console.error('Error:', error);
                       });
                 }
@@ -155,41 +145,6 @@ const LoginScreen = ({ navigation }) => {
                     <Text style={styles.loginText}>Sign up</Text>
                 </Pressable>
             </View>
-            <AwesomeAlert
-              show={showAlert}
-              showProgress={false}
-              title="Success"
-              message={alertMessage}
-              closeOnTouchOutside={true}
-              closeOnHardwareBackPress={true}
-              showCancelButton={false}
-              showConfirmButton={true}
-              confirmText="OK"
-              confirmButtonColor="#00bb00"
-              onConfirmPressed={() => setShowAlert(false)}
-            />
-            <AwesomeAlert
-              show={showErrorAlert}
-              showProgress={false}
-              title="Error"
-              message={errorMessage}
-              closeOnTouchOutside={true}
-              closeOnHardwareBackPress={true}
-              showCancelButton={false}
-              showConfirmButton={true}
-              confirmText="OK"
-              confirmButtonColor="#e23636"
-              onConfirmPressed={() => setShowErrorAlert(false)}
-            />
-            <AwesomeAlert
-              show={showLoadingAlert}
-              showProgress={false}
-              title="Loading ..."
-              closeOnTouchOutside={false}
-              closeOnHardwareBackPress={true}
-              showCancelButton={false}
-              showConfirmButton={false}
-            />
         </ScrollView>
     );
 };

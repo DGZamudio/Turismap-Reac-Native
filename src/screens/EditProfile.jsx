@@ -3,6 +3,7 @@ import React, {useContext, useState} from 'react'
 import { CommonActions } from '@react-navigation/native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import themeContext from '../theme/themeContext';
+import { useAlert } from './Alert';
 
 const EditProfile = ({ route, navigation }) => {
   const scaleAnim = new Animated.Value(1);
@@ -42,14 +43,10 @@ const EditProfile = ({ route, navigation }) => {
   const [oldPass, setOldPass] = useState('')
   const sinCaracteresEspeciales = /^[a-zA-Z0-9]*$/;
 
-  const [showAlert, setShowAlert] = useState(false);
-  const [showLoadingAlert, setShowLoadingAlert] = useState(false);
-  const [showErrorAlert, setShowErrorAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
+  const { showAlert, hideAlert } = useAlert();
 
   const editdata = (id) => {
-    setShowLoadingAlert(true)
+    showAlert('','loading')
     if (nombreUsuario !== '' && sinCaracteresEspeciales.test(nombreUsuario)) {
       fetch(`https://turismap-backend-python.onrender.com/update_user/${id}`, {
         method: 'PUT',
@@ -60,9 +57,8 @@ const EditProfile = ({ route, navigation }) => {
       })
       .then(resp => resp.json())
       .then(data => {
-        setShowLoadingAlert(false)
-        setAlertMessage('The user has been modified correctly')
-        setShowAlert(true)
+        hideAlert()
+        showAlert('The user has been modified correctly', 'success')
         navigation.dispatch(
           CommonActions.reset({
               index: 0,
@@ -71,21 +67,20 @@ const EditProfile = ({ route, navigation }) => {
       );
       })
       .catch(error => {
-        setShowLoadingAlert(false)
-        setErrorMessage('The was an error trying to edit the user')
-        setShowErrorAlert(true)
+        hideAlert()
+        showAlert('The was an error trying to edit the user', 'error')
         console.log(error)
       })
     }
     else{
-      setShowLoadingAlert(false)
-      setErrorMessage('The user cant have special characters in his name')
-      setShowErrorAlert(true)
+      hideAlert()
+      showAlert('The user cant have special characters in his name', 'error')
+      
     }
   }
 
   const editPass = (id) => {
-      setShowLoadingAlert(true)
+      showAlert('', 'loading')
       if (newPass.length >= 8 && newPass !== '') {
         fetch(`https://turismap-backend-python.onrender.com/update_pass/${id}`, {
           method: 'PUT',
@@ -96,10 +91,9 @@ const EditProfile = ({ route, navigation }) => {
         })
         .then(resp => resp.json())
         .then(data => {
-          setShowLoadingAlert(false)
+          hideAlert()
           if (data.mensaje === 'Usuario actualizado exitosamente') {
-            setAlertMessage('The password was modified correctly');
-            setShowAlert(true);
+            showAlert('The password was modified correctly', 'success');
             navigation.dispatch(
               CommonActions.reset({
                   index: 0,
@@ -108,22 +102,19 @@ const EditProfile = ({ route, navigation }) => {
           );
           } else {
               if(data.mensaje === 'La contraseña antigua no es correcta'){
-                setErrorMessage('The password related to this user isnt the one you gived');
-                setShowErrorAlert(true);
+                showAlert('The password related to this user isnt the one you gived', 'error');
               }
           }
         })
         .catch(error => {
-          setShowLoadingAlert(false)
-          setErrorMessage('There was an error trying to edit the user')
-          setShowErrorAlert(true)
+          hideAlert()
+          showAlert('There was an error trying to edit the user', 'error')
           console.log(error)
         });
       } 
       else {
-        setShowLoadingAlert(false)
-        setErrorMessage('The password has to be eight characters')
-        setShowErrorAlert(true) 
+        hideAlert()
+        showAlert('The password has to be eight characters', 'error')  
       }
   }
 
@@ -181,41 +172,6 @@ const EditProfile = ({ route, navigation }) => {
           </Pressable>
         </View>
       </View>
-            <AwesomeAlert
-              show={showAlert}
-              showProgress={false}
-              title="Success"
-              message={alertMessage}
-              closeOnTouchOutside={true}
-              closeOnHardwareBackPress={true}
-              showCancelButton={false}
-              showConfirmButton={true}
-              confirmText="OK"
-              confirmButtonColor="#00bb00"
-              onConfirmPressed={() => setShowAlert(false)}
-            />
-            <AwesomeAlert
-              show={showErrorAlert}
-              showProgress={false}
-              title="Error"
-              message={errorMessage}
-              closeOnTouchOutside={true}
-              closeOnHardwareBackPress={true}
-              showCancelButton={false}
-              showConfirmButton={true}
-              confirmText="OK"
-              confirmButtonColor="#e23636"
-              onConfirmPressed={() => setShowErrorAlert(false)}
-            />
-            <AwesomeAlert
-              show={showLoadingAlert}
-              showProgress={false}
-              title="Loading ..."
-              closeOnTouchOutside={false}
-              closeOnHardwareBackPress={true}
-              showCancelButton={false}
-              showConfirmButton={false}
-            />
     </View>
   );
 };

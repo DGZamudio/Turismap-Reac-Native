@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, TextInput, Pressable, StyleSheet, Image, ScrollView, Animated } from 'react-native';
 import { Video } from 'expo-av';
 import { CommonActions } from '@react-navigation/native';
-import AwesomeAlert from 'react-native-awesome-alerts';
+import { useAlert } from './Alert';
 import themeContext from '../theme/themeContext';
 
 const RegisterScreen = ({ navigation }) => {
@@ -42,11 +42,7 @@ const RegisterScreen = ({ navigation }) => {
   const [contrasenaUsuario, setContrasenaUsuario] = useState("")
   const [contrasenaUsuario2, setContrasenaUsuario2] = useState("")
 
-  const [showAlert, setShowAlert] = useState(false);
-  const [showLoadingAlert, setShowLoadingAlert] = useState(false);
-  const [showErrorAlert, setShowErrorAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
+  const { showAlert, hideAlert } = useAlert();
   const sinCaracteresEspeciales = /^[a-zA-Z0-9]*$/;
   const regexCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -59,7 +55,7 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   const insertData = () => {
-    setShowLoadingAlert(true)
+    showAlert('', 'loading')
     if (contrasenaUsuario != '') {
         if (nombreUsuario != '') {
             if (correoUsuario != '') {
@@ -77,16 +73,14 @@ const RegisterScreen = ({ navigation }) => {
                                   .then(resp => resp.json())
                                   .then(data => {
                                     if (data.mensaje === 'Este usuario ya existe') {
-                                        setShowLoadingAlert(false)
-                                        setErrorMessage('This email is taken')
-                                        setShowErrorAlert(true)
+                                        hideAlert()
+                                        showAlert('This email is taken', 'error')
                                     }
                                     else {
                                         if (data.access_token) {
-                                            setShowLoadingAlert(false)
-                                            setAlertMessage('User was added succesfully')
+                                            hideAlert()
+                                            showAlert('User was added succesfully', 'success')
                                             storeData(data.access_token)
-                                            setShowAlert(true)
                                             navigation.dispatch(
                                                 CommonActions.reset({
                                                     index: 0,
@@ -94,59 +88,50 @@ const RegisterScreen = ({ navigation }) => {
                                                 })
                                             );
                                           } else {
-                                            setShowLoadingAlert(false)
-                                            setErrorMessage('Register failed try again');
-                                            setShowErrorAlert(true);
+                                            hideAlert()
+                                            showAlert('Register failed try again', 'error');
                                           }
                                     }
                                   })
                                   .catch(error => {
-                                      setShowLoadingAlert(false)
-                                      setErrorMessage('There was an error creating the user')
-                                      setShowErrorAlert(true)
-                                      console.log(error)
+                                      hideAlert()
+                                      showAlert('There was an error creating the user', 'error')
+                                      console.error(error)
                                   })
                             }
                             else {
-                                setShowLoadingAlert(false)
-                                setErrorMessage('The email is not valid')
-                                setShowErrorAlert(true)
+                                hideAlert()
+                                showAlert('The email is not valid', 'error')
                             }
                         }
                         else {
-                            setShowLoadingAlert(false)
-                            setErrorMessage('The username cant have special characters')
-                            setShowErrorAlert(true)
+                            hideAlert()
+                            showAlert('The username cant have special characters', 'error')
                         }
                     }
                     else {
-                        setShowLoadingAlert(false)
-                        setErrorMessage('The password has to be 8 or more characters long')
-                        setShowErrorAlert(true)
+                        hideAlert()
+                        showAlert('The password has to be 8 or more characters long', 'error')
                     }
                 }
                 else {
-                    setShowLoadingAlert(false)
-                    setErrorMessage('The passwords arent the same')
-                    setShowErrorAlert(true)
+                    hideAlert()
+                    showAlert('The passwords arent the same', 'error')
                 }
             }
             else {
-                setShowLoadingAlert(false)
-                setErrorMessage('The email cant be empty')
-                setShowErrorAlert(true)
+                hideAlert()
+                showAlert('The email cant be empty', 'error')
             }
         }
         else {
-            setShowLoadingAlert(false)
-            setErrorMessage('The username cant be empty')
-            setShowErrorAlert(true)
+            hideAlert()
+            showAlert('The username cant be empty', 'error')
         }
     } 
     else {
-        setShowLoadingAlert(false)
-        setErrorMessage('The password cant be empty')
-        setShowErrorAlert(true)
+        hideAlert()
+        showAlert('The password cant be empty', 'error')
     }
   }
 
@@ -192,41 +177,6 @@ const RegisterScreen = ({ navigation }) => {
                     <Text style={styles.loginText}>Sign in</Text>
                 </Pressable>
           </View>
-          <AwesomeAlert
-              show={showAlert}
-              showProgress={false}
-              title="Success"
-              message={alertMessage}
-              closeOnTouchOutside={true}
-              closeOnHardwareBackPress={true}
-              showCancelButton={false}
-              showConfirmButton={true}
-              confirmText="OK"
-              confirmButtonColor="#00bb00"
-              onConfirmPressed={() => setShowAlert(false)}
-            />
-            <AwesomeAlert
-              show={showErrorAlert}
-              showProgress={false}
-              title="Error"
-              message={errorMessage}
-              closeOnTouchOutside={true}
-              closeOnHardwareBackPress={true}
-              showCancelButton={false}
-              showConfirmButton={true}
-              confirmText="OK"
-              confirmButtonColor="#e23636"
-              onConfirmPressed={() => setShowErrorAlert(false)}
-            />
-            <AwesomeAlert
-              show={showLoadingAlert}
-              showProgress={false}
-              title="Loading ..."
-              closeOnTouchOutside={false}
-              closeOnHardwareBackPress={true}
-              showCancelButton={false}
-              showConfirmButton={false}
-            />
       </ScrollView>
   );
 };
