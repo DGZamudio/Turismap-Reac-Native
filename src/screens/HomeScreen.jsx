@@ -3,12 +3,15 @@ import { View, StyleSheet, TouchableOpacity, TextInput, Pressable, Text } from '
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MapView, { Polygon, Marker, Polyline } from 'react-native-maps'
 import themeContext from '../theme/themeContext';
+import AwesomeAlert from 'react-native-awesome-alerts';
 import * as Location from 'expo-location';
 import { useAlert } from './Alert';
 
 const HomeScreen = () => {
 
   const theme = useContext(themeContext)
+  const [showUB, setShowUB] = useState(false);
+  const [current, setCurrent] = useState(null);
   const [origin, setOrigin] = useState(null);
   const [destination, setDestination] = useState(null);
   const [routeCoordinates, setRouteCoordinates] = useState([]);
@@ -45,7 +48,8 @@ const HomeScreen = () => {
   };
 
   const selectPointOnMap = (e) => {
-    setOrigin(e.nativeEvent.coordinate);
+    setCurrent(e.nativeEvent.coordinate)
+    setShowUB(true)
   };
   
   const handleSelectDestination = (coordinate) => {
@@ -115,11 +119,11 @@ const HomeScreen = () => {
   }, [])
 
   const fetchRoute = async (origin, destination) => {
-    if (!origin || !destination) return showAlert('There is no origin point please select one', 'error');
+    if (!origin || !destination) return showAlert('There is no origin point please click on the map to select one or use your location', 'error');
     showAlert('', 'loading')
     try {
       const response = await fetch(
-        `https://router.project-osrm.org/route/v1/driving/${origin.longitude},${origin.latitude};${destination.longitude},${destination.latitude}?overview=full&geometries=geojson`
+        `https://router.project-osrm.org/route/v1/foot/${origin.longitude},${origin.latitude};${destination.longitude},${destination.latitude}?overview=full&geometries=geojson`
       );
       const data = await response.json();
 
@@ -162,7 +166,9 @@ const HomeScreen = () => {
             initialRegion={initialRegion}
             onPress={selectPointOnMap}
           >
-          {origin && <Marker coordinate={origin} />}
+          {origin && 
+              <Marker coordinate={origin} />
+          }
           {DATA.map((sitio) => (
             <Marker
               key={sitio._id}
@@ -183,10 +189,19 @@ const HomeScreen = () => {
               strokeWidth={2}
             />
           </MapView>
+          {origin && 
+            <Pressable style={[styles.close1, {backgroundColor: theme.bg2}]} onPress={() => setOrigin(null)}>
+              <AntDesign name="close" size={24} color="red" />
+              <Text style={{color: theme.title}}>Delete origin point</Text>
+            </Pressable>
+          }
           {selectedSite && (
-            <View style={styles.search}>
-              <Text>{selectedSite.nombreSitiosTuristicos}</Text>
-              <Text>{selectedSite.descripcionSitiosTuristicos}</Text>
+            <View style={[styles.selected, {backgroundColor: theme.bg2}]}>
+              <Pressable style={styles.close} onPress={() => setSelectedSite(false)}>
+                <AntDesign name="close" size={24} color="red" />
+              </Pressable>
+              <Text style={[styles.title, {color: theme.title}]}>{selectedSite.nombreSitiosTuristicos}</Text>
+              <Text style={[{color: theme.text}]}>{selectedSite.descripcionSitiosTuristicos}</Text>
               <TouchableOpacity 
                 style={styles.button} 
                 onPress={() => {
@@ -197,10 +212,23 @@ const HomeScreen = () => {
                   setSelectedSite(null);
                 }}
               >
-                <Text style={styles.buttonText}>Elegir destino</Text>
+                <Text style={styles.buttonText}>Select destination</Text>
               </TouchableOpacity>
             </View>
           )}
+          <AwesomeAlert
+            show={showUB}
+            showProgress={false}
+            title="Do you want to set this location your origin?"
+            closeOnTouchOutside={true}
+            closeOnHardwareBackPress={true}
+            showCancelButton={true}
+            showConfirmButton={true}
+            confirmText="I am sure"
+            confirmButtonColor="#00bb00"
+            onCancelPressed={() => setShowUB(false)}
+            onConfirmPressed={() => {setOrigin(current), setShowUB(false)}}
+          />
         </View>
     );
 };
@@ -225,7 +253,33 @@ const styles = StyleSheet.create({
       justifyContent:'space-around',
       borderWidth:3,
       borderColor:'#000',
-      width:'65%'
+      width:'65%',
+      alignItems:'center',
+    },
+    selected: {
+      position:'absolute',
+      zIndex:1,
+      top:'40%',
+      borderRadius:30,
+      padding:'5%',
+      margin:'5%',
+    },
+    title: {
+      textAlign:'center',
+      fontSize:24,
+    },
+    close: {
+      alignItems:'flex-end'
+    },
+    close1: {
+      position:'absolute',
+      zIndex:2,
+      margin:'5%',
+      alignItems:'center',
+      justifyContent:'center',
+      flexDirection:'row',
+      padding:'2%',
+      borderRadius:10,
     },
     searchContent: {
       textAlign:'center',
