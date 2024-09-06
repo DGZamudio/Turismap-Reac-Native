@@ -1,7 +1,7 @@
 import { StyleSheet, TextInput, View, Image, Animated, Pressable, Text } from 'react-native'
 import React, {useContext, useState} from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions } from '@react-navigation/native';
-import AwesomeAlert from 'react-native-awesome-alerts';
 import themeContext from '../theme/themeContext';
 import { useAlert } from './Alert';
 
@@ -37,13 +37,21 @@ const EditProfile = ({ route, navigation }) => {
 
   const theme = useContext(themeContext)
   const { data } = route.params;
-  const [_id] = useState(data._id)
+  const [_id] = useState(data.user_id)
   const [nombreUsuario, setNombreUsuario] = useState(data.nombreUsuario)
   const [newPass, setNewPass] = useState('')
   const [oldPass, setOldPass] = useState('')
   const sinCaracteresEspeciales = /^[a-zA-Z0-9]*$/;
 
   const { showAlert, hideAlert } = useAlert();
+
+  const updateToken = async (newToken) => {
+    try {
+        await AsyncStorage.setItem('token', newToken);
+    } catch (error) {
+        console.error('Error al guardar el nuevo token:', error);
+    }
+  };
 
   const editdata = (id) => {
     showAlert('','loading')
@@ -57,19 +65,20 @@ const EditProfile = ({ route, navigation }) => {
       })
       .then(resp => resp.json())
       .then(data => {
+        updateToken(data.access_token);
         hideAlert()
         showAlert('The user has been modified correctly', 'success')
         navigation.dispatch(
           CommonActions.reset({
               index: 0,
-              routes: [{ name: 'Home' }],
+              routes: [{ name: 'Redirect' }],
           })
       );
       })
       .catch(error => {
         hideAlert()
         showAlert('The was an error trying to edit the user', 'error')
-        console.log(error)
+        console.error(error)
       })
     }
     else{
@@ -109,7 +118,7 @@ const EditProfile = ({ route, navigation }) => {
         .catch(error => {
           hideAlert()
           showAlert('There was an error trying to edit the user', 'error')
-          console.log(error)
+          console.error(error)
         });
       } 
       else {

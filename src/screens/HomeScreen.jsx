@@ -167,7 +167,7 @@ const HomeScreen = () => {
             onPress={selectPointOnMap}
           >
           {origin && 
-              <Marker coordinate={origin} />
+              <Marker coordinate={origin} image={require('../../assets/pin.png')}/>
           }
           {DATA.map((sitio) => (
             <Marker
@@ -190,7 +190,7 @@ const HomeScreen = () => {
             />
           </MapView>
           {origin && 
-            <Pressable style={[styles.close1, {backgroundColor: theme.bg2}]} onPress={() => setOrigin(null)}>
+            <Pressable style={[styles.close1, {backgroundColor: theme.bg2}]} onPress={() => {setOrigin(null), setRouteCoordinates([])}}>
               <AntDesign name="close" size={24} color="red" />
               <Text style={{color: theme.title}}>Delete origin point</Text>
             </Pressable>

@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View, FlatList, ScrollView, Pressable, TextInput } from 'react-native'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import themeContext from '../theme/themeContext';
 import { useAlert } from './Alert';
+import { getData } from '../services/api';
 
 const Crud = ({ navigation }) => {
     const theme = useContext(themeContext)
@@ -16,25 +17,51 @@ const Crud = ({ navigation }) => {
     const { showAlert, hideAlert } = useAlert();
 
     //Cargar data
-    const loadData = () => {
+    useEffect(() => {
+      if (showCrud === '0'){
+        return
+      }
       showAlert('', 'loading')
-      useAlert
-      fetch('https://turismap-backend-python.onrender.com/get_users', {
-        method: 'GET',
+      const url = showCrud === '1'
+          ? '/get_users'
+          : '/get_item';
 
-      })
-      .then((response) => response.json())
+      getData(url)
       .then((data) => {
-        hideAlert()
-        setData(data);
-        setIsLoading(false)
-        showAlert('The data has been succesfully loaded', 'success');
+          hideAlert();
+          setData(data);
+          setIsLoading(false);
+          showAlert('The data has been succesfully loaded', 'success');
       })
       .catch((error) => {
-        hideAlert()
-        console.error('Error al obtener los usuarios:', error);
-        showAlert('There has been an error trying to load the data', 'error')
+          hideAlert();
+          console.error('Error loading data:', error);
+          showAlert('There has been an error trying to load the data', 'error');
       });
+    }, [showCrud]);
+
+    const loadData = () => {
+      if (showCrud === '0'){
+        return
+      }
+      const url = showCrud === '1'
+      ? '/get_users'
+      : showCrud === '2' 
+      ? '/get_item' : '';
+      showAlert('', 'loading')
+      getData(url)
+      .then((data) => {
+          hideAlert();
+          setData(data);
+          setIsLoading(false);
+          showAlert('The data has been succesfully loaded', 'success');
+      })
+      .catch((error) => {
+          hideAlert();
+          console.error('Error loading data:', error);
+          showAlert('There has been an error trying to load the data', 'error');
+      });
+
     }
 
     //Buscar usuario
@@ -54,26 +81,6 @@ const Crud = ({ navigation }) => {
       .catch((error) => {
         hideAlert()
         console.error('Error al obtener los usuarios:', error);
-      });
-    }
-
-    const loadData2 = () => {
-      showAlert('', 'loading')
-      fetch('https://turismap-backend-python.onrender.com/get_item', {
-        method: 'GET',
-
-      })
-      .then((response) => response.json())
-      .then((data) => {
-        hideAlert()
-        setData(data);
-        setIsLoading(false)
-        showAlert('The data has been succesfully loaded', 'success')
-      })
-      .catch((error) => {
-        hideAlert()
-        console.error('Error al obtener los sitios turisticos:', error);
-        showAlert('There has been an error trying to load the data', 'error')
       });
     }
 
@@ -180,7 +187,7 @@ const Crud = ({ navigation }) => {
               <View style={styles.buttons}>
                 <Text style={[styles.title, {color: theme.title, borderBottomColor: theme.title}]}>Users</Text>
                 {showCrud === '0' && (
-                  <Pressable onPress={() => {loadData(); setShowCrud('1')}}>
+                  <Pressable onPress={() => {setShowCrud('1')}}>
                     <AntDesign name="plus" size={24} color={theme.title} />
                   </Pressable>
                 )}
@@ -248,7 +255,7 @@ const Crud = ({ navigation }) => {
               <View style={styles.buttons}>
                 <Text style={[styles.title, {color: theme.title, borderBottomColor: theme.title}]}>Turistic places</Text>
                 {showCrud === '0' && (
-                  <Pressable onPress={() => {loadData2(); setShowCrud('2')}}>
+                  <Pressable onPress={() => {setShowCrud('2')}}>
                     <AntDesign name="plus" size={24} color={theme.title} />
                   </Pressable>
                 )}
@@ -268,7 +275,7 @@ const Crud = ({ navigation }) => {
                     <AntDesign name="adduser" size={24} color="white" />
                   </Pressable>
                   <Pressable style={styles.refresh}>
-                    <AntDesign name="reload1" size={24} color="black" onPress={() => loadData2()} />
+                    <AntDesign name="reload1" size={24} color="black" onPress={() => loadData()} />
                   </Pressable>
                   <View style={styles.search}>          
                     <TextInput placeholder='Search' style={styles.searchContent} onChangeText={text => setSearch(text)}/>
@@ -297,7 +304,7 @@ const Crud = ({ navigation }) => {
                     data={DATA}
                     renderItem={({ item }) => <Item2 _id={item._id} nombreSitiosTuristicos={item.nombreSitiosTuristicos} estadoSitiosTuristicos={item.estadoSitiosTuristicos}/>}
                     keyExtractor={item => item._id}
-                    onRefresh={() => loadData2()}
+                    onRefresh={() => loadData()}
                     refreshing = {loading}
                 />
               </>

@@ -1,8 +1,10 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useContext, useCallback, useEffect } from 'react';
 import { createDrawerNavigator, DrawerItemList } from '@react-navigation/drawer';
+import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import Entypo from '@expo/vector-icons/Entypo';
 import HomeScreen from './HomeScreen';
 import EditProfile from './EditProfile';
 import Login from './LoginScreen'
@@ -13,6 +15,7 @@ import { EventRegister } from 'react-native-event-listeners';
 import themeContext from '../theme/themeContext';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { useAlert } from './Alert';
+import Preferences from './Preferences';
 
 const Drawer = createDrawerNavigator();
 
@@ -52,8 +55,14 @@ function DrawerNavigator() {
   }
 
   useEffect(() => {
-    getData()
+    getData();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      getData();
+    }, [])
+);
 
   return (
     <Drawer.Navigator initialRouteName="Home"
@@ -96,7 +105,7 @@ function DrawerNavigator() {
                   marginTop: '3%',
                   color: theme.title,
                 }}>{userData.sub.nombreUsuario}</Text>
-                  <Pressable onPress={() => singOut()} style={{
+                  <Pressable onPress={() => {singOut()}} style={{
                     borderRadius:5,
                     backgroundColor:'#c13636',
                     flexDirection:'row',
@@ -164,6 +173,14 @@ function DrawerNavigator() {
             drawerIcon: () => (
               <AntDesign name="user" size={24} color={theme.title} />
             )
+          }}
+        />
+        <Drawer.Screen name="Preferences" component={Preferences} initialParams={{ data: userData.sub }  } 
+          options={{
+            title: 'User Preferences',
+            drawerIcon: () => (
+              <Entypo name="add-to-list" size={24} color={theme.title} />
+            ),
           }}
         />
       { userData.sub.rolUsuario === '2' && (

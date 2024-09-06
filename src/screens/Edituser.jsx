@@ -1,7 +1,7 @@
 import { StyleSheet, TextInput, View, Image, Animated, Pressable, Text } from 'react-native'
 import React, {useState, useContext} from 'react'
-import AwesomeAlert from 'react-native-awesome-alerts';
 import themeContext from '../theme/themeContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAlert } from './Alert';
 
 const EditUser = ({ route, navigation }) => {
@@ -43,6 +43,14 @@ const EditUser = ({ route, navigation }) => {
 
   const { showAlert, hideAlert } = useAlert();
 
+  const updateToken = async (newToken) => {
+    try {
+        await AsyncStorage.setItem('token', newToken);
+    } catch (error) {
+        console.error('Error al guardar el nuevo token:', error);
+    }
+  };
+
   const editdata = (id) => {
     showAlert('','loading')
     if (nombreUsuario !== '' && sinCaracteresEspeciales.test(nombreUsuario)) {
@@ -55,12 +63,13 @@ const EditUser = ({ route, navigation }) => {
       })
       .then(resp => resp.json())
       .then(data => {
+        updateToken(data.access_token);
         hideAlert()
         showAlert('The user has been modified correctly', 'success')
         navigation.dispatch(
           CommonActions.reset({
               index: 0,
-              routes: [{ name: 'Home' }],
+              routes: [{ name: 'Redirect' }],
           })
       );
       })
