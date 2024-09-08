@@ -28,13 +28,11 @@ const Crud = ({ navigation }) => {
 
       getData(url)
       .then((data) => {
-          hideAlert();
           setData(data);
           setIsLoading(false);
           showAlert('The data has been succesfully loaded', 'success');
       })
       .catch((error) => {
-          hideAlert();
           console.error('Error loading data:', error);
           showAlert('There has been an error trying to load the data', 'error');
       });
@@ -51,13 +49,11 @@ const Crud = ({ navigation }) => {
       showAlert('', 'loading')
       getData(url)
       .then((data) => {
-          hideAlert();
           setData(data);
           setIsLoading(false);
           showAlert('The data has been succesfully loaded', 'success');
       })
       .catch((error) => {
-          hideAlert();
           console.error('Error loading data:', error);
           showAlert('There has been an error trying to load the data', 'error');
       });
@@ -334,17 +330,14 @@ const Crud = ({ navigation }) => {
                   })
                   .then(response => {
                     if (response.ok) {
-                      hideAlert();
                       setData(DATA.filter(user => user._id !== userIdToDelete)); 
                       showAlert('The user has been deleted', 'succes');
                     } else {
-                      hideAlert();
                       console.error('Error deleting user:', response.statusText);
                       showAlert('There seems to be an error trying to delete the user', 'error');
                     }
                   })
                   .catch(error => {
-                    hideAlert();
                     console.error('Error deleting user:', error);
                     showAlert('There seems to be an error trying to delete the user', 'error');
                   })
@@ -359,17 +352,14 @@ const Crud = ({ navigation }) => {
                   })
                   .then(response => {
                     if (response.ok) {
-                      hideAlert();
                       setData(DATA.filter(user => user._id !== userIdToDelete)); 
                       showAlert('The local has been deleted', 'success');
                     } else {
-                      hideAlert();
                       console.error('Error deleting local:', response.statusText);
                       showAlert('There seems to be an error trying to delete the local', 'error');
                     }
                   })
                   .catch(error => {
-                    hideAlert();
                     console.error('Error deleting local:', error);
                     showAlert('There seems to be an error trying to delete the local', 'error');
                   })

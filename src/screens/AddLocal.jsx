@@ -1,11 +1,12 @@
 import React, {useContext, useState} from 'react'
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, Animated, FlatList } from 'react-native';
 import { Video } from 'expo-av';
-import AwesomeAlert from 'react-native-awesome-alerts';
 import themeContext from '../theme/themeContext';
 import { RadioButton } from 'react-native-paper';
+import { useAlert } from './Alert';
+import { sendData } from '../services/api';
 
-const AddLocal = ({ navigation }) => {
+const AddLocal = () => {
   const scaleAnim = new Animated.Value(1);
   const shadowAnim = new Animated.Value(0.2);
 
@@ -43,11 +44,7 @@ const AddLocal = ({ navigation }) => {
   const [horarios, setHorarios] = useState("")
   const [check, setCheck] = useState("0")
 
-  const [showAlert, setShowAlert] = useState(false);
-  const [showLoadingAlert, setShowLoadingAlert] = useState(false);
-  const [showErrorAlert, setShowErrorAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
+  const { showAlert, hideAlert } = useAlert();
   const sinCaracteresEspeciales = /^[a-zA-Z0-9]*$/;
 
   const options = [
@@ -77,26 +74,21 @@ const AddLocal = ({ navigation }) => {
   }
 
   const insertData = () => {
-    setShowLoadingAlert(true)
-    fetch('https://turismap-backend-python.onrender.com/new_item', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({nombreSitiosTuristicos:nombreLocal,descripcionSitiosTuristicos:descripcion,altitudSitiosTuristicos:altitud,latitudSitiosTuristicos:longitud,horariosSitiosTuristicos:horarios,tipoSitiosTuristicos:check, estadoSitiosTuristicos:"1"})
-      })
-      .then(resp => resp.json())
-      .then(data => {
-            setShowLoadingAlert(false)
-            setAlertMessage('Local was added succesfully')
-            setShowAlert(true)
-      })
-      .catch(error => {
-          setShowLoadingAlert(false)
-          setErrorMessage('There was an error creating the local')
-          setShowErrorAlert(true)
-          console.log(error)
-      })
+    showAlert('','loading')
+    if (nombreLocal === '' || descripcion === '' || altitud === '' || longitud === '' || horarios === '' || check === '0') {
+        showAlert('Please fill all the blanks', 'error')
+    }
+    else {
+        sendData('/new_item', {nombreSitiosTuristicos:nombreLocal,descripcionSitiosTuristicos:descripcion,altitudSitiosTuristicos:altitud,latitudSitiosTuristicos:longitud,horariosSitiosTuristicos:horarios,tipoSitiosTuristicos:check, estadoSitiosTuristicos:"1"})
+          .then(resp => resp.json())
+          .then(data => {       
+                showAlert('Local was added succesfully', 'success')
+          })
+          .catch(error => {
+              showAlert('There was an error creating the local', 'error')
+              console.error(error)
+          })
+    }
   }
   
   return (
@@ -140,41 +132,6 @@ const AddLocal = ({ navigation }) => {
                   </Animated.View>
               </Pressable>
           </View>
-          <AwesomeAlert
-              show={showAlert}
-              showProgress={false}
-              title="Success"
-              message={alertMessage}
-              closeOnTouchOutside={true}
-              closeOnHardwareBackPress={true}
-              showCancelButton={false}
-              showConfirmButton={true}
-              confirmText="OK"
-              confirmButtonColor="#00bb00"
-              onConfirmPressed={() => setShowAlert(false)}
-            />
-            <AwesomeAlert
-              show={showErrorAlert}
-              showProgress={false}
-              title="Error"
-              message={errorMessage}
-              closeOnTouchOutside={true}
-              closeOnHardwareBackPress={true}
-              showCancelButton={false}
-              showConfirmButton={true}
-              confirmText="OK"
-              confirmButtonColor="#e23636"
-              onConfirmPressed={() => setShowErrorAlert(false)}
-            />
-            <AwesomeAlert
-              show={showLoadingAlert}
-              showProgress={false}
-              title="Loading ..."
-              closeOnTouchOutside={false}
-              closeOnHardwareBackPress={true}
-              showCancelButton={false}
-              showConfirmButton={false}
-            />
       </ScrollView>
   );
 };

@@ -29,9 +29,6 @@
             body: JSON.stringify(body)
         })
         .then((response) => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
             return response.json();
         })
         .then((data) => {
@@ -52,9 +49,6 @@
             body: JSON.stringify(body)
         })
         .then((response) => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
             return response.json();
         })
         .then((data) => {
@@ -66,7 +60,20 @@
         }) 
     }
     const deleteData = (endpoint) => {
-        
+        const url = `${baseUrl}${endpoint}`;
+        return fetch(url, {
+            method: 'DELETE'
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((data) => {
+            return data;
+        })
+        .catch((e) => {
+            console.error('Fetch error:', e);
+            throw e;
+        })
     }
 
-export { getData, sendData, updateData }
+export { getData, sendData, updateData, deleteData }

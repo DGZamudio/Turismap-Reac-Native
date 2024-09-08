@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import themeContext from '../theme/themeContext';
 
@@ -24,6 +24,10 @@ export const AlertProvider = ({ children }) => {
   const renderAlert = () => {
 
     const theme = useContext(themeContext)
+    
+    useEffect(() => {
+      hideAlert();
+    }, []);
 
     return (
       <AwesomeAlert
@@ -54,7 +58,7 @@ export const AlertProvider = ({ children }) => {
             backgroundColor: theme.bg2, 
             borderRadius: 10,
         }}
-        onConfirmPressed={() => hideAlert}
+        onConfirmPressed={() => hideAlert()}
       />
     );
   };

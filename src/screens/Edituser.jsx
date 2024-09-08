@@ -41,7 +41,7 @@ const EditUser = ({ route, navigation }) => {
   const [oldPass, setOldPass] = useState('')
   const sinCaracteresEspeciales = /^[a-zA-Z0-9]*$/;
 
-  const { showAlert, hideAlert } = useAlert();
+  const { showAlert } = useAlert();
 
   const updateToken = async (newToken) => {
     try {
@@ -64,7 +64,6 @@ const EditUser = ({ route, navigation }) => {
       .then(resp => resp.json())
       .then(data => {
         updateToken(data.access_token);
-        hideAlert()
         showAlert('The user has been modified correctly', 'success')
         navigation.dispatch(
           CommonActions.reset({
@@ -74,13 +73,11 @@ const EditUser = ({ route, navigation }) => {
       );
       })
       .catch(error => {
-        hideAlert()
         showAlert('The was an error trying to edit the user', 'error')
         console.log(error)
       })
     }
     else{
-      hideAlert()
       showAlert('The user cant have special characters in his name', 'error')
       
     }
@@ -98,7 +95,6 @@ const EditUser = ({ route, navigation }) => {
       })
       .then(resp => resp.json())
       .then(data => {
-        hideAlert()
         if (data.mensaje === 'Usuario actualizado exitosamente') {
           showAlert('The password was modified correctly', 'success');
           navigation.dispatch(
@@ -114,13 +110,11 @@ const EditUser = ({ route, navigation }) => {
         }
       })
       .catch(error => {
-        hideAlert()
         showAlert('There was an error trying to edit the user', 'error')
         console.log(error)
       });
     } 
     else {
-      hideAlert()
       showAlert('The password has to be eight characters', 'error')  
     }
 }

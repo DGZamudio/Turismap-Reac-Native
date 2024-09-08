@@ -22,7 +22,7 @@ const Drawer = createDrawerNavigator();
 function DrawerNavigator() {
 
   const theme = useContext(themeContext)
-  const { showAlert, hideAlert } = useAlert();
+  const { showAlert } = useAlert();
   const [userData, setUserData] = useState(null);
   const [logged, setLogged] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
@@ -43,13 +43,11 @@ function DrawerNavigator() {
 
   const singOut = async () => {
     try{
-      hideAlert()
       await AsyncStorage.removeItem('token');
       setLogged(false);
       showAlert('Succesfully logged out', 'success')
     }
     catch (e){
-      hideAlert()
       console.error(e)
       showAlert('There was an error trying to log out try again', 'error')
     }
@@ -58,9 +56,6 @@ function DrawerNavigator() {
   useEffect(() => {
     getData();
   }, []);
-
-  useEffect(() => {
-  }, [logged]);
 
   useFocusEffect(
     useCallback(() => {

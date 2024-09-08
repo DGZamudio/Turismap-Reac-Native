@@ -10,7 +10,7 @@ const Preferences = ({ route, navigation }) => {
     const theme = useContext(themeContext);
     const { data } = route.params;
     const [_id] = useState(data.user_id)
-    const { showAlert, hideAlert } = useAlert()
+    const { showAlert } = useAlert()
     const [selectedItems, setSelectedItems] = useState(new Set());
 
     const options = [
@@ -61,7 +61,6 @@ const Preferences = ({ route, navigation }) => {
                     showAlert('', 'loading')
                     updateData(`/addpre/${_id}`, {preferencias:[...selectedItems]})
                     .then((data) => {
-                        hideAlert();
                         showAlert('Preferences set correctly', 'success');
                         navigation.dispatch(
                             CommonActions.reset({
@@ -71,7 +70,6 @@ const Preferences = ({ route, navigation }) => {
                         );
                     })
                     .catch((error) => {
-                        hideAlert();
                         console.error(error);
                         showAlert('there was an error trying to set your preferences try againg', 'error');
                     })

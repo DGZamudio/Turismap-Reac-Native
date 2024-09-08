@@ -4,6 +4,7 @@ import { View, Text, TextInput, Pressable, StyleSheet, Image, ScrollView, Animat
 import { Video } from 'expo-av';
 import themeContext from '../theme/themeContext';
 import { useAlert } from './Alert';
+import { sendData } from '../services/api';
 
 const LoginScreen = ({ navigation }) => {
     const scaleAnim = new Animated.Value(1);
@@ -40,7 +41,7 @@ const LoginScreen = ({ navigation }) => {
     const [correoUsuario, setCorreoUsuario] = useState("")
     const [contrasenaUsuario, setContrasenaUsuario] = useState("")
 
-    const { showAlert, hideAlert } = useAlert();
+    const { showAlert } = useAlert();
 
     const storeData = async (value) => {
         try {
@@ -52,49 +53,24 @@ const LoginScreen = ({ navigation }) => {
 
     const login = () => {
         showAlert('alert', 'loading')
-        if(correoUsuario === ''){
-            hideAlert()
-            showAlert('Email cant be empty', 'error');
+        if (correoUsuario === '' || contrasenaUsuario === ''){
+                showAlert('Please fill all the blanks', 'error')
         }
-        else {
-            if(contrasenaUsuario === ''){
-                hideAlert()
-                showAlert('Pasword cant be empty', 'error');    
-            }
-            else {
-                if(regexCorreo.test(correoUsuario)){
-                    fetch('https://turismap-backend-python.onrender.com/login', {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({correoUsuario:correoUsuario,contrasenaUsuario:contrasenaUsuario})
-                    })
-                    .then(resp => resp.json())
-                    .then(data => {
-                        if (data.mensaje === 'Contraseña incorrecta') {
-                            hideAlert()
-                            showAlert('Invalid password', 'error');
-                        }
-                        else {
-                            if (data.access_token) {
-                                hideAlert()
-                                showAlert('User was logged succesfully', 'succes')
-                                storeData(data.access_token)
-                                navigation.navigate('Redirect')
-                          } else {
-                            hideAlert()
-                            showAlert('Login failed try again', 'error');
-                          }
-                        }
-                    })
-                    .catch(error => {
-                        hideAlert()
-                        showAlert('There was an error logging in', 'error');
-                        console.error('Error:', error);
-                      });
+        if (regexCorreo.test(correoUsuario)){
+            sendData('/login', {correoUsuario:correoUsuario,contrasenaUsuario:contrasenaUsuario})
+            .then(data => {
+                    if (data.access_token) {
+                        showAlert('User was logged succesfully', 'succes')
+                        storeData(data.access_token)
+                        navigation.navigate('Redirect')
+                  } else {
+                        showAlert('Login failed try again', 'error');
                 }
-            }
+            })
+            .catch(error => {
+                showAlert('Wrong credentials', 'error');
+                console.error('Error:', error);
+              });
         }
     }
 

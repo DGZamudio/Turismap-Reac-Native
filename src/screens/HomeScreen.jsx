@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { View, StyleSheet, TouchableOpacity, TextInput, Pressable, Text } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MapView, { Polygon, Marker, Polyline } from 'react-native-maps'
@@ -8,6 +8,7 @@ import * as Location from 'expo-location';
 import { useAlert } from './Alert';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
+import { getData as Get } from '../services/api';
 
 const HomeScreen = () => {
 
@@ -100,17 +101,13 @@ const HomeScreen = () => {
 
   const loadData2 = () => {
     showAlert('', 'loading')
-    fetch('https://turismap-backend-python.onrender.com/get_item', {
-      method: 'GET',
-
-    })
+    Get('/get_item')
     .then((response) => response.json())
     .then((data) => {
       hideAlert()
       setData(data);
     })
     .catch((error) => {
-      hideAlert()
       console.error('Error al obtener los sitios turisticos:', error);
       showAlert('There has been an error trying to load the data', 'error')
     });
@@ -135,9 +132,8 @@ const HomeScreen = () => {
   }
 
   const filter = () => {
-    fetch(`https://turismap-backend-python.onrender.com/filter/${_id}`, {
-      method: 'GET',
-    })
+    showAlert('', 'loading')
+    Get(`/filter/${_id}`)
     .then((response) => response.json())
     .then(data => {
       hideAlert()

@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions } from '@react-navigation/native';
 import themeContext from '../theme/themeContext';
 import { useAlert } from './Alert';
+import { updateData } from '../services/api';
 
 const EditProfile = ({ route, navigation }) => {
   const scaleAnim = new Animated.Value(1);
@@ -43,7 +44,7 @@ const EditProfile = ({ route, navigation }) => {
   const [oldPass, setOldPass] = useState('')
   const sinCaracteresEspeciales = /^[a-zA-Z0-9]*$/;
 
-  const { showAlert, hideAlert } = useAlert();
+  const { showAlert } = useAlert();
 
   const updateToken = async (newToken) => {
     try {
@@ -56,17 +57,10 @@ const EditProfile = ({ route, navigation }) => {
   const editdata = (id) => {
     showAlert('','loading')
     if (nombreUsuario !== '' && sinCaracteresEspeciales.test(nombreUsuario)) {
-      fetch(`https://turismap-backend-python.onrender.com/update_user/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({nombreUsuario:nombreUsuario,estadoUsuario:'1'})
-      })
+      updateData(`/update_user/${id}`, {nombreUsuario:nombreUsuario,estadoUsuario:'1',rolUsuario:data.rolUsuario})
       .then(resp => resp.json())
       .then(data => {
         updateToken(data.access_token);
-        hideAlert()
         showAlert('The user has been modified correctly', 'success')
         navigation.dispatch(
           CommonActions.reset({
@@ -76,31 +70,21 @@ const EditProfile = ({ route, navigation }) => {
       );
       })
       .catch(error => {
-        hideAlert()
         showAlert('The was an error trying to edit the user', 'error')
         console.error(error)
       })
     }
     else{
-      hideAlert()
-      showAlert('The user cant have special characters in his name', 'error')
-      
+      showAlert('The user cant have special characters in his name', 'error')  
     }
   }
 
   const editPass = (id) => {
       showAlert('', 'loading')
       if (newPass.length >= 8 && newPass !== '') {
-        fetch(`https://turismap-backend-python.onrender.com/update_pass/${id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({oldPass:oldPass,contrasenaUsuario:newPass,estadoUsuario:'1',rolUsuario:'1'})
-        })
+        updateData(`/update_pass/${id}`, {oldPass:oldPass,contrasenaUsuario:newPass,estadoUsuario:'1'})
         .then(resp => resp.json())
         .then(data => {
-          hideAlert()
           if (data.mensaje === 'Usuario actualizado exitosamente') {
             showAlert('The password was modified correctly', 'success');
             navigation.dispatch(
@@ -116,13 +100,11 @@ const EditProfile = ({ route, navigation }) => {
           }
         })
         .catch(error => {
-          hideAlert()
           showAlert('There was an error trying to edit the user', 'error')
           console.error(error)
         });
       } 
       else {
-        hideAlert()
         showAlert('The password has to be eight characters', 'error')  
       }
   }

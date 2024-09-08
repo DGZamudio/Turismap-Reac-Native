@@ -5,6 +5,7 @@ import { Video } from 'expo-av';
 import { CommonActions } from '@react-navigation/native';
 import { useAlert } from './Alert';
 import themeContext from '../theme/themeContext';
+import { sendData } from '../services/api';
 
 const RegisterScreen = ({ navigation }) => {
   const scaleAnim = new Animated.Value(1);
@@ -42,7 +43,7 @@ const RegisterScreen = ({ navigation }) => {
   const [contrasenaUsuario, setContrasenaUsuario] = useState("")
   const [contrasenaUsuario2, setContrasenaUsuario2] = useState("")
 
-  const { showAlert, hideAlert } = useAlert();
+  const { showAlert } = useAlert();
   const sinCaracteresEspeciales = /^[a-zA-Z0-9]*$/;
   const regexCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -56,82 +57,54 @@ const RegisterScreen = ({ navigation }) => {
 
   const insertData = () => {
     showAlert('', 'loading')
-    if (contrasenaUsuario != '') {
-        if (nombreUsuario != '') {
-            if (correoUsuario != '') {
-                if (contrasenaUsuario == contrasenaUsuario2 ) {
-                    if (contrasenaUsuario.length >= 8) {
-                        if (sinCaracteresEspeciales.test(nombreUsuario)) {
-                            if (regexCorreo.test(correoUsuario)) {
-                                fetch('https://turismap-backend-python.onrender.com/register', {
-                                    method: 'POST',
-                                    headers: {
-                                      'Content-Type': 'application/json',
-                                    },
-                                    body: JSON.stringify({nombreUsuario:nombreUsuario,correoUsuario:correoUsuario,contrasenaUsuario:contrasenaUsuario,estadoUsuario:'1',rolUsuario:'1'})
-                                  })
-                                  .then(resp => resp.json())
-                                  .then(data => {
-                                    if (data.mensaje === 'Este usuario ya existe') {
-                                        hideAlert()
-                                        showAlert('This email is taken', 'error')
-                                    }
-                                    else {
-                                        if (data.access_token) {
-                                            hideAlert()
-                                            showAlert('User was added succesfully', 'success')
-                                            storeData(data.access_token)
-                                            navigation.dispatch(
-                                                CommonActions.reset({
-                                                    index: 0,
-                                                    routes: [{ name: 'Home' }],
-                                                })
-                                            );
-                                          } else {
-                                            hideAlert()
-                                            showAlert('Register failed try again', 'error');
-                                          }
-                                    }
-                                  })
-                                  .catch(error => {
-                                      hideAlert()
-                                      showAlert('There was an error creating the user', 'error')
-                                      console.error(error)
-                                  })
-                            }
-                            else {
-                                hideAlert()
-                                showAlert('The email is not valid', 'error')
-                            }
-                        }
-                        else {
-                            hideAlert()
-                            showAlert('The username cant have special characters', 'error')
-                        }
-                    }
-                    else {
-                        hideAlert()
-                        showAlert('The password has to be 8 or more characters long', 'error')
-                    }
-                }
-                else {
-                    hideAlert()
-                    showAlert('The passwords arent the same', 'error')
-                }
-            }
-            else {
-                hideAlert()
-                showAlert('The email cant be empty', 'error')
-            }
+    if (nombreUsuario === '' || correoUsuario === '' || contrasenaUsuario === '' || contrasenaUsuario2 === '') {
+        showAlert('Please fill all the blanks', 'error')
+    }
+    else {
+        if (contrasenaUsuario.length < 8) {
+            showAlert('The password has to be 8 or more characters long', 'error')
         }
         else {
-            hideAlert()
-            showAlert('The username cant be empty', 'error')
+            if (contrasenaUsuario !== contrasenaUsuario2 ) {
+                showAlert('The passwords arent the same', 'error')
+            }
+            else {
+                if (!sinCaracteresEspeciales.test(nombreUsuario)) {
+                    showAlert('The username cant have special characters', 'error')
+                }
+                else {
+                    if (!regexCorreo.test(correoUsuario)) {
+                        showAlert('The email is not valid', 'error')
+                    }
+                    else {
+                        sendData('/register', {nombreUsuario:nombreUsuario,correoUsuario:correoUsuario,contrasenaUsuario:contrasenaUsuario,estadoUsuario:'1',rolUsuario:'1'})
+                        .then(data => {
+                            if (data.mensaje === 'Este usuario ya existe') {
+                                showAlert('This email is taken', 'error')
+                            }
+                            else {
+                                if (data.access_token) {
+                                    showAlert('User was added succesfully', 'success')
+                                    storeData(data.access_token)
+                                    navigation.dispatch(
+                                        CommonActions.reset({
+                                            index: 0,
+                                            routes: [{ name: 'Home' }],
+                                        })
+                                    );
+                                  } else {
+                                    showAlert('Register failed try again', 'error');
+                                  }
+                            }
+                          })
+                          .catch(error => {
+                              showAlert('There was an error creating the user', 'error')
+                              console.error(error)
+                          })
+                    }
+                }
+            }
         }
-    } 
-    else {
-        hideAlert()
-        showAlert('The password cant be empty', 'error')
     }
   }
 
