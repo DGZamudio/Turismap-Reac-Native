@@ -4,7 +4,6 @@ import themeContext from '../theme/themeContext'
 import { ScrollView } from 'react-native-gesture-handler';
 import { updateData } from '../services/api';
 import { useAlert } from './Alert';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions } from '@react-navigation/native';
 
 const Preferences = ({ route, navigation }) => {
@@ -35,14 +34,6 @@ const Preferences = ({ route, navigation }) => {
         });
     };
 
-    const updateToken = async (newToken) => {
-        try {
-            await AsyncStorage.setItem('token', newToken);
-        } catch (error) {
-            console.error('Error al guardar el nuevo token:', error);
-        }
-    };
-
     const renderItem = ({item}) => (        
         <Pressable style={[styles.preferences, selectedItems.has(item.id) && styles.selected]} onPress={() => toggleSelection(item.id)}>
             <Image source={item.image} style={styles.img}/>
@@ -70,7 +61,6 @@ const Preferences = ({ route, navigation }) => {
                     showAlert('', 'loading')
                     updateData(`/addpre/${_id}`, {preferencias:[...selectedItems]})
                     .then((data) => {
-                        updateToken(data.access_token);
                         hideAlert();
                         showAlert('Preferences set correctly', 'success');
                         navigation.dispatch(

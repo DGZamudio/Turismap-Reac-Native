@@ -132,13 +132,9 @@ const HomeScreen = () => {
     }
   };
 
-  const filter = (pref) => {
-    fetch(`https://turismap-backend-python.onrender.com/filter`, {
+  const filter = () => {
+    fetch(`https://turismap-backend-python.onrender.com/filter/${_id}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({preferencias:pref})
     })
     .then((response) => response.json())
     .then(data => {
