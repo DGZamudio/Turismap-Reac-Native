@@ -61,7 +61,7 @@ const EditProfile = ({ route, navigation }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({nombreUsuario:nombreUsuario,estadoUsuario:'1',rolUsuario:'1'})
+        body: JSON.stringify({nombreUsuario:nombreUsuario,estadoUsuario:'1'})
       })
       .then(resp => resp.json())
       .then(data => {

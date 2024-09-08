@@ -1,16 +1,21 @@
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
 import { View, StyleSheet, TouchableOpacity, TextInput, Pressable, Text } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MapView, { Polygon, Marker, Polyline } from 'react-native-maps'
 import themeContext from '../theme/themeContext';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import * as Location from 'expo-location';
+import { useFocusEffect } from '@react-navigation/native';
 import { useAlert } from './Alert';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { jwtDecode } from 'jwt-decode';
 
 const HomeScreen = () => {
 
   const theme = useContext(themeContext)
   const [showUB, setShowUB] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [logged, setLogged] = useState(false);
   const [current, setCurrent] = useState(null);
   const [origin, setOrigin] = useState(null);
   const [destination, setDestination] = useState(null);
@@ -114,9 +119,45 @@ const HomeScreen = () => {
     });
   }
 
+  const getData = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        const decoded = jwtDecode(token);
+        setUserData(decoded);
+        setLogged(true)
+      }
+    } catch (e) {
+      console.error('Error decoding token:', e);
+    }
+  };
+
+  const filter = (pref) => {
+    fetch(`https://turismap-backend-python.onrender.com/filter`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({preferencias:pref})
+    })
+    .then((response) => response.json())
+    .then(data => {
+      console.log('preferencias:',pref,' data:', data)
+      hideAlert()
+      setData(data)
+    })
+  }
+
   useEffect(() => {
     loadData2()
+    getData()
   }, [])
+
+  useFocusEffect(
+    useCallback(() => {
+      getData();
+    }, [])
+);
 
   const fetchRoute = async (origin, destination) => {
     if (!origin || !destination) return showAlert('There is no origin point please click on the map to select one or use your location', 'error');
@@ -155,6 +196,14 @@ const HomeScreen = () => {
               <AntDesign name="reload1" size={24} color="black" onPress={() => loadData2()} />
             </Pressable>
           </View>
+          { logged && (
+            <View style={[styles.filter, {backgroundColor:theme.bg1}]}>
+              <Pressable onPress={() => filter(userData.sub.preferencias)} style={{flexDirection:'row',justifyContent:'center',alignItems:'center',}}>
+                <AntDesign name="question" size={24} color={theme.title} />
+                <Text style={{color:theme.title}}>You may like these places</Text>
+              </Pressable>
+            </View>
+          )}
           <MapView
             ref={mapRef}
             style={styles.map}
@@ -255,6 +304,13 @@ const styles = StyleSheet.create({
       borderColor:'#000',
       width:'65%',
       alignItems:'center',
+    },
+    filter:{
+      position:'absolute',
+      zIndex:1,
+      margin: '5%',
+      borderRadius:5,
+      padding:5
     },
     selected: {
       position:'absolute',

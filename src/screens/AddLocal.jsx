@@ -1,8 +1,9 @@
 import React, {useContext, useState} from 'react'
-import { View, Text, TextInput, Pressable, StyleSheet, Image, ScrollView, Animated } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, Animated, FlatList } from 'react-native';
 import { Video } from 'expo-av';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import themeContext from '../theme/themeContext';
+import { RadioButton } from 'react-native-paper';
 
 const AddLocal = ({ navigation }) => {
   const scaleAnim = new Animated.Value(1);
@@ -40,6 +41,7 @@ const AddLocal = ({ navigation }) => {
   const [altitud, setAltitud] = useState("")
   const [longitud, setLongitud] = useState("")
   const [horarios, setHorarios] = useState("")
+  const [check, setCheck] = useState("0")
 
   const [showAlert, setShowAlert] = useState(false);
   const [showLoadingAlert, setShowLoadingAlert] = useState(false);
@@ -48,6 +50,32 @@ const AddLocal = ({ navigation }) => {
   const [errorMessage, setErrorMessage] = useState('')
   const sinCaracteresEspeciales = /^[a-zA-Z0-9]*$/;
 
+  const options = [
+    { id:"1", title:'Historical Heritage'},
+    { id:"2", title:'Art'},
+    { id:"3", title:'Museums and galleries'},
+    { id:"4", title:'Literature'},
+    { id:"5", title:'Performing arts'},
+    { id:"6", title:'Iconic places'}
+    ]
+
+  const renderCheck = ({item}) => {
+    return(
+        <>
+        <View style={{backgroundColor:'#2020208a', flexDirection:'row', borderRadius:20, width:'95%'}}>
+            <RadioButton
+                value={item.id}
+                status={ check === item.id ? 'checked' : 'unchecked' }
+                onPress={() => setCheck(item.id)}
+                color='#FFF'
+                uncheckedColor='#FFF'
+            />
+            <Text style={styles.input2}>{item.title}</Text>
+        </View>
+        </>
+    )
+  }
+
   const insertData = () => {
     setShowLoadingAlert(true)
     fetch('https://turismap-backend-python.onrender.com/new_item', {
@@ -55,7 +83,7 @@ const AddLocal = ({ navigation }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({nombreSitiosTuristicos:nombreLocal,descripcionSitiosTuristicos:descripcion,altitudSitiosTuristicos:altitud,latitudSitiosTuristicos:longitud,horariosSitiosTuristicos:horarios, estadoSitiosTuristicos:"1"})
+        body: JSON.stringify({nombreSitiosTuristicos:nombreLocal,descripcionSitiosTuristicos:descripcion,altitudSitiosTuristicos:altitud,latitudSitiosTuristicos:longitud,horariosSitiosTuristicos:horarios,tipoSitiosTuristicos:check, estadoSitiosTuristicos:"1"})
       })
       .then(resp => resp.json())
       .then(data => {
@@ -70,7 +98,7 @@ const AddLocal = ({ navigation }) => {
           console.log(error)
       })
   }
-
+  
   return (
       <ScrollView contentContainerStyle={styles.container}>
           <Video
@@ -83,12 +111,16 @@ const AddLocal = ({ navigation }) => {
           />
           <View style={styles.card}>
               <Text style={styles.title}>Turismap</Text>
-              <Image source={require('../../assets/Turismap Logo Minimalist.png')} style={styles.logo} />
               <TextInput placeholder="Local name" style={styles.input} placeholderTextColor="#f8f9fa" value={nombreLocal} onChangeText = {text => setNombreLocal(text)}/>
               <TextInput placeholder="Description" style={styles.description} placeholderTextColor="#f8f9fa" value={descripcion} onChangeText = {text => setDescripcion(text)}/>
               <TextInput placeholder="Altitude" style={styles.input} placeholderTextColor="#f8f9fa" value={altitud} onChangeText = {text => setAltitud(text)}/>
               <TextInput placeholder="Longitude" style={styles.input} placeholderTextColor="#f8f9fa" value={longitud} onChangeText = {text => setLongitud(text)}/>
               <TextInput placeholder="Opens & closes at" style={styles.input} placeholderTextColor="#f8f9fa" value={horarios} onChangeText = {text => setHorarios(text)}/>
+              <FlatList
+                data={options}
+                renderItem={renderCheck}
+                keyExtractor={(item) => item.id}
+              />
               <Pressable
                   onPress={() => insertData()}
                   onPressIn={handlePressIn}
@@ -176,12 +208,6 @@ const styles = StyleSheet.create({
       marginBottom: 10,
       color: '#f8f9fa',
   },
-  logo: {
-      width: 100,
-      height: 100,
-      aspectRatio: 1,
-      marginBottom: 20,
-  },
   input: {
       backgroundColor: 'transparent',       
       borderBottomColor: '#fff',
@@ -192,13 +218,20 @@ const styles = StyleSheet.create({
       marginBottom: 10,
       color: '#f8f9fa',
   },
+  input2: {
+    backgroundColor: 'transparent',       
+    width: '100%',
+    padding: 10,
+    marginBottom: 10,
+    color: '#f8f9fa',
+},
   description: {
     backgroundColor: 'transparent',       
     borderBottomColor: '#fff',
     borderBottomWidth: 1,
     borderRadius: 15,
     width: '100%',
-    height: '30%',
+    height: '10%',
     padding: 10,
     marginBottom: 10,
     color: '#f8f9fa',

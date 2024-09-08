@@ -54,7 +54,7 @@ export const AlertProvider = ({ children }) => {
             backgroundColor: theme.bg2, 
             borderRadius: 10,
         }}
-        onConfirmPressed={hideAlert}
+        onConfirmPressed={() => hideAlert}
       />
     );
   };

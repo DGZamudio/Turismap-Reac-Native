@@ -15,12 +15,12 @@ const Preferences = ({ route, navigation }) => {
     const [selectedItems, setSelectedItems] = useState(new Set());
 
     const options = [
-        { id:1, title:'Historical Heritage', image: require('../../assets/pfp.jpg')},
-        { id:2, title:'Art', image: require('../../assets/pfp.jpg')},
-        { id:3, title:'Museums and galleries', image: require('../../assets/pfp.jpg')},
-        { id:4, title:'Literature', image: require('../../assets/pfp.jpg')},
-        { id:5, title:'Performing arts', image: require('../../assets/pfp.jpg')},
-        { id:6, title:'Iconic places', image: require('../../assets/pfp.jpg')}
+        { id:"1", title:'Historical Heritage', image: require('../../assets/pfp.jpg')},
+        { id:"2", title:'Art', image: require('../../assets/pfp.jpg')},
+        { id:"3", title:'Museums and galleries', image: require('../../assets/pfp.jpg')},
+        { id:"4", title:'Literature', image: require('../../assets/pfp.jpg')},
+        { id:"5", title:'Performing arts', image: require('../../assets/pfp.jpg')},
+        { id:"6", title:'Iconic places', image: require('../../assets/pfp.jpg')}
     ]
 
     const toggleSelection = (id) => {
