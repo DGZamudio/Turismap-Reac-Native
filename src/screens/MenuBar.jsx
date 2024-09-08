@@ -37,6 +37,7 @@ function DrawerNavigator() {
       }
     } catch (e) {
       console.error('Error decoding token:', e);
+      setLogged(false);
     }
   };
 
@@ -57,6 +58,9 @@ function DrawerNavigator() {
   useEffect(() => {
     getData();
   }, []);
+
+  useEffect(() => {
+  }, [logged]);
 
   useFocusEffect(
     useCallback(() => {
@@ -157,14 +161,14 @@ function DrawerNavigator() {
       }
     }    
     >
-    <Drawer.Screen name="Home" component={HomeScreen}     
+        <Drawer.Screen name="Home" component={HomeScreen} 
           options={{
             title: 'Map',
             drawerIcon: () => (
               <AntDesign name="home" size={24} color={theme.title} />
             ),
           }}
-    />
+        />
     { logged ? (
       <>
         <Drawer.Screen name="EditProfile" component={EditProfile} initialParams={{ data: userData.sub }}

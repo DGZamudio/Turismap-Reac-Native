@@ -5,7 +5,6 @@ import MapView, { Polygon, Marker, Polyline } from 'react-native-maps'
 import themeContext from '../theme/themeContext';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import * as Location from 'expo-location';
-import { useFocusEffect } from '@react-navigation/native';
 import { useAlert } from './Alert';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
@@ -14,7 +13,7 @@ const HomeScreen = () => {
 
   const theme = useContext(themeContext)
   const [showUB, setShowUB] = useState(false);
-  const [userData, setUserData] = useState(null);
+  const [_id, set_id] = useState(null);
   const [logged, setLogged] = useState(false);
   const [current, setCurrent] = useState(null);
   const [origin, setOrigin] = useState(null);
@@ -26,6 +25,22 @@ const HomeScreen = () => {
   const [search, setSearch] = useState("");
   const { showAlert, hideAlert } = useAlert();
   const [selectedSite, setSelectedSite] = useState(null);
+
+
+  const getData = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        const decoded = jwtDecode(token);
+        id = decoded.sub.user_id;
+        set_id(id)
+        setLogged(true)
+      }
+    } catch (e) {
+      console.error('Error decoding token:', e);
+      setLogged(false);
+    }
+  };
 
   const initialRegion = {
     latitude: 4.597841,
@@ -119,41 +134,21 @@ const HomeScreen = () => {
     });
   }
 
-  const getData = async () => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      if (token) {
-        const decoded = jwtDecode(token);
-        setUserData(decoded);
-        setLogged(true)
-      }
-    } catch (e) {
-      console.error('Error decoding token:', e);
-    }
-  };
-
   const filter = () => {
     fetch(`https://turismap-backend-python.onrender.com/filter/${_id}`, {
-      method: 'POST',
+      method: 'GET',
     })
     .then((response) => response.json())
     .then(data => {
-      console.log('preferencias:',pref,' data:', data)
       hideAlert()
       setData(data)
     })
   }
 
   useEffect(() => {
-    loadData2()
     getData()
+    loadData2()
   }, [])
-
-  useFocusEffect(
-    useCallback(() => {
-      getData();
-    }, [])
-);
 
   const fetchRoute = async (origin, destination) => {
     if (!origin || !destination) return showAlert('There is no origin point please click on the map to select one or use your location', 'error');
@@ -194,7 +189,7 @@ const HomeScreen = () => {
           </View>
           { logged && (
             <View style={[styles.filter, {backgroundColor:theme.bg1}]}>
-              <Pressable onPress={() => filter(userData.sub.preferencias)} style={{flexDirection:'row',justifyContent:'center',alignItems:'center',}}>
+              <Pressable onPress={() => filter()} style={{flexDirection:'row',justifyContent:'center',alignItems:'center',}}>
                 <AntDesign name="question" size={24} color={theme.title} />
                 <Text style={{color:theme.title}}>You may like these places</Text>
               </Pressable>
