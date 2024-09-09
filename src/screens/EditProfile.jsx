@@ -58,7 +58,6 @@ const EditProfile = ({ route, navigation }) => {
     showAlert('','loading')
     if (nombreUsuario !== '' && sinCaracteresEspeciales.test(nombreUsuario)) {
       updateData(`/update_user/${id}`, {nombreUsuario:nombreUsuario,estadoUsuario:'1',rolUsuario:data.rolUsuario})
-      .then(resp => resp.json())
       .then(data => {
         updateToken(data.access_token);
         showAlert('The user has been modified correctly', 'success')
@@ -83,7 +82,6 @@ const EditProfile = ({ route, navigation }) => {
       showAlert('', 'loading')
       if (newPass.length >= 8 && newPass !== '') {
         updateData(`/update_pass/${id}`, {oldPass:oldPass,contrasenaUsuario:newPass,estadoUsuario:'1'})
-        .then(resp => resp.json())
         .then(data => {
           if (data.mensaje === 'Usuario actualizado exitosamente') {
             showAlert('The password was modified correctly', 'success');

@@ -80,7 +80,6 @@ const AddLocal = () => {
     }
     else {
         sendData('/new_item', {nombreSitiosTuristicos:nombreLocal,descripcionSitiosTuristicos:descripcion,altitudSitiosTuristicos:altitud,latitudSitiosTuristicos:longitud,horariosSitiosTuristicos:horarios,tipoSitiosTuristicos:check, estadoSitiosTuristicos:"1"})
-          .then(resp => resp.json())
           .then(data => {       
                 showAlert('Local was added succesfully', 'success')
           })
