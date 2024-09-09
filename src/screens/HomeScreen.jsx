@@ -102,7 +102,6 @@ const HomeScreen = () => {
   const loadData2 = () => {
     showAlert('', 'loading')
     Get('/get_item')
-    .then((response) => response.json())
     .then((data) => {
       hideAlert()
       setData(data);
@@ -134,7 +133,6 @@ const HomeScreen = () => {
   const filter = () => {
     showAlert('', 'loading')
     Get(`/filter/${_id}`)
-    .then((response) => response.json())
     .then(data => {
       hideAlert()
       setData(data)
@@ -263,6 +261,10 @@ const HomeScreen = () => {
             confirmText="I am sure"
             confirmButtonColor="#00bb00"
             onCancelPressed={() => setShowUB(false)}
+            contentContainerStyle={{
+              backgroundColor: theme.bg2, 
+              borderRadius: 10,
+            }}
             onConfirmPressed={() => {setOrigin(current), setShowUB(false)}}
           />
         </View>
