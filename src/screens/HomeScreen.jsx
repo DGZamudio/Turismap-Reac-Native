@@ -18,7 +18,6 @@ const HomeScreen = () => {
   const [logged, setLogged] = useState(false);
   const [current, setCurrent] = useState(null);
   const [origin, setOrigin] = useState(null);
-  const [destination, setDestination] = useState(null);
   const [routeCoordinates, setRouteCoordinates] = useState([]);
   const mapRef = useRef(null);
   const [region, setRegion] = useState(initialRegion);
@@ -74,8 +73,7 @@ const HomeScreen = () => {
   };
   
   const handleSelectDestination = (coordinate) => {
-    setDestination(coordinate);
-    fetchRoute(origin, destination)
+    fetchRoute(origin, coordinate)
   };
 
   const polygonCoordinates = [
@@ -145,27 +143,32 @@ const HomeScreen = () => {
   }, [])
 
   const fetchRoute = async (origin, destination) => {
-    if (!origin || !destination) return showAlert('There is no origin point please click on the map to select one or use your location', 'error');
-    showAlert('', 'loading')
+    setRouteCoordinates([]);
+    if (!origin || !destination) {
+      return showAlert('There is no origin point. Please click on the map to select one or use your location.', 'error');
+    }
+  
+    showAlert('', 'loading');
+  
     try {
       const response = await fetch(
         `https://router.project-osrm.org/route/v1/foot/${origin.longitude},${origin.latitude};${destination.longitude},${destination.latitude}?overview=full&geometries=geojson`
       );
       const data = await response.json();
-
+  
       if (data.routes && data.routes.length > 0) {
-        hideAlert()
-        const route = data.routes[0].geometry.coordinates.map(([longitude, latitude]) => ({
+        hideAlert();
+        const newRoute = data.routes[0].geometry.coordinates.map(([longitude, latitude]) => ({
           latitude,
           longitude,
         }));
-        setRouteCoordinates(route);
+        setRouteCoordinates(newRoute);
       } else {
-        hideAlert()
+        hideAlert();
         console.error('No se encontraron rutas');
       }
     } catch (error) {
-      hideAlert()
+      hideAlert();
       console.error('Error al obtener la ruta:', error);
     }
   };
