@@ -2,6 +2,7 @@ import React, {useContext, useState} from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, TextInput, Pressable, StyleSheet, Image, ScrollView, Animated } from 'react-native';
 import { Video } from 'expo-av';
+import { Checkbox } from 'react-native-paper';
 import { CommonActions } from '@react-navigation/native';
 import { useAlert } from './Alert';
 import themeContext from '../theme/themeContext';
@@ -42,6 +43,7 @@ const RegisterScreen = ({ navigation }) => {
   const [correoUsuario, setCorreoUsuario] = useState("")
   const [contrasenaUsuario, setContrasenaUsuario] = useState("")
   const [contrasenaUsuario2, setContrasenaUsuario2] = useState("")
+  const [acceptTerms, setAcceptTerms] = useState(false);
 
   const { showAlert } = useAlert();
   const sinCaracteresEspeciales = /^[a-zA-Z0-9]*$/;
@@ -56,6 +58,10 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   const insertData = () => {
+    if (!acceptTerms) {
+      showAlert('You must accept the terms and conditions', 'error')
+      return;
+    }
     showAlert('', 'loading')
     if (nombreUsuario === '' || correoUsuario === '' || contrasenaUsuario === '' || contrasenaUsuario2 === '') {
         showAlert('Please fill all the blanks', 'error')
@@ -128,6 +134,17 @@ const RegisterScreen = ({ navigation }) => {
               <Text style={styles.passwordInfo}>
                   Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
               </Text>
+              <View style={styles.checkboxContainer}>
+                <Checkbox
+                  status={acceptTerms ? 'checked' : 'unchecked'}
+                  onPress={() => setAcceptTerms(!acceptTerms)}
+                  color="#fff"
+                  uncheckedColor='#FFF'
+                />
+                <Text style={styles.checkboxText}>
+                  Accept <Text style={styles.linkText} onPress={() => navigation.navigate('TM')}>Terms and Conditions</Text>
+                </Text>
+              </View>
               <Pressable
                   onPress={() => insertData()}
                   onPressIn={handlePressIn}
@@ -232,6 +249,18 @@ const styles = StyleSheet.create({
   loginText: {
       color: '#6c757d',
       fontSize: 16,
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  checkboxText: {
+    color: '#f8f9fa',
+  },
+  linkText: {
+    color: '#f8f9fa',
+    textDecorationLine: 'underline',
   },
 });
 
