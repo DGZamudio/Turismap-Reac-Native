@@ -49,10 +49,6 @@ const HomeScreen = () => {
     longitudeDelta: 0.01,
   };
 
-  const handleMarkerPress = (sitio) => {
-    setSelectedSite(sitio);
-  };
-
   const getUserLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
@@ -137,6 +133,19 @@ const HomeScreen = () => {
     })
   }
 
+  const IMGS = {
+    1: require('../../assets/HGM.png'),
+    2: require('../../assets/ArtM.png'),
+    3: require('../../assets/MuseumM.png'),
+    4: require('../../assets/LiteratureM.png'),
+    5: require('../../assets/Art2M.png'),
+    6: require('../../assets/IconicM.png'),
+  };
+
+  const getIconForType = (type) => {
+    return IMGS[type] || IMGS['1'];
+  };
+
   useEffect(() => {
     getData()
     loadData2()
@@ -213,7 +222,8 @@ const HomeScreen = () => {
                 latitude: parseFloat(sitio.altitudSitiosTuristicos),
                 longitude: parseFloat(sitio.latitudSitiosTuristicos),
               }}
-              onPress={() => handleMarkerPress(sitio)}
+              onPress={() => setSelectedSite(sitio)}
+              image={getIconForType(sitio.tipoSitiosTuristicos)}
             />
           ))}
           {routeCoordinates.length > 0 && (
