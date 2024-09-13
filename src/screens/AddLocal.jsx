@@ -91,7 +91,7 @@ const AddLocal = () => {
   }
   
   return (
-      <ScrollView contentContainerStyle={styles.container}>
+      <View contentContainerStyle={styles.container}>
           <Video
               source={{uri: theme.uri}}
               style={styles.backgroundVideo}
@@ -100,6 +100,7 @@ const AddLocal = () => {
               shouldPlay
               resizeMode="cover"
           />
+          <ScrollView>
           <View style={styles.card}>
               <Text style={styles.title}>Turismap</Text>
               <TextInput placeholder="Local name" style={styles.input} placeholderTextColor="#f8f9fa" value={nombreLocal} onChangeText = {text => setNombreLocal(text)}/>
@@ -131,7 +132,8 @@ const AddLocal = () => {
                   </Animated.View>
               </Pressable>
           </View>
-      </ScrollView>
+          </ScrollView>
+      </View>
   );
 };
 

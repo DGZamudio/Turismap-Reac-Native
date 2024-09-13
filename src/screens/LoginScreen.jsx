@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, TextInput, Pressable, StyleSheet, Image, ScrollView, Animated } from 'react-native';
 import { Video } from 'expo-av';
 import themeContext from '../theme/themeContext';
+import { CommonActions } from '@react-navigation/native';
 import { useAlert } from './Alert';
 import { sendData } from '../services/api';
 
@@ -52,7 +53,7 @@ const LoginScreen = ({ navigation }) => {
       };
 
     const login = () => {
-        showAlert('alert', 'loading')
+        showAlert('', 'loading')
         if (correoUsuario === '' || contrasenaUsuario === ''){
                 showAlert('Please fill all the blanks', 'error')
         }
@@ -60,9 +61,14 @@ const LoginScreen = ({ navigation }) => {
             sendData('/login', {correoUsuario:correoUsuario,contrasenaUsuario:contrasenaUsuario})
             .then(data => {
                     if (data.access_token) {
-                        showAlert('User was logged succesfully', 'succes')
                         storeData(data.access_token)
-                        navigation.navigate('Redirect')
+                        showAlert('User was logged succesfully', 'success')
+                        navigation.dispatch(
+                            CommonActions.reset({
+                                index: 0,
+                                routes: [{ name: 'Redirect' }],
+                            })
+                        );
                   } else {
                         showAlert('Login failed try again', 'error');
                 }

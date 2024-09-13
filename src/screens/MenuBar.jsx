@@ -9,6 +9,7 @@ import HomeScreen from './HomeScreen';
 import EditProfile from './EditProfile';
 import Login from './LoginScreen'
 import NavCrud from './NavCrud'
+import Dashboard from './Dashboard';
 import { View, Image, Text, Pressable, Switch, StyleSheet } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { EventRegister } from 'react-native-event-listeners';
@@ -156,11 +157,17 @@ function DrawerNavigator() {
       }
     }    
     >
-        <Drawer.Screen name="Home" component={HomeScreen} 
+        <Drawer.Screen name="Home" component={Dashboard} 
           options={{
-            title: 'Map',
             drawerIcon: () => (
               <AntDesign name="home" size={24} color={theme.title} />
+            ),
+          }}
+        />
+        <Drawer.Screen name="Map" component={HomeScreen} 
+          options={{
+            drawerIcon: () => (
+              <Entypo name="map" size={24} color={theme.title} />
             ),
           }}
         />

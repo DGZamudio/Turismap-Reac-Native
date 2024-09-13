@@ -8,9 +8,10 @@ import * as Location from 'expo-location';
 import { useAlert } from './Alert';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
-import { getData as Get } from '../services/api';
+import { getData as Get, sendData } from '../services/api';
+import Entypo from '@expo/vector-icons/Entypo';
 
-const HomeScreen = () => {
+const HomeScreen = ({ route }) => {
 
   const theme = useContext(themeContext)
   const [showUB, setShowUB] = useState(false);
@@ -18,6 +19,7 @@ const HomeScreen = () => {
   const [logged, setLogged] = useState(false);
   const [current, setCurrent] = useState(null);
   const [origin, setOrigin] = useState(null);
+  const { site } = route.params || {};
   const [routeCoordinates, setRouteCoordinates] = useState([]);
   const mapRef = useRef(null);
   const [region, setRegion] = useState(initialRegion);
@@ -25,7 +27,7 @@ const HomeScreen = () => {
   const [search, setSearch] = useState("");
   const { showAlert, hideAlert } = useAlert();
   const [selectedSite, setSelectedSite] = useState(null);
-
+  const [page, setPage] = useState(1);
 
   const getData = async () => {
     try {
@@ -124,13 +126,30 @@ const HomeScreen = () => {
     });
   }
 
-  const filter = () => {
+  const filtr = (id) => {
     showAlert('', 'loading')
-    Get(`/filter/${_id}`)
+    sendData(`/filtr?page=${page}&per_page=2`, {sitio: id})
     .then(data => {
       hideAlert()
-      setData(data)
+      setData(data.data)
     })
+    .catch((error) => {
+      console.error('Error al obtener los sitios turisticos:', error);
+      showAlert('There has been an error trying to load the data', 'error')
+    });
+  }
+
+  const filter = () => {
+    showAlert('', 'loading')
+    Get(`/filter/${_id}?page=${page}&per_page=1`)
+    .then(data => {
+      hideAlert()
+      setData(data.data)
+    })
+    .catch((error) => {
+      console.error('Error al obtener los sitios turisticos:', error);
+      showAlert('You havent setted your preferences', 'error')
+    });
   }
 
   const IMGS = {
@@ -148,8 +167,13 @@ const HomeScreen = () => {
 
   useEffect(() => {
     getData()
-    loadData2()
-  }, [])
+    if (site) {
+      filtr(site)
+    }
+    else {
+      loadData2()
+    }
+  }, [site])
 
   const fetchRoute = async (origin, destination) => {
     setRouteCoordinates([]);
@@ -188,9 +212,15 @@ const HomeScreen = () => {
             <TextInput placeholder='Search' style={styles.searchContent} />
             <AntDesign name="search1" size={24} color="grey" style={{
               marginRight:15,
-            }} onPress={() => getUserLocation()} />
+            }} onPress={() => console.log('puta')} />
             <Pressable style={styles.refresh}>
               <AntDesign name="reload1" size={24} color="black" onPress={() => loadData2()} />
+            </Pressable>
+          </View>
+          <View style={[styles.location, {backgroundColor:theme.bg1}]}>
+            <Pressable onPress={() => getUserLocation()} style={{flexDirection:'row',justifyContent:'center',alignItems:'center',}}>
+              <Text style={{color:theme.title}}>Set origin</Text>
+              <Entypo name="location-pin" size={24} color={theme.title} />
             </Pressable>
           </View>
           { logged && (
@@ -248,7 +278,10 @@ const HomeScreen = () => {
                 <AntDesign name="close" size={24} color="red" />
               </Pressable>
               <Text style={[styles.title, {color: theme.title}]}>{selectedSite.nombreSitiosTuristicos}</Text>
-              <Text style={[{color: theme.text}]}>{selectedSite.descripcionSitiosTuristicos}</Text>
+              <Text style={[{textAlign:'center',margin:'2%',color: theme.text}]}>{selectedSite.descripcionSitiosTuristicos}</Text>
+              <Pressable onPress={() => console.log('puta')}>
+                <Text style={{textAlign:'center', fontSize:18, margin:'5%'}}>See more...</Text>
+              </Pressable>
               <TouchableOpacity 
                 style={styles.button} 
                 onPress={() => {
@@ -311,6 +344,14 @@ const styles = StyleSheet.create({
       position:'absolute',
       zIndex:1,
       margin: '5%',
+      borderRadius:5,
+      padding:5
+    },
+    location: {
+      position:'absolute',
+      zIndex:1,
+      left:'73%',
+      marginTop:'15%',
       borderRadius:5,
       padding:5
     },
