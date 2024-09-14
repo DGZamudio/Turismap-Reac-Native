@@ -12,7 +12,7 @@ import { getData as Get, sendData } from '../services/api';
 import Entypo from '@expo/vector-icons/Entypo';
 
 const HomeScreen = ({ route }) => {
-
+  const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiaGFpZGVyMTgiLCJhIjoiY20xMW4xdXVrMDRzZjJtcTBzMW5zb3BjbCJ9.OMXILYFN8qtCXB561pdrQw';
   const theme = useContext(themeContext)
   const [showUB, setShowUB] = useState(false);
   const [_id, set_id] = useState(null);
@@ -28,8 +28,7 @@ const HomeScreen = ({ route }) => {
   const { showAlert, hideAlert } = useAlert();
   const [selectedSite, setSelectedSite] = useState(null);
   const [page, setPage] = useState(1);
-
-  const getData = async () => {
+ const getData = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
       if (token) {
@@ -44,6 +43,7 @@ const HomeScreen = ({ route }) => {
     }
   };
 
+ 
   const initialRegion = {
     latitude: 4.597841,
     longitude: -74.076184,
@@ -176,7 +176,8 @@ const HomeScreen = ({ route }) => {
   }, [site])
 
   const fetchRoute = async (origin, destination) => {
-    setRouteCoordinates([]);
+    setRouteCoordinates([]); // Clear previous route coordinates
+  
     if (!origin || !destination) {
       return showAlert('There is no origin point. Please click on the map to select one or use your location.', 'error');
     }
@@ -185,7 +186,7 @@ const HomeScreen = ({ route }) => {
   
     try {
       const response = await fetch(
-        `https://router.project-osrm.org/route/v1/foot/${origin.longitude},${origin.latitude};${destination.longitude},${destination.latitude}?overview=full&geometries=geojson`
+        `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.longitude},${origin.latitude};${destination.longitude},${destination.latitude}?geometries=geojson&access_token=${MAPBOX_ACCESS_TOKEN}`
       );
       const data = await response.json();
   
@@ -195,17 +196,21 @@ const HomeScreen = ({ route }) => {
           latitude,
           longitude,
         }));
-        setRouteCoordinates(newRoute);
+        setRouteCoordinates(newRoute); // Update route coordinates
       } else {
         hideAlert();
-        console.error('No se encontraron rutas');
+        console.error('No routes found');
+        showAlert('No routes found', 'error');
       }
     } catch (error) {
       hideAlert();
-      console.error('Error al obtener la ruta:', error);
+      console.error('Error fetching route:', error);
+      showAlert('Error fetching route', 'error');
     }
   };
-
+  
+  
+  
     return(
         <View style={styles.container}>
           <View style={styles.search}>          
@@ -231,20 +236,18 @@ const HomeScreen = ({ route }) => {
               </Pressable>
             </View>
           )}
-          <MapView
-            ref={mapRef}
-            style={styles.map}
-            customMapStyle={theme.map}
-            loadingEnabled={true}
-            showsUserLocation={true}
-            region={region}
-            followsUserLocation={true}
-            initialRegion={initialRegion}
-            onPress={selectPointOnMap}
-          >
-          {origin && 
-              <Marker coordinate={origin} image={require('../../assets/pin.png')}/>
-          }
+        <MapView
+          ref={mapRef}
+          style={styles.map}
+          customMapStyle={theme.map}
+          loadingEnabled={true}
+          showsUserLocation={true}
+          region={region}
+          followsUserLocation={true}
+          initialRegion={initialRegion}
+          onPress={selectPointOnMap}
+        >
+          {origin && <Marker coordinate={origin} image={require('../../assets/pin.png')} />}
           {DATA.map((sitio) => (
             <Marker
               key={sitio._id}
@@ -259,13 +262,14 @@ const HomeScreen = ({ route }) => {
           {routeCoordinates.length > 0 && (
             <Polyline coordinates={routeCoordinates} strokeWidth={4} strokeColor="red" />
           )}
-            <Polygon
-              coordinates={polygonCoordinates}
-              strokeColor={theme.title}
-              fillColor="transparent" 
-              strokeWidth={2}
-            />
-          </MapView>
+          <Polygon
+            coordinates={polygonCoordinates}
+            strokeColor={theme.title}
+            fillColor="transparent"
+            strokeWidth={2}
+          />
+        </MapView>
+
           {origin && 
             <Pressable style={[styles.close1, {backgroundColor: theme.bg2}]} onPress={() => {setOrigin(null), setRouteCoordinates([])}}>
               <AntDesign name="close" size={24} color="red" />
