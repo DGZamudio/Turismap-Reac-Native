@@ -16,6 +16,7 @@ import PreTutorial from './src/screens/PreTutorial';
 import { EventRegister } from 'react-native-event-listeners';
 import { AlertProvider } from './src/screens/Alert';
 import Tutorial from './src/screens/Tutorial';
+import Item from './src/screens/Item';
 
 const Stack = createStackNavigator();
 
@@ -48,6 +49,7 @@ const App = () => {
             <Stack.Screen name="Index" component={IndexScreen} options={{ headerShown: false }} />
             <Stack.Screen name="PreT" component={PreTutorial} options={{ headerShown: false }} />
             <Stack.Screen name="Tutorial" component={Tutorial} options={{ headerShown: false }} />
+            <Stack.Screen name="Item" component={Item} options={{ headerShown: false }} />
           </Stack.Navigator>
         </NavigationContainer>
       </AlertProvider>

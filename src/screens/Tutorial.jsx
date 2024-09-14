@@ -38,7 +38,7 @@ const Tutorial = ({ navigation }) => {
                             View every site
                         </Text>
                         <Text style={styles.text}>
-                            If you want to see all the aviable points in the map the only thong you have to do is to acces the map once you enter to the map whit no extra instructions ebery aviable point will load
+                            If you want to see all the aviable points in the map the only thing you have to do is to acces the map once you enter to the map with no extra instructions every aviable point will load
                         </Text>
                         <Image />
                         <Text style={styles.text}>

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
-import { View, StyleSheet, TouchableOpacity, TextInput, Pressable, Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, TextInput, Pressable, Text, FlatList } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MapView, { Polygon, Marker, Polyline } from 'react-native-maps'
 import themeContext from '../theme/themeContext';
@@ -11,10 +11,11 @@ import { jwtDecode } from 'jwt-decode';
 import { getData as Get, sendData } from '../services/api';
 import Entypo from '@expo/vector-icons/Entypo';
 
-const HomeScreen = ({ route }) => {
+const HomeScreen = ({ navigation, route }) => {
 
   const theme = useContext(themeContext)
   const [showUB, setShowUB] = useState(false);
+  const reseña = '1'
   const [_id, set_id] = useState(null);
   const [logged, setLogged] = useState(false);
   const [current, setCurrent] = useState(null);
@@ -109,6 +110,7 @@ const HomeScreen = ({ route }) => {
   }
 
   const searchData = () => {
+    showAlert('', 'loading')
     fetch(`https://turismap-backend-python.onrender.com/search_item?q=${encodeURIComponent(search)}`, {
       method: 'GET',
       headers: {
@@ -117,11 +119,15 @@ const HomeScreen = ({ route }) => {
     })
     .then((response) => response.json())
     .then((data) => {
-      setShowLoadingAlert(false)
+      if (data.mensaje === 'No se encontraron usuarios con ese criterio de búsqueda'){
+        showAlert('No sites found','error')
+        return
+      }
+      hideAlert()
       setData(data);
     })
     .catch((error) => {
-      setShowLoadingAlert(false)
+      showAlert('error, try again','error')
       console.error('Error al obtener los usuarios:', error);
     });
   }
@@ -161,12 +167,23 @@ const HomeScreen = ({ route }) => {
     6: require('../../assets/IconicM.png'),
   };
 
+  const stars = [
+    {id: '1'},
+    {id: '2'},
+    {id: '3'},
+    {id: '4'},
+    {id: '5'}
+  ]
+
   const getIconForType = (type) => {
     return IMGS[type] || IMGS['1'];
   };
 
   useEffect(() => {
     getData()
+  }, [])
+
+  useEffect(() => {
     if (site) {
       filtr(site)
     }
@@ -209,10 +226,10 @@ const HomeScreen = ({ route }) => {
     return(
         <View style={styles.container}>
           <View style={styles.search}>          
-            <TextInput placeholder='Search' style={styles.searchContent} />
+            <TextInput placeholder='Search' style={styles.searchContent} on onChangeText={(text) => setSearch(text)}/>
             <AntDesign name="search1" size={24} color="grey" style={{
               marginRight:15,
-            }} onPress={() => console.log('puta')} />
+            }} onPress={() => searchData()} />
             <Pressable style={styles.refresh}>
               <AntDesign name="reload1" size={24} color="black" onPress={() => loadData2()} />
             </Pressable>
@@ -279,8 +296,22 @@ const HomeScreen = ({ route }) => {
               </Pressable>
               <Text style={[styles.title, {color: theme.title}]}>{selectedSite.nombreSitiosTuristicos}</Text>
               <Text style={[{textAlign:'center',margin:'2%',color: theme.text}]}>{selectedSite.descripcionSitiosTuristicos}</Text>
-              <Pressable onPress={() => console.log('puta')}>
-                <Text style={{textAlign:'center', fontSize:18, margin:'5%'}}>See more...</Text>
+              <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+              <FlatList
+                data={stars}
+                renderItem={({ item, index }) => (
+                    <AntDesign
+                    name={index < reseña ? "star" : "staro"}
+                    size={24}
+                    color="#d4af37"
+                    />
+                )}
+                keyExtractor={(item) => item.id}
+                numColumns={5}
+              />
+              </View>
+              <Pressable onPress={() => navigation.navigate('Item',{site: selectedSite})}>
+                <Text style={{textAlign:'center', fontSize:18, margin:'5%', color: theme.title}}>See more...</Text>
               </Pressable>
               <TouchableOpacity 
                 style={styles.button} 

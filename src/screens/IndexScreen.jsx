@@ -39,9 +39,9 @@ const IndexScreen = ({ navigation }) => {
   useEffect(() => {
     if (animationFinished && dataLoaded) {
       if (isLoggedIn) {
-        navigation.navigate('Home');
+        navigation.replace('Home');
       } else {
-        navigation.navigate('PreT');
+        navigation.replace('PreT');
       }
     }
   }, [animationFinished, dataLoaded, isLoggedIn]);
