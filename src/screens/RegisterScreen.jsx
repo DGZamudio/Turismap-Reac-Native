@@ -48,6 +48,7 @@ const RegisterScreen = ({ navigation }) => {
   const { showAlert } = useAlert();
   const sinCaracteresEspeciales = /^[a-zA-Z0-9]*$/;
   const regexCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(contrasenaUsuario);
 
   const storeData = async (value) => {
     try {
@@ -67,8 +68,17 @@ const RegisterScreen = ({ navigation }) => {
         showAlert('Please fill all the blanks', 'error')
     }
     else {
+        if (contrasenaUsuario === '12345678') {
+            showAlert('Your password is not safe', 'error')
+            return;
+        }
+        if (!hasSpecialChars) {
+            showAlert('Your password musst have at leats one special character such as (@!"#$%&/)', 'error')
+            return;
+        }
         if (contrasenaUsuario.length < 8) {
             showAlert('The password has to be 8 or more characters long', 'error')
+            return;
         }
         else {
             if (contrasenaUsuario !== contrasenaUsuario2 ) {

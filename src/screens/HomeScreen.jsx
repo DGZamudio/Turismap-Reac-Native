@@ -150,6 +150,7 @@ const HomeScreen = ({ navigation, route }) => {
       setPage(data.page)
       setMaxPage(data.total_pages)
       setData(data.data)
+      getImage(data.data[0]._id)
     })
     .catch((error) => {
       console.error('Error al obtener los sitios turisticos:', error);
@@ -159,7 +160,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   const getImage = (id) => {
     setImage("")
-    Get(`/get_image/${id}`)
+    fetch(`https://turismap-backend-python.onrender.com/get_image/${id}`)
     .then((response) => {
       if (!response.ok) {
         throw new Error("Error al obtener la imagen");
@@ -290,7 +291,7 @@ const HomeScreen = ({ navigation, route }) => {
           </View>
           { logged && (
             <View style={[styles.filter, {backgroundColor:theme.bg1}]}>
-              <Pressable onPress={() => filter()} style={{flexDirection:'row',justifyContent:'center',alignItems:'center',}}>
+              <Pressable onPress={() => {filter()}} style={{flexDirection:'row',justifyContent:'center',alignItems:'center',}}>
                 <AntDesign name="question" size={24} color={theme.title} />
                 <Text style={{color:theme.title}}>You may like these places</Text>
               </Pressable>
