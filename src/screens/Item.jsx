@@ -1,10 +1,10 @@
-import { StyleSheet, Text, View, ScrollView, FlatList, Pressable, TextInput } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, FlatList, Pressable, TextInput, Image } from 'react-native'
 import React, { useContext, useState } from 'react'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import themeContext from '../theme/themeContext';
 
 const Item = ({ navigation, route }) => {
-    const { site } = route.params || {};
+    const { site, image } = route.params || {};
     const theme = useContext(themeContext)
     const [selectedStars, setSelectedStars] = useState(0);
     const [reviewComment, setReviewComment] = useState('');
@@ -42,6 +42,13 @@ const Item = ({ navigation, route }) => {
                 keyExtractor={(item) => item.id}
                 numColumns={5}
             />
+            <View style={{justifyContent:'cneter',alignItems:'center', padding:'5%',margin:'5%', backgroundColor: theme.bg1, borderRadius:43}}>
+              {image ? (
+                <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
+              ) : (
+                <Text>No image available</Text>
+              )}
+            </View>
             <Text style={[styles.desc, {color: theme.text}]}>{site.descripcionSitiosTuristicos}</Text>
             <View style={{ justifyContent: 'center', alignItems: 'center', margin: '15%'}}>
                 <Text style={{color: theme.text}}>Give us your opinion</Text>

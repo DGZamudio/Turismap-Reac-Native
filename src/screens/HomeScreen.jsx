@@ -352,7 +352,7 @@ const HomeScreen = ({ navigation, route }) => {
                         )}
                       </View>
                       <View style={{justifyContent:'center'}}>
-                        <Pressable onPress={() => navigation.navigate('Item',{site: item})}>
+                        <Pressable onPress={() => navigation.navigate('Item',{site: item, image: image})}>
                           <Text style={{textAlign:'center', fontSize:18, margin:'5%', color: theme.title}}>See more...</Text>
                         </Pressable>
                       </View>
