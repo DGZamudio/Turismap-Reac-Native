@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
-import { View, StyleSheet, TouchableOpacity, TextInput, Pressable, Text, FlatList } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, TextInput, Pressable, Text, FlatList, Image } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MapView, { Polygon, Marker, Polyline } from 'react-native-maps'
 import themeContext from '../theme/themeContext';
@@ -17,6 +17,8 @@ const HomeScreen = ({ navigation, route }) => {
   const [showUB, setShowUB] = useState(false);
   const reseña = '1'
   const [_id, set_id] = useState(null);
+  const [filtered, setFiltered] = useState(false)
+  const [image, setImage] = useState("")
   const [logged, setLogged] = useState(false);
   const [current, setCurrent] = useState(null);
   const [origin, setOrigin] = useState(null);
@@ -29,6 +31,9 @@ const HomeScreen = ({ navigation, route }) => {
   const { showAlert, hideAlert } = useAlert();
   const [selectedSite, setSelectedSite] = useState(null);
   const [page, setPage] = useState(1);
+  const [maxPage, setMaxPage] = useState(1)
+  const [filter1, setFilter1] = useState(false)
+  const [filter2, setFilter2] = useState(false)
 
   const getData = async () => {
     try {
@@ -98,6 +103,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   const loadData2 = () => {
     showAlert('', 'loading')
+    setFiltered(false)
     Get('/get_item')
     .then((data) => {
       hideAlert()
@@ -111,6 +117,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   const searchData = () => {
     showAlert('', 'loading')
+    setFiltered(false)
     fetch(`https://turismap-backend-python.onrender.com/search_item?q=${encodeURIComponent(search)}`, {
       method: 'GET',
       headers: {
@@ -133,10 +140,15 @@ const HomeScreen = ({ navigation, route }) => {
   }
 
   const filtr = (id) => {
+    setFilter1(true)
+    setFilter2(false)
     showAlert('', 'loading')
-    sendData(`/filtr?page=${page}&per_page=2`, {sitio: id})
+    setFiltered(true)
+    sendData(`/filtr?page=${page}&per_page=1`, {sitio: id})
     .then(data => {
       hideAlert()
+      setPage(data.page)
+      setMaxPage(data.total_pages)
       setData(data.data)
     })
     .catch((error) => {
@@ -145,12 +157,37 @@ const HomeScreen = ({ navigation, route }) => {
     });
   }
 
+  const getImage = (id) => {
+    setImage("")
+    fetch(`http://192.168.20.50:5000/get_image/${id}`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Error al obtener la imagen");
+      }
+      return response.text(); 
+    })
+    .then((base64String) => {
+      const imageSrc = `data:image/jpeg;base64,${base64String}`; 
+      setImage(imageSrc); 
+    })
+    .catch((error) => {
+      console.error(error); 
+    });
+  }
+
   const filter = () => {
+    setFilter1(false)
+    setFilter2(true)
     showAlert('', 'loading')
+    setFiltered(true)
     Get(`/filter/${_id}?page=${page}&per_page=1`)
     .then(data => {
+      sites = data.data
       hideAlert()
-      setData(data.data)
+      setPage(data.page)
+      setMaxPage(data.total_pages)
+      setData(sites)
+      getImage(sites[0]._id)
     })
     .catch((error) => {
       console.error('Error al obtener los sitios turisticos:', error);
@@ -182,6 +219,17 @@ const HomeScreen = ({ navigation, route }) => {
   useEffect(() => {
     getData()
   }, [])
+
+  useEffect(() => {
+    if (filter1){
+      filtr(site)
+    }
+    else{
+      if (filter2){
+        filter()
+      }
+    }
+  }, [page])
 
   useEffect(() => {
     if (site) {
@@ -247,6 +295,72 @@ const HomeScreen = ({ navigation, route }) => {
                 <Text style={{color:theme.title}}>You may like these places</Text>
               </Pressable>
             </View>
+          )}
+          { filtered && (
+            <>
+              <View style={[styles.card, {backgroundColor: theme.bg1}]}>
+                <View style={{flexDirection: 'row', justifyContent:'space-between', alignItems: 'center'}}>
+                  <Text style={{color: theme.title, fontSize:25, fontWeight:'bold'}}>
+                    Exploring sites
+                  </Text>
+                  <Pressable onPress={() => loadData2()}>
+                    <AntDesign name="close" size={24} color="red" />
+                  </Pressable>
+                </View>
+                <View style={{flexDirection: 'row', justifyContent:'space-between', alignItems: 'center', marginLeft: '30%', marginRight:'30%'}}>
+                    <Pressable onPress={() => {setPage(page-1)}}>
+                      {page !== 1 && (
+                        <AntDesign name="caretleft" size={24} color="black" />
+                      )}
+                    </Pressable>
+                  <Text>
+                    {page} - {maxPage}
+                  </Text>
+                    <Pressable onPress={() => {setPage(page+1)}}>
+                      {maxPage !== page && (
+                        <AntDesign name="caretright" size={24} color={theme.title} />
+                      )}
+                    </Pressable>
+                </View>
+                <FlatList
+                  data={DATA}
+                  renderItem={({ item }) => (
+                    <View style={{padding: '2%', margin:'5%', backgroundColor:theme.bg2, borderRadius:15}}>
+                      <Text style={{color: theme.title, fontWeight:'bold'}}>{item.nombreSitiosTuristicos}</Text>
+                      <View>
+                        <FlatList
+                          data={stars}
+                          renderItem={({ item, index }) => (
+                              <AntDesign
+                                name={index < reseña ? "star" : "staro"}
+                                size={24}
+                                color="#d4af37"
+                              />
+                          )}
+                          keyExtractor={(item) => item.id}
+                          numColumns={5}
+                        />
+                      </View>                        
+                      <View style={{justifyContent:'center', alignItems:'center'}}>
+                        {image && (
+                            <Image 
+                              source={{ uri: image }} 
+                              style={{ width: 200, height: 200 }} 
+                              resizeMode="cover" 
+                            />
+                        )}
+                      </View>
+                      <View style={{justifyContent:'center'}}>
+                        <Pressable onPress={() => navigation.navigate('Item',{site: item})}>
+                          <Text style={{textAlign:'center', fontSize:18, margin:'5%', color: theme.title}}>See more...</Text>
+                        </Pressable>
+                      </View>
+                    </View>
+                  )}
+                  keyExtractor={(item) => item._id}
+                />
+              </View>
+            </>
           )}
           <MapView
             ref={mapRef}
@@ -429,5 +543,14 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       fontWeight: 'bold',
     },
+    card: {
+      position:'absolute',
+      zIndex:1,
+      top: '65%',
+      width:'100%',
+      height:'35%',
+      borderRadius:30,
+      padding:15
+    }
 })
 export default HomeScreen;
