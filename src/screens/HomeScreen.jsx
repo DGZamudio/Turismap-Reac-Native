@@ -159,7 +159,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   const getImage = (id) => {
     setImage("")
-    fetch(`http://192.168.20.50:5000/get_image/${id}`)
+    Get(`/get_image/${id}`)
     .then((response) => {
       if (!response.ok) {
         throw new Error("Error al obtener la imagen");
