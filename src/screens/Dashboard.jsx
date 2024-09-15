@@ -1,9 +1,7 @@
 import { StyleSheet, Text, View, Image, ScrollView, Dimensions, FlatList, Pressable } from 'react-native'
 import React, { useContext, useRef, useEffect, useState } from 'react'
-import { getData as Get } from '../services/api';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { jwtDecode } from 'jwt-decode';
 import themeContext from '../theme/themeContext'
+import { getData } from '../services/api';
 
     const { width } = Dimensions.get('window');
     const data = [
@@ -16,37 +14,26 @@ import themeContext from '../theme/themeContext'
     ];
 
 const Dashboard = ({ navigation }) => {
-    const [userData, setUserData] = useState(null);
     const [sitesData, setSitesData] = useState([]);
     const [showUB, setShowUB] = useState(false);
-    const [page, setPage] = useState(1);
-    const [perPage] = useState(5);
-    const [totalPages, setTotalPages] = useState(1);
-    const [logged, setLogged] = useState(false);
     const theme = useContext(themeContext)
     const flatListRef = useRef(null);
 
-    const getData = async () => {
-        try {
-          const token = await AsyncStorage.getItem('token');
-          if (token) {
-            const decoded = jwtDecode(token);
-            setUserData(decoded);
-            setLogged(true)
-          }
-        } catch (e) {
-          console.error('Error decoding token:', e);
-          setLogged(false);
-        }
-      };
 
-      const loadData = (id) => {
-        Get(`/filter/${id}?page=${page}&per_page=${perPage}`)
-        .then((data) => {
-            setSitesData(data.data);
-            setTotalPages(data.total_pages);
-        })
-      }
+    const loadData = () => {
+        getData(`/last`)
+          .then((data) => {
+            const updatedData = data.map((item) => ({
+              ...item,
+              image: `data:image/jpeg;base64,${item.image}` 
+            }));
+            setSitesData(updatedData);
+          })
+          .catch((error) => {
+            console.error("Error fetching data:", error);
+          });
+      };
+      
 
       const handlePress = (id) => {
         let sid = Array.of(id)
@@ -54,14 +41,8 @@ const Dashboard = ({ navigation }) => {
       }
 
     useEffect(() => {
-    getData();
+        loadData();
     }, []);
-
-    useEffect(() => {
-        if (logged) {
-            loadData(userData.sub.user_id)
-        }
-      }, [page]);
 
   return (
     <ScrollView style={[styles.container, {backgroundColor: theme.bg1}]}>
@@ -93,15 +74,15 @@ const Dashboard = ({ navigation }) => {
                 <Text style={[styles.title, {color: theme.title, textAlign:'center'}]}>Explore</Text>
                 <FlatList
                     ref={flatListRef}
-                    data={data}
-                    keyExtractor={(item) => item.id}
+                    data={sitesData}
+                    keyExtractor={(item) => item._id}
                     horizontal
                     pagingEnabled
                     showsHorizontalScrollIndicator={false}
                     renderItem={({ item }) => (
                         <View style={[styles.slide, {backgroundColor: theme.bg2}]}>
-                            <Image source={ item.image } style={styles.image} />
-                            <Text style={styles.title}>{item.title}</Text>
+                        <Image source={{ uri: item.image }} style={styles.image} />
+                        <Text style={styles.title}>{item.nombreSitiosTuristicos}</Text>
                         </View>
                     )}
                 />
@@ -152,8 +133,8 @@ const styles = StyleSheet.create({
         margin: '2%'
     },
     image: {
-        width: '100%',
-        height: 175,
+        width: 200,
+        height: 200,
         borderRadius: 10,
     },
     button: {

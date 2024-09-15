@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, ScrollView, FlatList, Pressable, TextInput, Image } from 'react-native'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import themeContext from '../theme/themeContext';
 
@@ -8,6 +8,7 @@ const Item = ({ navigation, route }) => {
     const theme = useContext(themeContext)
     const [selectedStars, setSelectedStars] = useState(0);
     const [reviewComment, setReviewComment] = useState('');
+    const [image1, setImage1] = useState("")
     const stars = [
         {id: '1'},
         {id: '2'},
@@ -19,6 +20,31 @@ const Item = ({ navigation, route }) => {
     setSelectedStars(index + 1);
     };
     const reseña = '1'
+
+    const getImage = (id) => {
+      setImage1("")
+      fetch(`https://turismap-backend-python.onrender.com/get_image/${id}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error al obtener la imagen");
+        }
+        return response.text(); 
+      })
+      .then((base64String) => {
+        const imageSrc = `data:image/jpeg;base64,${base64String}`; 
+        setImage1(imageSrc); 
+      })
+      .catch((error) => {
+        console.error(error); 
+      });
+    }
+
+    useEffect(() => {
+      if(!image) {
+        getImage(site._id)
+      }
+    }, [image])
+
   return (
     <>
     <View style={{justifyContent:'flex-start',marginTop:'10%', marginLeft:'3%'}}>
@@ -43,9 +69,9 @@ const Item = ({ navigation, route }) => {
                 numColumns={5}
             />
             <View style={{justifyContent:'cneter',alignItems:'center', padding:'5%',margin:'5%', backgroundColor: theme.bg1, borderRadius:43}}>
-              {image ? (
-                <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
-              ) : (
+              {image || image1 ? (
+                <Image source={{ uri: image ? image : image1 }} style={{ width: 200, height: 200, borderRadius:15 }} />
+              ) : ( 
                 <Text>No image available</Text>
               )}
             </View>

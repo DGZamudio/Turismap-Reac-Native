@@ -34,6 +34,7 @@ const HomeScreen = ({ navigation, route }) => {
   const [maxPage, setMaxPage] = useState(1)
   const [filter1, setFilter1] = useState(false)
   const [filter2, setFilter2] = useState(false)
+  const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiaGFpZGVyMTgiLCJhIjoiY20xMW4xdXVrMDRzZjJtcTBzMW5zb3BjbCJ9.OMXILYFN8qtCXB561pdrQw';
 
   const getData = async () => {
     try {
@@ -251,7 +252,7 @@ const HomeScreen = ({ navigation, route }) => {
   
     try {
       const response = await fetch(
-        `https://router.project-osrm.org/route/v1/foot/${origin.longitude},${origin.latitude};${destination.longitude},${destination.latitude}?overview=full&geometries=geojson`
+        `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.longitude},${origin.latitude};${destination.longitude},${destination.latitude}?geometries=geojson&access_token=${MAPBOX_ACCESS_TOKEN}`
       );
       const data = await response.json();
   
@@ -263,7 +264,7 @@ const HomeScreen = ({ navigation, route }) => {
         }));
         setRouteCoordinates(newRoute);
       } else {
-        hideAlert();
+        showAlert('No routes found', 'error');
         console.error('No se encontraron rutas');
       }
     } catch (error) {
@@ -346,7 +347,7 @@ const HomeScreen = ({ navigation, route }) => {
                         {image && (
                             <Image 
                               source={{ uri: image }} 
-                              style={{ width: 200, height: 200 }} 
+                              style={{ width: 200, height: 200, borderRadius:15 }} 
                               resizeMode="cover" 
                             />
                         )}
@@ -425,7 +426,7 @@ const HomeScreen = ({ navigation, route }) => {
                 numColumns={5}
               />
               </View>
-              <Pressable onPress={() => navigation.navigate('Item',{site: selectedSite})}>
+              <Pressable onPress={() => navigation.navigate('Item',{site: selectedSite, image: image})}>
                 <Text style={{textAlign:'center', fontSize:18, margin:'5%', color: theme.title}}>See more...</Text>
               </Pressable>
               <TouchableOpacity 
