@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View, ScrollView, Image, Pressable } from 'react-native'
+import { Video } from 'expo-av';
 import React from 'react'
 
 const Tutorial = ({ navigation }) => {
@@ -40,11 +41,23 @@ const Tutorial = ({ navigation }) => {
                         <Text style={styles.text}>
                             If you want to see all the aviable points in the map the only thing you have to do is to acces the map once you enter to the map with no extra instructions every aviable point will load
                         </Text>
-                        <Image />
+                        <Video 
+                            source={require('../../assets/tutorial/all1.mp4')}
+                            resizeMode="contain"
+                            style={{width:250,height:400}}
+                            shouldPlay
+                            isLooping
+                        />
                         <Text style={styles.text}>
                             Also you can see all the sites by pressing this button
                         </Text>
-                        <Image />
+                        <Video
+                            source={require('../../assets/tutorial/all2.mp4')}
+                            resizeMode="contain"
+                            style={{width:250,height:400}}
+                            shouldPlay
+                            isLooping
+                        />
                     </View>
                     <View style={[styles.card, {borderWidth:3, borderColor:'#E0E0E0' ,backgroundColor: '#FFF'}]}>
                         <Text style={styles.title2}>
@@ -53,7 +66,13 @@ const Tutorial = ({ navigation }) => {
                         <Text style={styles.text}>
                             If you want to search a site for his name or something about it you can do it by pressing the search button and inserting the name of a site or something in his description
                         </Text>
-                        <Image />
+                        <Video 
+                            source={require('../../assets/tutorial/search.mp4')}
+                            resizeMode="contain"
+                            style={{width:250,height:400}}
+                            shouldPlay
+                            isLooping
+                        />
                     </View>
                     <View style={[styles.card, {borderWidth:3, borderColor:'#E0E0E0' ,backgroundColor: '#FFF'}]}>
                         <Text style={styles.title2}>
@@ -62,7 +81,13 @@ const Tutorial = ({ navigation }) => {
                         <Text style={styles.text}>
                             If you want to look for sites with special types you can do it in the home page by pressing one of the cards whit the type of sites you want to see
                         </Text>
-                        <Image />
+                        <Video 
+                            source={require('../../assets/tutorial/basicfilter.mp4')}
+                            resizeMode="contain"
+                            style={{width:250,height:400}}
+                            shouldPlay
+                            isLooping
+                        />
                     </View>
                     <View style={[styles.card, {borderWidth:3, borderColor:'#E0E0E0' ,backgroundColor: '#FFF'}]}>
                         <Text style={styles.title2}>
@@ -71,19 +96,43 @@ const Tutorial = ({ navigation }) => {
                         <Text style={styles.text}>
                             If you want to know how to go to a place the only thing you have to do is to set a origin and a destination, if you want your origin to be your actual ubication you just have to press the set origin button
                         </Text>
-                        <Image />
+                        <Video 
+                            source={require('../../assets/tutorial/routes1.mp4')}
+                            resizeMode="contain"
+                            style={{width:250,height:400}}
+                            shouldPlay
+                            isLooping
+                        />
                         <Text style={styles.text}>
                             But if you want to set an alternative location you just have to press the map in the location you want to set your origin
                         </Text>
-                        <Image />
+                        <Video 
+                            source={require('../../assets/tutorial/routes2.mp4')}
+                            resizeMode="contain"
+                            style={{width:250,height:400}}
+                            shouldPlay
+                            isLooping
+                        />
                         <Text style={styles.text}>
                             Once you set your origin point you have to select a destination and to do that you need to press one of the sites in the map and click the select destination button
                         </Text>
-                        <Image />
+                        <Video 
+                            source={require('../../assets/tutorial/routes3.mp4')}
+                            resizeMode="contain"
+                            style={{width:250,height:400}}
+                            shouldPlay
+                            isLooping
+                        />
                         <Text style={styles.text}>
                             Once you do all the procces the destination should be marked in the map
                         </Text>
-                        <Image />
+                        <Video 
+                            source={require('../../assets/tutorial/routes4.mp4')}
+                            resizeMode="contain"
+                            style={{width:250,height:400}}
+                            shouldPlay
+                            isLooping
+                        />
                     </View>
                 </View>
             </View>
@@ -99,11 +148,23 @@ const Tutorial = ({ navigation }) => {
                         <Text style={styles.text}>
                             If you make an account in our app you are going to be able to set your preferences by accessing the set preferences view
                         </Text>
-                        <Image />
+                        <Video 
+                            source={require('../../assets/tutorial/preferences1.mp4')}
+                            resizeMode="contain"
+                            style={{width:250,height:400}}
+                            shouldPlay
+                            isLooping
+                        />
                         <Text style={styles.text}>
                             Once you set your preferences and you are logged you are going to be able to use the function that will show you the sites with its interesant things
                         </Text>
-                        <Image />
+                        <Video 
+                            source={require('../../assets/tutorial/preferences2.mp4')}
+                            resizeMode="contain"
+                            style={{width:250,height:400}}
+                            shouldPlay
+                            isLooping                        
+                        />
                     </View>
                     <View style={[styles.card, {borderWidth:3, borderColor:'#E0E0E0' ,backgroundColor: '#FFF'}]}>
                         <Text style={styles.title2}>
@@ -112,11 +173,23 @@ const Tutorial = ({ navigation }) => {
                         <Text style={styles.text}>
                             If you make an account in our app you are going to be able to make reviews to sites so other tourist can see what people think of the sites
                         </Text>
-                        <Image />
+                        <Video 
+                            source={require('../../assets/tutorial/review1.mp4')}
+                            resizeMode="contain"
+                            style={{width:250,height:400}}
+                            shouldPlay
+                            isLooping                             
+                        />
                         <Text style={styles.text}>
                             To make a review you have to set a value in stars, 5 being the max once you do that you can make a comment if you want to
                         </Text>
-                        <Image />
+                        <Video 
+                            source={require('../../assets/tutorial/review2.mp4')}
+                            resizeMode="contain"
+                            style={{width:250,height:400}}
+                            shouldPlay
+                            isLooping                           
+                        />
                     </View>
                     <View style={[styles.card, {borderWidth:3, borderColor:'#E0E0E0' ,backgroundColor: '#FFF'}]}>
                         <Text style={styles.title2}>
@@ -125,12 +198,18 @@ const Tutorial = ({ navigation }) => {
                         <Text style={styles.text}>
                             If you want to change your password or user name you can do it inside the edit profile view
                         </Text>
-                        <Image />
+                        <Video 
+                            source={require('../../assets/tutorial/edit.mp4')}
+                            resizeMode="contain"
+                            style={{width:250,height:400}}
+                            shouldPlay
+                            isLooping                           
+                        />
                     </View>
                 </View>
  
             </View>
-            <Pressable style={styles.button} onPress={() => navigation.navigate('Home')}>
+            <Pressable style={styles.button} onPress={() => navigation.replace('Home')}>
                 <Text style={[styles.title2, {color: '#FFF'}]}>
                     Let’s start
                 </Text>

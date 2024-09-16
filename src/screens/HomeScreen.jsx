@@ -290,6 +290,13 @@ const HomeScreen = ({ navigation, route }) => {
               <Entypo name="location-pin" size={24} color={theme.title} />
             </Pressable>
           </View>
+          <View style={{position:'absolute',flexDirection:'row', justifyContent:'space-between', margin:'5%', padding:'2%', backgroundColor:theme.bg2, top:'93%', zIndex:1, width:'100%'}}>
+            <Text style={{fontWeight:'bold'}}>Turismap</Text>
+            <Image 
+              source={require('../../assets/icon.png')}
+              style={{width:25, height:25}}
+            />
+          </View>
           { logged && (
             <View style={[styles.filter, {backgroundColor:theme.bg1}]}>
               <Pressable onPress={() => {filter()}} style={{flexDirection:'row',justifyContent:'center',alignItems:'center',}}>
