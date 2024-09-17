@@ -15,7 +15,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   const theme = useContext(themeContext)
   const [showUB, setShowUB] = useState(false);
-  const reseña = '1'
+  const [reseña, setReseña] = useState(0)
   const [_id, set_id] = useState(null);
   const [filtered, setFiltered] = useState(false)
   const [image, setImage] = useState("")
@@ -116,6 +116,13 @@ const HomeScreen = ({ navigation, route }) => {
     });
   }
 
+  const getAverage = (id) => {
+    Get(`/average-site-rating/${id}`)
+    .then((data) => {
+      setReseña(data.Promedio)
+    })
+  }
+  
   const searchData = () => {
     showAlert('', 'loading')
     setFiltered(false)
@@ -242,6 +249,12 @@ const HomeScreen = ({ navigation, route }) => {
     }
   }, [site])
 
+  useEffect(() => {
+    if (selectedSite) {
+      getAverage(selectedSite._id)
+    }
+  }, [selectedSite])
+
   const fetchRoute = async (origin, destination) => {
     setRouteCoordinates([]);
     if (!origin || !destination) {
@@ -291,7 +304,7 @@ const HomeScreen = ({ navigation, route }) => {
             </Pressable>
           </View>
           <View style={{position:'absolute',flexDirection:'row', justifyContent:'space-between', margin:'5%', padding:'2%', backgroundColor:theme.bg2, top:'93%', zIndex:1, width:'100%'}}>
-            <Text style={{fontWeight:'bold'}}>Turismap</Text>
+            <Text style={{fontWeight:'bold', color: theme.title}}>Turismap</Text>
             <Image 
               source={require('../../assets/icon.png')}
               style={{width:25, height:25}}
@@ -433,7 +446,7 @@ const HomeScreen = ({ navigation, route }) => {
                 numColumns={5}
               />
               </View>
-              <Pressable onPress={() => navigation.navigate('Item',{site: selectedSite, image: image})}>
+              <Pressable onPress={() => navigation.navigate('Item',{site: selectedSite, image: image, logged: logged, id: _id})}>
                 <Text style={{textAlign:'center', fontSize:18, margin:'5%', color: theme.title}}>See more...</Text>
               </Pressable>
               <TouchableOpacity 

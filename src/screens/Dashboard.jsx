@@ -64,7 +64,7 @@ const Dashboard = ({ navigation }) => {
                         <Pressable onPress={() => handlePress(item.id)}>
                             <View style={[styles.slide, {backgroundColor: theme.bg2}]}>
                                 <Image source={ item.image } style={styles.image} />
-                                <Text style={styles.title}>{item.title}</Text>
+                                <Text style={[styles.title, {color: theme.title}]}>{item.title}</Text>
                             </View>
                         </Pressable>
                     )}
@@ -82,7 +82,7 @@ const Dashboard = ({ navigation }) => {
                     renderItem={({ item }) => (
                         <View style={[styles.slide, {backgroundColor: theme.bg2}]}>
                         <Image source={{ uri: item.image }} style={styles.image} />
-                        <Text style={styles.title}>{item.nombreSitiosTuristicos}</Text>
+                        <Text style={[styles.title, {color: theme.title}]}>{item.nombreSitiosTuristicos}</Text>
                         </View>
                     )}
                 />
