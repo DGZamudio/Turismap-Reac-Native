@@ -70,11 +70,11 @@ const LoginScreen = ({ navigation }) => {
                             })
                         );
                   } else {
-                        showAlert('Login failed try again', 'error');
+                        showAlert('Wrong credentials', 'error');
                 }
             })
             .catch(error => {
-                showAlert('Wrong credentials', 'error');
+                showAlert('Login failed try again', 'error');
                 console.error('Error:', error);
               });
         }

@@ -35,7 +35,7 @@ const Item = ({ navigation, route }) => {
         return response.text(); 
       })
       .then((base64String) => {
-        const imageSrc = `data:image/jpeg;base64,${base64String}`; 
+        const imageSrc = `data:image/webp;base64,${base64String}`; 
         setImage1(imageSrc); 
       })
       .catch((error) => {
@@ -118,9 +118,9 @@ const Item = ({ navigation, route }) => {
                 keyExtractor={(item) => item.id}
                 numColumns={5}
             />
-            <View style={{justifyContent:'center',alignItems:'center', padding:'5%',margin:'5%', backgroundColor: theme.bg1, borderRadius:43}}>
+            <View style={{justifyContent:'center',alignItems:'center', padding:'3%',margin:'4%', backgroundColor: theme.bg1, borderRadius:15}}>
               {image || image1 ? (
-                <Image source={{ uri: image ? image : image1 }} style={{ width: 200, height: 200, borderRadius:15 }} />
+                <Image source={{ uri: image ? image : image1 }} style={{ width: 300, height: 300, borderRadius:15 }} />
               ) : ( 
                 <Text>No image available</Text>
               )}
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 25,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     desc: {
         marginTop:'5%',

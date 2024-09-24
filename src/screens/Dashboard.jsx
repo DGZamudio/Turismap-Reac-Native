@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, Image, ScrollView, Dimensions, FlatList, Pressa
 import React, { useContext, useRef, useEffect, useState } from 'react'
 import themeContext from '../theme/themeContext'
 import { getData } from '../services/api';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
     const { width } = Dimensions.get('window');
     const data = [
@@ -23,9 +24,10 @@ const Dashboard = ({ navigation }) => {
     const loadData = () => {
         getData(`/last`)
           .then((data) => {
-            const updatedData = data.map((item) => ({
+            const updatedData = data.map((item, index) => ({
               ...item,
-              image: `data:image/jpeg;base64,${item.image}` 
+              image: `data:image/webp;base64,${item.image}`,
+              position: index+1
             }));
             setSitesData(updatedData);
           })
@@ -53,22 +55,30 @@ const Dashboard = ({ navigation }) => {
         <View style={styles.body}>
             <View>
                 <Text style={[styles.title, {color: theme.title, textAlign:'center'}]}>Explore</Text>
-                <FlatList
-                    ref={flatListRef}
-                    data={data}
-                    keyExtractor={(item) => item.id}
-                    horizontal
-                    pagingEnabled
-                    showsHorizontalScrollIndicator={false}
-                    renderItem={({ item }) => (
-                        <Pressable onPress={() => handlePress(item.id)}>
-                            <View style={[styles.slide, {backgroundColor: theme.bg2}]}>
-                                <Image source={ item.image } style={styles.image} />
-                                <Text style={[styles.title, {color: theme.title}]}>{item.title}</Text>
-                            </View>
-                        </Pressable>
-                    )}
-                />
+                    <FlatList
+                        ref={flatListRef}
+                        data={data}
+                        keyExtractor={(item) => item.id}
+                        horizontal
+                        pagingEnabled
+                        showsHorizontalScrollIndicator={true}
+                        renderItem={({ item }) => (
+                            <Pressable onPress={() => handlePress(item.id)}>
+                                <View style={[styles.slide, {backgroundColor: theme.bg2}]}>
+                                    {item.id != "1" && (
+                                        <AntDesign name="left" size={24} color="black" />
+                                    )}
+                                    <View style={{justifyContent:'center', alignItems:'center',flexDirection: 'column'}}>
+                                        <Image source={ item.image } style={styles.image} />
+                                        <Text style={[styles.title, {color: theme.title}]}>{item.title}</Text>
+                                    </View>
+                                    {item.id != "6" && (
+                                        <AntDesign name="right" size={24} color="black" />
+                                    )}
+                                </View>
+                            </Pressable>
+                        )}
+                    />
             </View>
             <View>
                 <Text style={[styles.title, {color: theme.title, textAlign:'center'}]}>Explore</Text>
@@ -78,11 +88,19 @@ const Dashboard = ({ navigation }) => {
                     keyExtractor={(item) => item._id}
                     horizontal
                     pagingEnabled
-                    showsHorizontalScrollIndicator={false}
+                    showsHorizontalScrollIndicator={true}
                     renderItem={({ item }) => (
                         <View style={[styles.slide, {backgroundColor: theme.bg2}]}>
-                        <Image source={{ uri: item.image }} style={styles.image} />
-                        <Text style={[styles.title, {color: theme.title}]}>{item.nombreSitiosTuristicos}</Text>
+                            {item.position != 1 && (
+                                <AntDesign name="left" size={24} color="black" />
+                            )}
+                            <View style={{justifyContent:'center', alignItems:'center',flexDirection: 'column'}}>
+                                <Image source={{ uri: item.image }} style={styles.image} />
+                                <Text style={[styles.title, {color: theme.title}]}>{item.nombreSitiosTuristicos}</Text>
+                            </View>
+                            {item.position != 5 && (
+                                <AntDesign name="right" size={24} color="black" />
+                            )}
                         </View>
                     )}
                 />
@@ -105,7 +123,8 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize:20,
-        fontWeight:'bold'
+        fontWeight:'bold',
+        textAlign:'center'
     },
     logo: {
         width: 60,
@@ -128,9 +147,11 @@ const styles = StyleSheet.create({
         width: width - 60,
         marginHorizontal: 10,
         alignItems: 'center',
+        justifyContent:'center',
         borderRadius: 20,
         padding: 15,
-        margin: '2%'
+        margin: '2%',
+        flexDirection:'row'
     },
     image: {
         width: 200,

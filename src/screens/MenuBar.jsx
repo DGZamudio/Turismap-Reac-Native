@@ -20,7 +20,7 @@ import Preferences from './Preferences';
 
 const Drawer = createDrawerNavigator();
 
-function DrawerNavigator() {
+function DrawerNavigator({ navigation }) {
 
   const theme = useContext(themeContext)
   const { showAlert } = useAlert();
@@ -150,6 +150,11 @@ function DrawerNavigator() {
                   style={styles.switch}
                 />
               </View>
+              <Pressable onPress={() => navigation.replace('Tutorial')}>
+                  <Text style={{color: theme.text}}>
+                    Do you want to see the tutorial?
+                  </Text>
+              </Pressable>
             </View>
             <DrawerItemList {...props} />
           </SafeAreaView>

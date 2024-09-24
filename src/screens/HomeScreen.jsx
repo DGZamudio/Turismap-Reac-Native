@@ -34,6 +34,8 @@ const HomeScreen = ({ navigation, route }) => {
   const [maxPage, setMaxPage] = useState(1)
   const [filter1, setFilter1] = useState(false)
   const [filter2, setFilter2] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [change, setChange] = useState(true)
   const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiaGFpZGVyMTgiLCJhIjoiY20xMW4xdXVrMDRzZjJtcTBzMW5zb3BjbCJ9.OMXILYFN8qtCXB561pdrQw';
 
   const getData = async () => {
@@ -147,18 +149,20 @@ const HomeScreen = ({ navigation, route }) => {
     });
   }
 
-  const filtr = (id) => {
+  const filtr = (id,pge) => {
     setFilter1(true)
     setFilter2(false)
     showAlert('', 'loading')
     setFiltered(true)
-    sendData(`/filtr?page=${page}&per_page=1`, {sitio: id})
+    sendData(`/filtr?page=${pge}&per_page=1`, {sitio: id})
     .then(data => {
-      hideAlert()
-      setPage(data.page)
       setMaxPage(data.total_pages)
       setData(data.data)
       getImage(data.data[0]._id)
+      getAverage(data.data[0]._id)
+      setIsLoading(false)
+      setChange(false)
+      hideAlert()
     })
     .catch((error) => {
       console.error('Error al obtener los sitios turisticos:', error);
@@ -176,7 +180,7 @@ const HomeScreen = ({ navigation, route }) => {
       return response.text(); 
     })
     .then((base64String) => {
-      const imageSrc = `data:image/jpeg;base64,${base64String}`; 
+      const imageSrc = `data:image/webp;base64,${base64String}`; 
       setImage(imageSrc); 
     })
     .catch((error) => {
@@ -184,19 +188,22 @@ const HomeScreen = ({ navigation, route }) => {
     });
   }
 
-  const filter = () => {
+  const filter = (pge) => {
     setFilter1(false)
     setFilter2(true)
     showAlert('', 'loading')
     setFiltered(true)
-    Get(`/filter/${_id}?page=${page}&per_page=1`)
+    Get(`/filter/${_id}?page=${pge}&per_page=1`)
     .then(data => {
       sites = data.data
-      hideAlert()
       setPage(data.page)
       setMaxPage(data.total_pages)
       setData(sites)
       getImage(sites[0]._id)
+      getAverage(data.data[0]._id)
+      setIsLoading(false)
+      setChange(false)
+      hideAlert()
     })
     .catch((error) => {
       console.error('Error al obtener los sitios turisticos:', error);
@@ -230,24 +237,38 @@ const HomeScreen = ({ navigation, route }) => {
   }, [])
 
   useEffect(() => {
-    if (filter1){
-      filtr(site)
+    if (DATA && DATA.length > 0){
+      const newRegion = {
+        latitude: parseFloat(DATA[0].altitudSitiosTuristicos),
+        longitude: parseFloat(DATA[0].latitudSitiosTuristicos),
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      };
+      mapRef.current.animateToRegion(newRegion, 1000);
     }
-    else{
-      if (filter2){
-        filter()
-      }
-    }
-  }, [page])
+  }, [DATA])
 
   useEffect(() => {
+    setChange(true)
+    setPage(1)
     if (site) {
-      filtr(site)
+      filtr(site,1)
     }
     else {
       loadData2()
     }
   }, [site])
+
+  useEffect(() => {
+    if (!change){
+      if (filter1){
+        filtr(site,page)
+      }
+      else {
+        filter(page)
+      }
+    }
+  }, [page])
 
   useEffect(() => {
     if (selectedSite) {
@@ -312,7 +333,7 @@ const HomeScreen = ({ navigation, route }) => {
           </View>
           { logged && (
             <View style={[styles.filter, {backgroundColor:theme.bg1}]}>
-              <Pressable onPress={() => {filter()}} style={{flexDirection:'row',justifyContent:'center',alignItems:'center',}}>
+              <Pressable onPress={() => {filter(1)}} style={{flexDirection:'row',justifyContent:'center',alignItems:'center',}}>
                 <AntDesign name="question" size={24} color={theme.title} />
                 <Text style={{color:theme.title}}>You may like these places</Text>
               </Pressable>
@@ -331,15 +352,15 @@ const HomeScreen = ({ navigation, route }) => {
                 </View>
                 <View style={{flexDirection: 'row', justifyContent:'space-between', alignItems: 'center', marginLeft: '30%', marginRight:'30%'}}>
                     <Pressable onPress={() => {setPage(page-1)}}>
-                      {page !== 1 && (
-                        <AntDesign name="caretleft" size={24} color="black" />
+                      {page !== 1 && !isLoading && (
+                          <AntDesign name="caretleft" size={24} color="black" />
                       )}
                     </Pressable>
                   <Text>
                     {page} - {maxPage}
                   </Text>
                     <Pressable onPress={() => {setPage(page+1)}}>
-                      {maxPage !== page && (
+                      {maxPage !== page && !isLoading && (
                         <AntDesign name="caretright" size={24} color={theme.title} />
                       )}
                     </Pressable>
@@ -394,6 +415,7 @@ const HomeScreen = ({ navigation, route }) => {
             followsUserLocation={true}
             initialRegion={initialRegion}
             onPress={selectPointOnMap}
+            toolbarEnabled={false}
           >
           {origin && 
               <Marker coordinate={origin} image={require('../../assets/pin.png')}/>

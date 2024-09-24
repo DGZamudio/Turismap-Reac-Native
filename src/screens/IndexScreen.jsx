@@ -10,17 +10,20 @@ const IndexScreen = ({ navigation }) => {
   const [animationFinished, setAnimationFinished] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
 
-  const getData = async () => {
+  const checkFirstLaunch = async () => {
     try {
-      const token = await AsyncStorage.getItem('token');
-      if (token) {
-        setIsLoggedIn(true);
+      const alreadyLaunched = await AsyncStorage.getItem('alreadyLaunched');
+      if (alreadyLaunched === null) {
+        setIsLoggedIn(false)
+        await AsyncStorage.setItem('alreadyLaunched', 'true');
       }
-    } catch (e) {
-      console.error('Error decoding token:', e);
-      setIsLoggedIn(false);
+      else{
+        setIsLoggedIn(true)
+      }
+    } catch (error) {
+      console.error("Error accediendo a AsyncStorage", error);
     } finally {
-      setDataLoaded(true);
+      setDataLoaded(true)
     }
   };
 
@@ -33,7 +36,7 @@ const IndexScreen = ({ navigation }) => {
       setAnimationFinished(true);
     });
 
-    getData();
+    checkFirstLaunch();
   }, []);
 
   useEffect(() => {
