@@ -1,7 +1,9 @@
 import { StyleSheet, Text, View, FlatList, ScrollView, Pressable, TextInput } from 'react-native'
 import React, { useContext, useState, useEffect } from 'react'
 import AntDesign from '@expo/vector-icons/AntDesign';
+import Entypo from '@expo/vector-icons/Entypo';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import themeContext from '../theme/themeContext';
 import { useAlert } from './Alert';
 import { getData } from '../services/api';
@@ -13,10 +15,10 @@ const Crud = ({ navigation }) => {
     const [loading,setIsLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [userIdToDelete, setUserIdToDelete] = useState(null);
+    const [ state, setState ] = useState("")
     const [showDeleteAlert, setShowDeleteAlert] = useState(false);
     const { showAlert, hideAlert } = useAlert();
 
-    //Cargar data
     useEffect(() => {
       if (showCrud === '0'){
         return
@@ -60,7 +62,6 @@ const Crud = ({ navigation }) => {
 
     }
 
-    //Buscar usuario
     const searchUser = () => {
       showAlert('', 'loading')
       fetch(`https://turismap-backend-python.onrender.com/search_user?q=${encodeURIComponent(search)}`, {
@@ -102,21 +103,23 @@ const Crud = ({ navigation }) => {
     type ItemProps = {_id: string; nombreUsuario: string; correoUsuario: string; estadoUsuario: string; rolUsuario: string;};
     type ItemProps2 = {_id: string; nombreSitiosTuristicos: string; estadoSitiosTuristicos: string;}
 
-    //Eliminar Usuario
-    const deleteUser = (id) => {
+    const deleteUser = (id, state) => {
       setShowDeleteAlert(true);
-      setUserIdToDelete(id); 
+      setUserIdToDelete(id);
+      setState(state);
     };
 
-    //Editar Usuario
     const edit = (user) => {
       const userData = DATA.find(u => u._id === user._id);
       if (userData) {
           navigation.navigate('EditProfile', { data: userData });
       }
     };
+
+    const editL = (id, nombre) => {
+      navigation.navigate('EditLocal', { _id: id, nombreSitiosTuristicos: nombre});
+    }
   
-    //Item de la tabla usuario
     const Item = ({ _id, nombreUsuario, correoUsuario, estadoUsuario, rolUsuario }: ItemProps) => (
         <View style={styles.rowList}>
           <View style={styles.item}>
@@ -129,21 +132,23 @@ const Crud = ({ navigation }) => {
             <Text style={[styles.itemTitle, { color: theme.text }]}>{correoUsuario}</Text>
           </View>
           <View style={styles.item}>
-            <Text style={[styles.itemTitle, { color: theme.text }]}>{estadoUsuario}</Text>
+            <Text style={[styles.itemTitle, { color: theme.text }]}>{estadoUsuario === '1' ? 'Active' :'Inactive'}</Text>
           </View>
           <View style={styles.item}>
-            <Text style={[styles.itemTitle, { color: theme.text }]}>{rolUsuario}</Text>
+            <Text style={[styles.itemTitle, { color: theme.text }]}>{rolUsuario === '2' ? 'Admin' : 'User'}</Text>
           </View>
           <View style={styles.item}>
             <View style={styles.rowIcon}>
-              <Pressable style={styles.editItemn} >
+              {/*<Pressable style={styles.editItemn} >
                 <AntDesign name="edit" size={24} color="black" 
                 onPress={() => edit({_id, nombreUsuario})} />
-              </Pressable>
-            {/*<Pressable style={styles.delItemn} 
-              onPress={() => deleteUser(_id)}>
-                <AntDesign name="delete" size={24} color="black"/>
               </Pressable>*/}
+              <Pressable style={[styles.delItemn, { backgroundColor: estadoUsuario === '1' ? '#e23636' : '#00bb00'}]} 
+                onPress={() => deleteUser(_id, estadoUsuario)}>
+                {
+                  estadoUsuario === '1' ? <FontAwesome name="ban" size={24} color="black"/> : <Entypo name="check" size={24} color="black" />
+                }
+              </Pressable>
             </View>
           </View>
         </View>
@@ -158,17 +163,19 @@ const Crud = ({ navigation }) => {
             <Text style={[styles.itemTitle, { color: theme.text }]}>{nombreSitiosTuristicos}</Text>
           </View>
           <View style={styles.item}>
-            <Text style={[styles.itemTitle, { color: theme.text }]}>{estadoSitiosTuristicos}</Text>
+            <Text style={[styles.itemTitle, { color: theme.text }]}>{estadoSitiosTuristicos === '1' ? 'Active' : 'Inactive'}</Text>
           </View>
           <View style={styles.item}>
             <View style={styles.rowIcon}>
               <Pressable style={styles.editItemn} >
                 <AntDesign name="edit" size={24} color="black" 
-                onPress={() => edit({_id, nombreSitiosTuristicos})} />
+                onPress={() => editL(_id, nombreSitiosTuristicos)} />
               </Pressable>
-              <Pressable style={styles.delItemn} 
-              onPress={() => deleteUser(_id)}>
-                <AntDesign name="delete" size={24} color="black"/>
+              <Pressable style={[styles.delItemn, { backgroundColor: estadoSitiosTuristicos === '1' ? '#e23636' : '#00bb00'}]} 
+              onPress={() => deleteUser(_id, estadoSitiosTuristicos)}>
+                {
+                  estadoSitiosTuristicos === '1' ? <FontAwesome name="ban" size={24} color="black"/> : <Entypo name="check" size={24} color="black" />
+                }
               </Pressable>
             </View>
           </View>
@@ -322,18 +329,17 @@ const Crud = ({ navigation }) => {
                 setShowDeleteAlert(false);
                 showAlert('', 'loading');
                 {showCrud === '1' && (
-                  fetch(`https://turismap-backend-python.onrender.com/delete_user/${userIdToDelete}`, {
-                    method: 'DELETE',
+                  fetch(`https://turismap-backend-python.onrender.com/ban/${userIdToDelete}/${state}`, {
+                    method: 'PUT',
                     headers: {
                       'Content-Type': 'application/json',
                     },
                   })
                   .then(response => {
                     if (response.ok) {
-                      setData(DATA.filter(user => user._id !== userIdToDelete)); 
-                      showAlert('The user has been deleted', 'succes');
+                      showAlert('The user has been modfied', 'success');
                     } else {
-                      console.error('Error deleting user:', response.statusText);
+                      console.error('Error trying to modify user:', response.statusText);
                       showAlert('There seems to be an error trying to delete the user', 'error');
                     }
                   })
@@ -344,23 +350,22 @@ const Crud = ({ navigation }) => {
                 )}
 
                 {showCrud === '2' && (
-                  fetch(`https://turismap-backend-python.onrender.com/delete_item/${userIdToDelete}`, {
-                    method: 'DELETE',
+                  fetch(`https://turismap-backend-python.onrender.com/banS/${userIdToDelete}/${state}`, {
+                    method: 'PUT',
                     headers: {
                       'Content-Type': 'application/json',
                     },
                   })
                   .then(response => {
                     if (response.ok) {
-                      setData(DATA.filter(user => user._id !== userIdToDelete)); 
-                      showAlert('The local has been deleted', 'success');
+                      showAlert('The local has been modified', 'success');
                     } else {
-                      console.error('Error deleting local:', response.statusText);
+                      console.error('Error trying to modify the local:', response.statusText);
                       showAlert('There seems to be an error trying to delete the local', 'error');
                     }
                   })
                   .catch(error => {
-                    console.error('Error deleting local:', error);
+                    console.error('Error trying to modify the local:', error);
                     showAlert('There seems to be an error trying to delete the local', 'error');
                   })
                 )}
@@ -457,10 +462,11 @@ const styles = StyleSheet.create({
         height:30,
       },
       delItemn:{
+        justifyContent:'center',
+        alignItems:'center',
         width:26,
         height:26,
         marginLeft:5,
-        backgroundColor:'#e23636',
         borderRadius:10,
       },
       editItemn:{

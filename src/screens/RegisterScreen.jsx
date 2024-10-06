@@ -137,10 +137,10 @@ const RegisterScreen = ({ navigation }) => {
           <View style={styles.card}>
               <Text style={styles.title}>Turismap</Text>
               <Image source={require('../../assets/Turismap Logo Minimalist.png')} style={styles.logo} />
-              <TextInput placeholder="Username" style={styles.input} placeholderTextColor="#f8f9fa" value={nombreUsuario} onChangeText = {text => setNombreUsuario(text)}/>
-              <TextInput placeholder="Email" style={styles.input} keyboardType="email-address" placeholderTextColor="#f8f9fa" value={correoUsuario} onChangeText = {text => setCorreoUsuario(text)}/>
-              <TextInput placeholder="Password" style={styles.input} secureTextEntry={true} placeholderTextColor="#f8f9fa" value={contrasenaUsuario} onChangeText = {text => setContrasenaUsuario(text)}/>
-              <TextInput placeholder="Confirm Password" style={styles.input} secureTextEntry={true} placeholderTextColor="#f8f9fa" onChangeText = {text => setContrasenaUsuario2(text)}/>
+              <TextInput placeholder="Username*" style={styles.input} placeholderTextColor="#f8f9fa" value={nombreUsuario} onChangeText = {text => setNombreUsuario(text)}/>
+              <TextInput placeholder="Email*" style={styles.input} keyboardType="email-address" placeholderTextColor="#f8f9fa" value={correoUsuario} onChangeText = {text => setCorreoUsuario(text)}/>
+              <TextInput placeholder="Password*" style={styles.input} secureTextEntry={true} placeholderTextColor="#f8f9fa" value={contrasenaUsuario} onChangeText = {text => setContrasenaUsuario(text)}/>
+              <TextInput placeholder="Confirm Password*" style={styles.input} secureTextEntry={true} placeholderTextColor="#f8f9fa" onChangeText = {text => setContrasenaUsuario2(text)}/>
               <Text style={styles.passwordInfo}>
                   Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
               </Text>

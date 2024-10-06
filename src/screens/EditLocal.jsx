@@ -1,12 +1,11 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, Animated, FlatList, Image, Button } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, Animated, FlatList } from 'react-native';
 import { Video } from 'expo-av';
 import themeContext from '../theme/themeContext';
 import { RadioButton } from 'react-native-paper';
 import { useAlert } from './Alert';
-import * as ImagePicker from 'expo-image-picker';
 
-const AddLocal = () => {
+const AddLocal = ({ route }) => {
   const scaleAnim = new Animated.Value(1);
   const shadowAnim = new Animated.Value(0.2);
 
@@ -37,16 +36,15 @@ const AddLocal = () => {
   };
 
   const theme = useContext(themeContext);
-  const [nombreLocal, setNombreLocal] = useState("");
+  const { _id, nombreSitiosTuristicos } = route.params;
+  const [nombreLocal, setNombreLocal] = useState(nombreSitiosTuristicos || ""); 
   const [descripcion, setDescripcion] = useState("");
   const [altitud, setAltitud] = useState("");
   const [longitud, setLongitud] = useState("");
   const [horarios, setHorarios] = useState("");
   const [check, setCheck] = useState("0");
-  const [imageUri, setImageUri] = useState(null);
 
-  const { showAlert, hideAlert } = useAlert();
-  const sinCaracteresEspeciales = /^[a-zA-Z0-9]*$/;
+  const { showAlert } = useAlert();
 
   const options = [
     { id: "1", title: 'Historical Heritage' },
@@ -72,70 +70,34 @@ const AddLocal = () => {
     );
   };
 
-  const selectImage = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  
-    if (!permissionResult.granted) {
-      alert("Se necesitan permisos para acceder a la galería.");
-      return;
-    }
-  
-    const pickerResult = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-  
-    if (!pickerResult.canceled && pickerResult.assets && pickerResult.assets.length > 0) {
-      const selectedImage = pickerResult.assets[0];
-      if (selectedImage.uri) {
-        setImageUri(selectedImage.uri); 
-      } else {
-        console.error("Error: URI no encontrada");
-      }
-    } else {
-      alert("Selección de imagen cancelada.");
-    }
-  };
-  
-
   const submitData = async () => {
-    if (!nombreLocal || !descripcion || altitud || longitud || horarios || check){
-      showAlert('Every field has to be filled','error')
-      return
-    }
-    const formData = new FormData();
-    formData.append('nombreSitiosTuristicos', nombreLocal);
-    formData.append('descripcionSitiosTuristicos', descripcion);
-    formData.append('altitudSitiosTuristicos', altitud);
-    formData.append('latitudSitiosTuristicos', longitud);
-    formData.append('horariosSitiosTuristicos', horarios);
-    formData.append('estadoSitiosTuristicos', '1');
-    formData.append('tipoSitiosTuristicos', check);
-
-    if (imageUri) {
-      formData.append('image', {
-        uri: imageUri,
-        type: 'image/jpeg',
-        name: 'imagen.jpg',
-      });
+    if (!nombreLocal || !descripcion || !altitud || !longitud || !horarios || !check) {
+      showAlert('Every field has to be filled', 'error');
+      return;
     }
 
     try {
-      const response = await fetch('https://turismap-backend-python.onrender.com/new_item', {
-        method: 'POST',
+      const response = await fetch(`https://turismap-backend-python.onrender.com/update_item/${_id}`, {
+        method: 'PUT',
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         },
-        body: formData,
+        body: JSON.stringify({
+          nombreSitiosTuristicos: nombreLocal,
+          descripcionSitiosTuristicos: descripcion,
+          altitudSitiosTuristicos: altitud,
+          latitudSitiosTuristicos: longitud,
+          horariosSitiosTuristicos: horarios,
+          tipoSitiosTuristicos: check,
+          estadoSitiosTuristicos: '1',
+        }),
       });
 
       const result = await response.json();
-      showAlert('Local registered succesfully','success')
+      showAlert('Local edited successfully', 'success');
     } catch (error) {
-      console.error('Error al enviar datos:', error);
-      setResponseMessage('Error al enviar los datos');
+      console.error('Error sending data:', error);
+      showAlert('Error sending data', 'error');
     }
   };
 
@@ -189,8 +151,6 @@ const AddLocal = () => {
             value={horarios}
             onChangeText={text => setHorarios(text)}
           />
-          <Button title="Select image" onPress={selectImage} />
-          {imageUri && <Image source={{ uri: imageUri }} />}
           <FlatList
             data={options}
             renderItem={renderCheck}
@@ -221,91 +181,91 @@ const AddLocal = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#000',
-  },
-  backgroundVideo: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-    width: '100%',
-    height: '100%',
-    zIndex: -1,
-  },
-  card: {
-    backgroundColor: '#343a408a',
-    padding: 20,
-    borderRadius: 10,
-    width: '90%',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 10,
-    color: '#f8f9fa',
-  },
-  input: {
-    backgroundColor: 'transparent',
-    borderBottomColor: '#fff',
-    borderBottomWidth: 1,
-    borderRadius: 15,
-    width: '100%',
-    padding: 10,
-    marginBottom: 10,
-    color: '#f8f9fa',
-  },
-  input2: {
-    backgroundColor: 'transparent',
-    width: '100%',
-    padding: 10,
-    marginBottom: 10,
-    color: '#f8f9fa',
-  },
-  description: {
-    backgroundColor: 'transparent',
-    borderBottomColor: '#fff',
-    borderBottomWidth: 1,
-    borderRadius: 15,
-    width: '100%',
-    height: '10%',
-    padding: 10,
-    marginBottom: 10,
-    color: '#f8f9fa',
-  },
-  button: {
-    borderRadius: 30,
-    overflow: 'hidden',
-    backgroundColor: '#fff',
-  },
-  buttonContent: {
-    backgroundColor: 'transparent',
-    paddingVertical: 14,
-    paddingHorizontal: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 5 },
-    shadowRadius: 15,
-    shadowOpacity: 0.2,
-    elevation: 5,
-  },
-  buttonText: {
-    color: '#000',
-    fontWeight: 'bold',
-    fontSize: 18,
-  },
-  loginButton: {
-    marginTop: 10,
-  },
-  loginText: {
-    color: '#6c757d',
-    fontSize: 16,
-  },
-});
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: '#000',
+    },
+    backgroundVideo: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      bottom: 0,
+      right: 0,
+      width: '100%',
+      height: '100%',
+      zIndex: -1,
+    },
+    card: {
+      backgroundColor: '#343a408a',
+      padding: 20,
+      borderRadius: 10,
+      width: '90%',
+      alignItems: 'center',
+    },
+    title: {
+      fontSize: 24,
+      marginBottom: 10,
+      color: '#f8f9fa',
+    },
+    input: {
+      backgroundColor: 'transparent',
+      borderBottomColor: '#fff',
+      borderBottomWidth: 1,
+      borderRadius: 15,
+      width: '100%',
+      padding: 10,
+      marginBottom: 10,
+      color: '#f8f9fa',
+    },
+    input2: {
+      backgroundColor: 'transparent',
+      width: '100%',
+      padding: 10,
+      marginBottom: 10,
+      color: '#f8f9fa',
+    },
+    description: {
+      backgroundColor: 'transparent',
+      borderBottomColor: '#fff',
+      borderBottomWidth: 1,
+      borderRadius: 15,
+      width: '100%',
+      height: '10%',
+      padding: 10,
+      marginBottom: 10,
+      color: '#f8f9fa',
+    },
+    button: {
+      borderRadius: 30,
+      overflow: 'hidden',
+      backgroundColor: '#fff',
+    },
+    buttonContent: {
+      backgroundColor: 'transparent',
+      paddingVertical: 14,
+      paddingHorizontal: 28,
+      alignItems: 'center',
+      justifyContent: 'center',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 5 },
+      shadowRadius: 15,
+      shadowOpacity: 0.2,
+      elevation: 5,
+    },
+    buttonText: {
+      color: '#000',
+      fontWeight: 'bold',
+      fontSize: 18,
+    },
+    loginButton: {
+      marginTop: 10,
+    },
+    loginText: {
+      color: '#6c757d',
+      fontSize: 16,
+    },
+  });
 
 export default AddLocal;

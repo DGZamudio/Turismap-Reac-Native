@@ -6,6 +6,7 @@ import Crud from './Crud';
 import EditUser from './Edituser';
 import AddLocal from './AddLocal';
 import themeContext from '../theme/themeContext';
+import EditLocal from './EditLocal'
 
 const Stack = createStackNavigator();
 
@@ -33,6 +34,7 @@ const NavCrud = () => {
         <Stack.Screen name="AddUser" component={AddUser}/>
         <Stack.Screen name="AddLocal" component={AddLocal}/>
         <Stack.Screen name="EditProfile" component={EditUser}/>
+        <Stack.Screen name="EditLocal" component={EditLocal}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

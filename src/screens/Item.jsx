@@ -57,7 +57,9 @@ const Item = ({ navigation, route }) => {
     const getComments = (id) => {
       getData(`/calificaciones_sitio/${id}`)
       .then((data) => {
-        setComments(data.resultados)
+        if (data && data.length > 0) {
+          setComments(data.resultados)
+        }
       })
       .catch((error) => {
         console.error(error)
@@ -73,7 +75,12 @@ const Item = ({ navigation, route }) => {
           showAlert('The review was succesfully created', 'success')
         }
         else {
-          showAlert('The was an erorr uploading the review', 'error')
+          if (data.mensaje === 'El usuario no puede hacer más de un comentario en un sitio') {
+            showAlert('You already have a comment in this local','error')
+          }
+          else {
+            showAlert('The was an erorr uploading the review', 'error')
+          }
         }
       })
       .catch((error) => {

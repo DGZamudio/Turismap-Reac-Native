@@ -60,6 +60,7 @@ const LoginScreen = ({ navigation }) => {
         if (regexCorreo.test(correoUsuario)){
             sendData('/login', {correoUsuario:correoUsuario,contrasenaUsuario:contrasenaUsuario})
             .then(data => {
+                if (data.mensaje === 'Usuario inactivo') {
                     if (data.access_token) {
                         storeData(data.access_token)
                         showAlert('User was logged succesfully', 'success')
@@ -72,6 +73,8 @@ const LoginScreen = ({ navigation }) => {
                   } else {
                         showAlert('Wrong credentials', 'error');
                 }
+                }
+                
             })
             .catch(error => {
                 showAlert('Login failed try again', 'error');
