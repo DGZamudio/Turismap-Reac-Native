@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { View, TextInput, Pressable, Text, Animated, StyleSheet, ScrollView } from 'react-native';
+import { useAlert } from './Alert'; 
 
 const RecoverPass = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [scaleAnim] = useState(new Animated.Value(1));
-  const [underlineAnim] = useState(new Animated.Value(0)); // Animación para la línea
+  const [underlineAnim] = useState(new Animated.Value(0));
+
+  const { showAlert } = useAlert();
 
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
@@ -21,8 +24,12 @@ const RecoverPass = ({ navigation }) => {
   };
 
   const handleRecoverPassword = () => {
-    console.log('Recovering password for:', email);
-    navigation.navigate('NewPasswordScreen');
+    if (email) {
+      showAlert(`A recovery email has been sent to: ${email}`, 'success');
+      navigation.navigate('Login');
+    } else {
+      showAlert('Please enter your email address.', 'error');
+    }
   };
 
   const handleCancel = () => {
@@ -30,7 +37,6 @@ const RecoverPass = ({ navigation }) => {
   };
 
   const handleFocus = () => {
-    // Animar la línea cuando el campo de texto obtiene el foco
     Animated.timing(underlineAnim, {
       toValue: 1,
       duration: 300,
@@ -39,7 +45,6 @@ const RecoverPass = ({ navigation }) => {
   };
 
   const handleBlur = () => {
-    // Revertir la animación cuando se pierde el foco
     Animated.timing(underlineAnim, {
       toValue: 0,
       duration: 300,
@@ -47,7 +52,6 @@ const RecoverPass = ({ navigation }) => {
     }).start();
   };
 
-  // Interpolación para el ancho de la línea
   const underlineWidth = underlineAnim.interpolate({
     inputRange: [0, 1],
     outputRange: ['0%', '100%'],
@@ -124,7 +128,7 @@ const styles = StyleSheet.create({
   },
   underline: {
     height: 2,
-    backgroundColor: '#007bff', // Cambié el color a azul
+    backgroundColor: '#007bff',
     marginTop: -2,
   },
   button: {
