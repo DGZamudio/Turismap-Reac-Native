@@ -7,11 +7,12 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import Entypo from '@expo/vector-icons/Entypo';
 import HomeScreen from './HomeScreen';
 import EditProfile from './EditProfile';
-import Login from './LoginScreen'
-import NavCrud from './NavCrud'
+import Login from './LoginScreen';
+import NavCrud from './NavCrud';
 import Dashboard from './Dashboard';
-import { View, Image, Text, Pressable, Switch, StyleSheet } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import Eventos from './Eventos'; 
+import { View, Image, Text, Pressable, Switch, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { EventRegister } from 'react-native-event-listeners';
 import themeContext from '../theme/themeContext';
 import Svg, { Circle, Path } from 'react-native-svg';
@@ -176,6 +177,14 @@ function DrawerNavigator({ navigation }) {
             ),
           }}
         />
+           <Drawer.Screen
+            name="Eventos" // Add this new screen
+            component={Eventos} // Link it to the new Eventos view
+            options={{
+              title: 'Eventos',
+              drawerIcon: () => <AntDesign name="calendar" size={24} color={theme.title} />,
+            }}
+          />
     { logged ? (
       <>
         <Drawer.Screen name="EditProfile" component={EditProfile} initialParams={{ data: userData.sub }}

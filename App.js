@@ -8,6 +8,7 @@ import MenuBar from './src/screens/MenuBar';
 import RecoverPass from './src/screens/RecoverPass';
 import NewPasswordScreen from './src/screens/NewPasswordScreen';
 import Redirect from './src/screens/Redirect';
+import Eventos from './src/screens/Eventos';
 import TermsAndConditions from './src/screens/TermsConditions';
 import theme from './src/theme/theme';
 import themeContext from './src/theme/themeContext';
@@ -49,6 +50,7 @@ const App = () => {
             <Stack.Screen name="Index" component={IndexScreen} options={{ headerShown: false }} />
             <Stack.Screen name="PreT" component={PreTutorial} options={{ headerShown: false }} />
             <Stack.Screen name="Tutorial" component={Tutorial} options={{ headerShown: false }} />
+            <Stack.Screen name="Eventos" component={Eventos} options={{ headerShown: false }} />
             <Stack.Screen name="Item" component={Item} options={{ headerShown: false }} />
           </Stack.Navigator>
         </NavigationContainer>
