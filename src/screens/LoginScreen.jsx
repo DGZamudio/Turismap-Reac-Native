@@ -61,18 +61,20 @@ const LoginScreen = ({ navigation }) => {
             sendData('/login', {correoUsuario:correoUsuario,contrasenaUsuario:contrasenaUsuario})
             .then(data => {
                 if (data.mensaje === 'Usuario inactivo') {
-                    if (data.access_token) {
-                        storeData(data.access_token)
-                        showAlert('User was logged succesfully', 'success')
-                        navigation.dispatch(
-                            CommonActions.reset({
-                                index: 0,
-                                routes: [{ name: 'Redirect' }],
-                            })
-                        );
-                  } else {
-                        showAlert('Wrong credentials', 'error');
+                    showAlert('User is inactive', 'error')
+                    return;
                 }
+                if (data.access_token) {
+                    storeData(data.access_token)
+                    showAlert('User was logged succesfully', 'success')
+                    navigation.dispatch(
+                        CommonActions.reset({
+                            index: 0,
+                            routes: [{ name: 'Redirect' }],
+                        })
+                    );
+              } else {
+                    showAlert('Wrong credentials', 'error');
                 }
                 
             })
