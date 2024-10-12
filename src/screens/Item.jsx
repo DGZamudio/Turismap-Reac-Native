@@ -3,7 +3,7 @@ import React, { useContext, useState, useEffect } from 'react'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import themeContext from '../theme/themeContext';
 import { useAlert } from './Alert';
-import { getData, sendData } from '../services/api';
+import { deleteData, getData, sendData } from '../services/api';
 
 const Item = ({ navigation, route }) => {
     const { site, image, logged, id } = route.params || {};
@@ -13,6 +13,7 @@ const Item = ({ navigation, route }) => {
     const [reviewComment, setReviewComment] = useState('');
     const [image1, setImage1] = useState("");
     const [comments, setComments] = useState([]);
+    const [userComment,setUserComment] = useState([]);
     const stars = [
         {id: '1'},
         {id: '2'},
@@ -50,21 +51,29 @@ const Item = ({ navigation, route }) => {
       })
       .catch((error) => {
         console.error(error)
-        showAlert('The was an erorr uploading the review', 'error')
+        showAlert('The was an erorr getting the reviews', 'error')
       })
     }
 
     const getComments = (id) => {
       getData(`/calificaciones_sitio/${id}`)
       .then((data) => {
-        if (data && data.length > 0) {
           setComments(data.resultados)
-        }
       })
       .catch((error) => {
         console.error(error)
-        showAlert('The was an erorr uploading the review', 'error')
       })
+    }
+
+    const deleteComment = (id) => {
+      deleteData(`/deleteC/${id}`)
+      .then((data) => {
+        showAlert('Your review was succesfully deleted','success')
+    })
+    .catch((error) => {
+      console.error(error)
+      showAlert('The was an erorr trying to delete the review', 'error')
+    })
     }
   
     const sendComment = () => {
@@ -85,7 +94,7 @@ const Item = ({ navigation, route }) => {
       })
       .catch((error) => {
         console.error(error)
-        showAlert('The was an erorr uploading the review', 'error')
+        showAlert('The was an error uploading the review', 'error')
       })
     }
 
@@ -93,6 +102,17 @@ const Item = ({ navigation, route }) => {
       if (site) {
         getAverage(site._id)
         getComments(site._id)
+        if (logged) {
+          getData(`/getC/${id}/${site._id}`)
+          .then((data) => {
+            if (data){
+              setUserComment(data)
+            }
+          })
+          .catch((error) => {
+            console.error(error)
+          })
+        }
       }
     }, [site])
 
@@ -133,6 +153,28 @@ const Item = ({ navigation, route }) => {
               )}
             </View>
             <Text style={[styles.desc, {color: theme.text}]}>{site.descripcionSitiosTuristicos}</Text>
+            {userComment && (
+              <View style= {{margin: '5%'}}>
+                  <View style={[styles.review, { backgroundColor: theme.bg3 }]}>
+                    <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+                      <Text style={{color: theme.title, fontSize:15, fontWeight: 'bold'}}>Your comment</Text>
+                      <Pressable onPress={() => {deleteComment(userComment._id)}} >
+                        <Text style={{color: '#e23636'}}>Delete</Text>
+                      </Pressable>
+                    </View>
+                    <View style={{flexDirection:'row'}}>
+                    {stars.map((_, index) => (
+                      <AntDesign
+                        name={index < userComment.calificacion ? "star" : "staro"}
+                        size={24}
+                        color="#d4af37"
+                      />
+                    ))}
+                    </View>
+                    <Text style={[styles.desc, {color: theme.text}]}>{userComment.comentario || 'no comment'}</Text>
+                  </View>
+            </View>        
+            )}
             {comments && (
               <View style= {{margin: '5%'}}>
                 <FlatList
