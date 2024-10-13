@@ -18,19 +18,26 @@ const Crud = ({ navigation }) => {
     const [ state, setState ] = useState("")
     const [showDeleteAlert, setShowDeleteAlert] = useState(false);
     const { showAlert, hideAlert } = useAlert();
+    const [page, setPage] = useState(1);
+    const [perPage, setPerPage] = useState(5);
+    const [maxPage, setMaxPage] = useState(1);
+    const [change, setChange] = useState(true);
 
     useEffect(() => {
+      setChange(true)
+      setPage(1)
       if (showCrud === '0'){
         return
       }
       showAlert('', 'loading')
       const url = showCrud === '1'
-          ? '/get_users'
-          : '/get_item';
+          ? `/get_users/${page}/${perPage}`
+          : `/get_item/${page}/${perPage}`;
 
       getData(url)
       .then((data) => {
-          setData(data);
+          setData(data.data);
+          setMaxPage(data.pages);
           setIsLoading(false);
           showAlert('The data has been succesfully loaded', 'success');
       })
@@ -45,13 +52,14 @@ const Crud = ({ navigation }) => {
         return
       }
       const url = showCrud === '1'
-      ? '/get_users'
+      ? `/get_users/${page}/${perPage}`
       : showCrud === '2' 
-      ? '/get_item' : '';
+      ? `/get_item/${page}/${perPage}` : '';
       showAlert('', 'loading')
       getData(url)
       .then((data) => {
-          setData(data);
+          setData(data.data);
+          setMaxPage(data.pages);
           setIsLoading(false);
           showAlert('The data has been succesfully loaded', 'success');
       })
@@ -99,6 +107,12 @@ const Crud = ({ navigation }) => {
         console.error('Error al obtener los usuarios:', error);
       });
     }
+
+    useEffect(() => {
+      if (!change) {
+        loadData()
+      }
+    },[page])
     
     type ItemProps = {_id: string; nombreUsuario: string; correoUsuario: string; estadoUsuario: string; rolUsuario: string;};
     type ItemProps2 = {_id: string; nombreSitiosTuristicos: string; estadoSitiosTuristicos: string;}
@@ -211,7 +225,7 @@ const Crud = ({ navigation }) => {
                     <AntDesign name="adduser" size={24} color="white" />
                   </Pressable>
                   <Pressable style={styles.refresh}>
-                    <AntDesign name="reload1" size={24} color="black" onPress={() => loadData()} />
+                    <AntDesign name="reload1" size={24} color="black" onPress={() => {setPage(1)}} />
                   </Pressable>
                   <View style={styles.search}>          
                     <TextInput placeholder='Search' style={styles.searchContent} onChangeText={text => setSearch(text)}/>
@@ -249,6 +263,23 @@ const Crud = ({ navigation }) => {
                     onRefresh={() => loadData()}
                     refreshing = {loading}
                 />
+                <View>
+                  <View style={{flexDirection: 'row', justifyContent:'space-between', alignItems: 'center', marginLeft: '30%', marginRight:'30%'}}>
+                      <Pressable onPress={() => {setPage(page-1), setChange(false)}}>
+                        {page !== 1 && !loading && (
+                            <AntDesign name="caretleft" size={24} color="black" />
+                        )}
+                      </Pressable>
+                    <Text>
+                      {page} - {maxPage}
+                    </Text>
+                      <Pressable onPress={() => {setPage(page+1), setChange(false)}}>
+                        {maxPage !== page && !loading && (
+                          <AntDesign name="caretright" size={24} color={theme.title} />
+                        )}
+                      </Pressable>
+                  </View>
+                </View>
               </>
                 )}
             </View>
@@ -278,7 +309,7 @@ const Crud = ({ navigation }) => {
                     <AntDesign name="adduser" size={24} color="white" />
                   </Pressable>
                   <Pressable style={styles.refresh}>
-                    <AntDesign name="reload1" size={24} color="black" onPress={() => loadData()} />
+                    <AntDesign name="reload1" size={24} color="black" onPress={() => {setPage(1)}} />
                   </Pressable>
                   <View style={styles.search}>          
                     <TextInput placeholder='Search' style={styles.searchContent} onChangeText={text => setSearch(text)}/>
@@ -310,6 +341,21 @@ const Crud = ({ navigation }) => {
                     onRefresh={() => loadData()}
                     refreshing = {loading}
                 />
+                  <View style={{flexDirection: 'row', justifyContent:'space-between', alignItems: 'center', marginLeft: '30%', marginRight:'30%'}}>
+                    <Pressable onPress={() => {setPage(page-1), setChange(false)}}>
+                      {page !== 1 && !loading && (
+                          <AntDesign name="caretleft" size={24} color="black" />
+                      )}
+                    </Pressable>
+                  <Text>
+                    {page} - {maxPage}
+                  </Text>
+                    <Pressable onPress={() => {setPage(page+1), setChange(false)}}>
+                      {maxPage !== page && !loading && (
+                        <AntDesign name="caretright" size={24} color={theme.title} />
+                      )}
+                    </Pressable>
+                  </View>
               </>
                 )}
             </View>

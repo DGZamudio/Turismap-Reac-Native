@@ -107,7 +107,7 @@ const HomeScreen = ({ navigation, route }) => {
   const loadData2 = () => {
     showAlert('', 'loading')
     setFiltered(false)
-    Get('/get_item')
+    Get('/get_sites')
     .then((data) => {
       hideAlert()
       setData(data);
