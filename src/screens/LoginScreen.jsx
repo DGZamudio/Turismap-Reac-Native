@@ -56,6 +56,7 @@ const LoginScreen = ({ navigation }) => {
         showAlert('', 'loading')
         if (correoUsuario === '' || contrasenaUsuario === ''){
                 showAlert('Please fill all the blanks', 'error')
+                return;
         }
         if (regexCorreo.test(correoUsuario)){
             sendData('/login', {correoUsuario:correoUsuario,contrasenaUsuario:contrasenaUsuario})
