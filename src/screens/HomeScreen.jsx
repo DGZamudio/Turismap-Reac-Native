@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { View, StyleSheet, TouchableOpacity, TextInput, Pressable, Text, FlatList, Image } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
-//import MapView, { Polygon, Marker, Polyline } from 'react-native-maps'
+import MapView, { Polygon, Marker, Polyline } from 'react-native-maps'
 import themeContext from '../theme/themeContext';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import * as Location from 'expo-location';
@@ -405,7 +405,7 @@ const HomeScreen = ({ navigation, route }) => {
               </View>
             </>
           )}
-          {/*<MapView
+          <MapView
             ref={mapRef}
             style={styles.map}
             customMapStyle={theme.map}
@@ -440,7 +440,7 @@ const HomeScreen = ({ navigation, route }) => {
               fillColor="transparent" 
               strokeWidth={2}
             />
-          </MapView>*/}
+          </MapView>
           {origin && 
             <Pressable style={[styles.close1, {backgroundColor: theme.bg2}]} onPress={() => {setOrigin(null), setRouteCoordinates([])}}>
               <AntDesign name="close" size={24} color="red" />
