@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { View, Text, TextInput, Pressable, StyleSheet, Image, ScrollView, Animated } from 'react-native';
 import { Video } from 'expo-av';
 import themeContext from '../theme/themeContext';
@@ -41,6 +42,7 @@ const LoginScreen = ({ navigation }) => {
     const theme = useContext(themeContext)
     const [correoUsuario, setCorreoUsuario] = useState("")
     const [contrasenaUsuario, setContrasenaUsuario] = useState("")
+    const [handlePassView, setHandlePassView] = useState(true)
 
     const { showAlert } = useAlert();
 
@@ -100,7 +102,12 @@ const LoginScreen = ({ navigation }) => {
                 <Text style={[styles.title]}>Turismap</Text>
                 <Image source={require('../../assets/Turismap Logo Minimalist.png')} style={styles.logo} />
                 <TextInput placeholder="Email" keyboardType="email-address" style={styles.input} placeholderTextColor="#f8f9fa" onChangeText={text => setCorreoUsuario(text)}/>
-                <TextInput placeholder="Password" style={styles.input} secureTextEntry={true} placeholderTextColor="#f8f9fa" onChangeText={text => setContrasenaUsuario(text)}/>
+                <View style={{flexDirection:'row', justifyContent:'center',alignItems:'center'}}>
+                    <TextInput placeholder="Password" style={[styles.input, {width:'92%'}]} secureTextEntry={handlePassView} placeholderTextColor="#f8f9fa" onChangeText={text => setContrasenaUsuario(text)}/>
+                    <Pressable onPress={() => {handlePassView ? setHandlePassView(false) : setHandlePassView(true)}}>
+                        <Ionicons name={handlePassView ? "eye" : "eye-off"} size={23} color="#FFF" />
+                    </Pressable>
+                </View>
                 <View style={styles.recov}>
                     <Text style={styles.passwordInfo}>If you forgot your password </Text>
                     <Pressable
@@ -129,7 +136,7 @@ const LoginScreen = ({ navigation }) => {
                         <Text style={styles.buttonText}>Sign in</Text>
                     </Animated.View>
                 </Pressable>
-                <Pressable onPress={() => navigation.navigate('Register')} style={styles.loginButton}>
+                <Pressable onPress={() => navigation.replace('Register')} style={styles.loginButton}>
                     <Text style={styles.loginText}>Sign up</Text>
                 </Pressable>
             </View>

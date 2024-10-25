@@ -4,6 +4,7 @@ import { View, Text, TextInput, Pressable, StyleSheet, Image, ScrollView, Animat
 import { Video } from 'expo-av';
 import { Checkbox } from 'react-native-paper';
 import { CommonActions } from '@react-navigation/native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useAlert } from './Alert';
 import themeContext from '../theme/themeContext';
 import { sendData } from '../services/api';
@@ -44,6 +45,7 @@ const RegisterScreen = ({ navigation }) => {
   const [contrasenaUsuario, setContrasenaUsuario] = useState("")
   const [contrasenaUsuario2, setContrasenaUsuario2] = useState("")
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [handlePassView, setHandlePassView] = useState(true);
 
   const { showAlert } = useAlert();
   const sinCaracteresEspeciales = /^[a-zA-Z0-9]*$/;
@@ -76,8 +78,8 @@ const RegisterScreen = ({ navigation }) => {
             showAlert('Your password musst have at leats one special character such as (@!"#$%&/)', 'error')
             return;
         }
-        if (contrasenaUsuario.length < 8) {
-            showAlert('The password has to be 8 or more characters long', 'error')
+        if (contrasenaUsuario.length < 8 || contrasenaUsuario.length > 19) {
+            showAlert('The password has to be 8-20 characters long', 'error')
             return;
         }
         else {
@@ -139,10 +141,15 @@ const RegisterScreen = ({ navigation }) => {
               <Image source={require('../../assets/Turismap Logo Minimalist.png')} style={styles.logo} />
               <TextInput placeholder="Username*" style={styles.input} placeholderTextColor="#f8f9fa" value={nombreUsuario} onChangeText = {text => setNombreUsuario(text)}/>
               <TextInput placeholder="Email*" style={styles.input} keyboardType="email-address" placeholderTextColor="#f8f9fa" value={correoUsuario} onChangeText = {text => setCorreoUsuario(text)}/>
-              <TextInput placeholder="Password*" style={styles.input} secureTextEntry={true} placeholderTextColor="#f8f9fa" value={contrasenaUsuario} onChangeText = {text => setContrasenaUsuario(text)}/>
-              <TextInput placeholder="Confirm Password*" style={styles.input} secureTextEntry={true} placeholderTextColor="#f8f9fa" onChangeText = {text => setContrasenaUsuario2(text)}/>
+              <View style={{flexDirection:'row', justifyContent:'center',alignItems:'center'}}>
+                    <TextInput placeholder="Password" style={[styles.input, {width:'92%'}]} secureTextEntry={handlePassView} placeholderTextColor="#f8f9fa" onChangeText={text => setContrasenaUsuario(text)}/>
+                    <Pressable onPress={() => {handlePassView ? setHandlePassView(false) : setHandlePassView(true)}}>
+                        <Ionicons name={handlePassView ? "eye" : "eye-off"} size={23} color="#FFF" />
+                    </Pressable>
+                </View>
+              <TextInput placeholder="Confirm Password*" style={styles.input} secureTextEntry={handlePassView} placeholderTextColor="#f8f9fa" onChangeText = {text => setContrasenaUsuario2(text)}/>
               <Text style={styles.passwordInfo}>
-                  Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
+                  Your password must be 8-20 characters long, contain letters and a special character, and must not contain spaces or emojis.
               </Text>
               <View style={styles.checkboxContainer}>
                 <Checkbox
@@ -173,7 +180,7 @@ const RegisterScreen = ({ navigation }) => {
                       <Text style={styles.buttonText}>Create User</Text>
                   </Animated.View>
               </Pressable>
-              <Pressable onPress={() => navigation.navigate('Login')} style={styles.loginButton}>
+              <Pressable onPress={() => navigation.replace('Login')} style={styles.loginButton}>
                     <Text style={styles.loginText}>Sign in</Text>
                 </Pressable>
           </View>
