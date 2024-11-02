@@ -81,7 +81,7 @@ const Dashboard = ({ navigation }) => {
                     />
             </View>
             <View>
-                <Text style={[styles.title, {color: theme.title, textAlign:'center'}]}>Explore</Text>
+                <Text style={[styles.title, {color: theme.title, textAlign:'center'}]}>Best places</Text>
                 <FlatList
                     ref={flatListRef}
                     data={sitesData}

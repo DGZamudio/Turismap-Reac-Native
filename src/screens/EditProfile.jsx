@@ -5,6 +5,7 @@ import { CommonActions } from '@react-navigation/native';
 import themeContext from '../theme/themeContext';
 import { useAlert } from './Alert';
 import { updateData } from '../services/api';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 const EditProfile = ({ route, navigation }) => {
   const scaleAnim = new Animated.Value(1);
@@ -43,6 +44,7 @@ const EditProfile = ({ route, navigation }) => {
   const [newPass, setNewPass] = useState('')
   const [oldPass, setOldPass] = useState('')
   const sinCaracteresEspeciales = /^[a-zA-Z0-9]*$/;
+  const [showDeleteAlert,setShowDeleteAlert] = useState(false)
 
   const { showAlert } = useAlert();
 
@@ -53,6 +55,29 @@ const EditProfile = ({ route, navigation }) => {
         console.error('Error al guardar el nuevo token:', error);
     }
   };
+
+  const singOut = async () => {
+    try{
+      await AsyncStorage.removeItem('token');
+    }
+    catch (e){
+      console.error(e)
+      showAlert('There was an error trying to log out try again', 'error')
+    }
+  }
+
+  const ban = () => {
+    updateData(`/ban/${_id}/1`)
+    .then((data) => {
+        showAlert('The user was deactivated','success')
+        navigation.replace('Home')
+        singOut()
+    })
+    .catch((error) => {
+      console.error(error)
+      showAlert('Try again','error')
+    })
+  }
 
   const editdata = (id) => {
     showAlert('','loading')
@@ -161,6 +186,28 @@ const EditProfile = ({ route, navigation }) => {
           </Pressable>
         </View>
       </View>
+        <Pressable onPress={() => {setShowDeleteAlert(true)}}>
+          <Text style={{color:"#e23636"}}>
+            Deactivate user
+          </Text>
+        </Pressable>
+        <AwesomeAlert
+              show={showDeleteAlert}
+              showProgress={false}
+              title="Are you sure?"
+              message="Are you sure you want to deactivate your user"
+              closeOnTouchOutside={true}
+              closeOnHardwareBackPress={true}
+              showCancelButton={true}
+              showConfirmButton={true}
+              confirmText="I am sure"
+              confirmButtonColor="#e23636"
+              onCancelPressed={() => setShowDeleteAlert(false)}
+              onConfirmPressed={() => {
+                ban()
+                setShowDeleteAlert(false)
+              }}
+            />
     </View>
   );
 };
