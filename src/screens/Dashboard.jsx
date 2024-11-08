@@ -65,23 +65,23 @@ const Dashboard = ({ navigation }) => {
                         renderItem={({ item }) => (
                             <Pressable onPress={() => handlePress(item.id)}>
                                 <View style={[styles.slide, {backgroundColor: theme.bg2}]}>
-                                    {item.id != "1" && (
-                                        <AntDesign name="left" size={24} color="black" />
-                                    )}
+                                    {item.id != "1" ? (
+                                        <AntDesign name="left" size={24} color={theme.title} />
+                                    ):<AntDesign name="left" size={24} color={theme.bg2} />}
                                     <View style={{justifyContent:'center', alignItems:'center',flexDirection: 'column'}}>
                                         <Image source={ item.image } style={styles.image} />
                                         <Text style={[styles.title, {color: theme.title}]}>{item.title}</Text>
                                     </View>
-                                    {item.id != "6" && (
-                                        <AntDesign name="right" size={24} color="black" />
-                                    )}
+                                    {item.id != "6" ? (
+                                        <AntDesign name="right" size={24} color={theme.title} />
+                                    ):<AntDesign name="left" size={24} color={theme.bg2} />}
                                 </View>
                             </Pressable>
                         )}
                     />
             </View>
             <View>
-                <Text style={[styles.title, {color: theme.title, textAlign:'center'}]}>Best places</Text>
+                <Text style={[styles.title, {color: theme.title, textAlign:'center'}]}>Most popular</Text>
                 <FlatList
                     ref={flatListRef}
                     data={sitesData}
@@ -91,16 +91,16 @@ const Dashboard = ({ navigation }) => {
                     showsHorizontalScrollIndicator={true}
                     renderItem={({ item }) => (
                         <View style={[styles.slide, {backgroundColor: theme.bg2}]}>
-                            {item.position != 1 && (
-                                <AntDesign name="left" size={24} color="black" />
-                            )}
+                            {item.position != 1 ? (
+                                <AntDesign name="left" size={24} color={theme.title} />
+                            ):<AntDesign name="left" size={24} color={theme.bg2} />}
                             <View style={{justifyContent:'center', alignItems:'center',flexDirection: 'column'}}>
                                 <Image source={{ uri: item.image }} style={styles.image} />
-                                <Text style={[styles.title, {color: theme.title}]}>{item.nombreSitiosTuristicos}</Text>
+                                <Text style={[styles.title, {color: theme.title, width: '70%'}]}>{item.nombreSitiosTuristicos}</Text>
                             </View>
-                            {item.position != 5 && (
-                                <AntDesign name="right" size={24} color="black" />
-                            )}
+                            {item.position != 5 ? (
+                                <AntDesign name="right" size={24} color={theme.title} />
+                            ) : <AntDesign name="right" size={24} color={theme.bg2} /> }
                         </View>
                     )}
                 />

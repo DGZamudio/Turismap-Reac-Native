@@ -267,10 +267,10 @@ const Crud = ({ navigation }) => {
                   <View style={{flexDirection: 'row', justifyContent:'space-between', alignItems: 'center', marginLeft: '30%', marginRight:'30%'}}>
                       <Pressable onPress={() => {setPage(page-1), setChange(false)}}>
                         {page !== 1 && !loading && (
-                            <AntDesign name="caretleft" size={24} color="black" />
+                            <AntDesign name="caretleft" size={24} color={theme.title} />
                         )}
                       </Pressable>
-                    <Text>
+                    <Text style={[{color:theme.title}]}>
                       {page} - {maxPage}
                     </Text>
                       <Pressable onPress={() => {setPage(page+1), setChange(false)}}>
@@ -287,7 +287,7 @@ const Crud = ({ navigation }) => {
 
             <View style={[styles.crud, {backgroundColor: theme.bg3}]}>
               <View style={styles.buttons}>
-                <Text style={[styles.title, {color: theme.title, borderBottomColor: theme.title}]}>Turistic places</Text>
+                <Text style={[styles.title, {color: theme.title, borderBottomColor: theme.title}]}>Touristic places</Text>
                 {showCrud === '0' && (
                   <Pressable onPress={() => {setShowCrud('2')}}>
                     <AntDesign name="plus" size={24} color={theme.title} />
@@ -344,10 +344,10 @@ const Crud = ({ navigation }) => {
                   <View style={{flexDirection: 'row', justifyContent:'space-between', alignItems: 'center', marginLeft: '30%', marginRight:'30%'}}>
                     <Pressable onPress={() => {setPage(page-1), setChange(false)}}>
                       {page !== 1 && !loading && (
-                          <AntDesign name="caretleft" size={24} color="black" />
+                          <AntDesign name="caretleft" size={24} color={theme.title} />
                       )}
                     </Pressable>
-                  <Text>
+                  <Text style={[{color:theme.title}]}>
                     {page} - {maxPage}
                   </Text>
                     <Pressable onPress={() => {setPage(page+1), setChange(false)}}>
@@ -370,6 +370,10 @@ const Crud = ({ navigation }) => {
               showConfirmButton={true}
               confirmText="I am sure"
               confirmButtonColor="#e23636"
+              contentContainerStyle={{
+                backgroundColor: theme.bg2, 
+                borderRadius: 10,
+            }}
               onCancelPressed={() => setShowDeleteAlert(false)}
               onConfirmPressed={() => {
                 setShowDeleteAlert(false);
@@ -384,6 +388,7 @@ const Crud = ({ navigation }) => {
                   .then(response => {
                     if (response.ok) {
                       showAlert('The user has been modfied', 'success');
+                      loadData()
                     } else {
                       console.error('Error trying to modify user:', response.statusText);
                       showAlert('There seems to be an error trying to delete the user', 'error');
@@ -405,6 +410,7 @@ const Crud = ({ navigation }) => {
                   .then(response => {
                     if (response.ok) {
                       showAlert('The local has been modified', 'success');
+                      loadData()
                     } else {
                       console.error('Error trying to modify the local:', response.statusText);
                       showAlert('There seems to be an error trying to delete the local', 'error');
