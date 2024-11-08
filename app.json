@@ -22,10 +22,16 @@
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION"
-      ]
+      ],
+      "package": "com.mogz.Turismap"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5bdadc64-94fe-4b5f-947d-eb2b6ef3b542"
+      }
     }
   }
 }
