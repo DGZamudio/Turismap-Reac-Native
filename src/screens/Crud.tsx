@@ -136,9 +136,9 @@ const Crud = ({ navigation }) => {
   
     const Item = ({ _id, nombreUsuario, correoUsuario, estadoUsuario, rolUsuario }: ItemProps) => (
         <View style={styles.rowList}>
-          <View style={styles.item}>
+          {/*<View style={styles.item}>
             <Text style={[styles.itemTitle, { color: theme.text }]}>{_id}</Text>
-          </View>
+          </View>*/}
           <View style={styles.item}>
             <Text style={[styles.itemTitle, { color: theme.text }]}>{nombreUsuario}</Text>
           </View>
@@ -170,9 +170,9 @@ const Crud = ({ navigation }) => {
 
     const Item2 = ({ _id, nombreSitiosTuristicos, estadoSitiosTuristicos}: ItemProps2) => (
         <View style={styles.rowList}>
-          <View style={styles.item}>
+          {/*<View style={styles.item}>
             <Text style={[styles.itemTitle, { color: theme.text }]}>{_id}</Text>
-          </View>
+          </View>*/}
           <View style={styles.item}>
             <Text style={[styles.itemTitle, { color: theme.text }]}>{nombreSitiosTuristicos}</Text>
           </View>
@@ -237,9 +237,9 @@ const Crud = ({ navigation }) => {
                   </View>
                 </View>
                 <View style={styles.headerRow}>
-                    <View style={styles.headerItem}>
+                    {/*<View style={styles.headerItem}>
                       <Text style={[styles.listTitle, {color: theme.title, borderBottomColor: theme.title}]}>Id</Text>
-                    </View>
+                    </View>*/}
                     <View style={styles.headerItem}>
                       <Text style={[styles.listTitle, {color: theme.title, borderBottomColor: theme.title}]}>Name</Text>
                     </View>
@@ -321,9 +321,9 @@ const Crud = ({ navigation }) => {
                   </View>
                 </View>
                 <View style={styles.headerRow}>
-                    <View style={styles.headerItem}>
+                    {/*<View style={styles.headerItem}>
                       <Text style={[styles.listTitle, {color: theme.title, borderBottomColor: theme.title}]}>Id</Text>
-                    </View>
+                    </View>*/}
                     <View style={styles.headerItem}>
                       <Text style={[styles.listTitle, {color: theme.title, borderBottomColor: theme.title}]}>Name</Text>
                     </View>
@@ -363,7 +363,7 @@ const Crud = ({ navigation }) => {
               show={showDeleteAlert}
               showProgress={false}
               title="Are you sure?"
-              message="Are you sure you want to delete the user"
+              message="Are you sure you want to deactivate/activate the user"
               closeOnTouchOutside={true}
               closeOnHardwareBackPress={true}
               showCancelButton={true}
